@@ -37,6 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'fitur_wajib',
+    'fitur_merah',
+    'fitur_kuning',
+    'fitur_hijau',
+    'fitur_biru',
 ]
 
 MIDDLEWARE = [
