@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="id" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TikTakTuk - Manajemen Event</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+
+  <style>
+    :root { --sidebar-width: 260px; --primary-green: #1a7a4a; --transition-speed: 0.3s; }
+
+    body { font-family: 'Inter', sans-serif; background-color: var(--bs-body-bg); transition: background-color var(--transition-speed), color var(--transition-speed); }
+
+    /* ── Sidebar ── */
+    .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; left: 0; top: 0; background: #111827; color: white; z-index: 1000; border-right: 1px solid rgba(255,255,255,0.1); overflow-y: auto; }
+    [data-bs-theme="dark"] .sidebar { background: #000; }
+    .sidebar-header { padding: 1.5rem; font-weight: 800; font-size: 1.25rem; color: var(--primary-green); display: flex; align-items: center; gap: 10px; }
+    .nav-list { list-style: none; padding: 0 1rem; }
+    .nav-item-custom { margin-bottom: 5px; }
+    .nav-link-custom { display: flex; align-items: center; gap: 12px; padding: 0.8rem 1rem; color: #9ca3af; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 500; transition: all 0.2s; }
+    .nav-link-custom:hover { background: rgba(255,255,255,0.05); color: white; }
+    .nav-link-custom.active { background: var(--primary-green); color: white; }
+
+    /* ── Layout ── */
+    .main-content { margin-left: var(--sidebar-width); padding: 0; min-height: 100vh; }
+    .top-bar { height: 70px; background: var(--bs-body-bg); border-bottom: 1px solid var(--bs-border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; position: sticky; top: 0; z-index: 999; }
+    .dev-tool-dropdown .dropdown-toggle::after { display: none; }
+    .theme-toggle-btn { cursor: pointer; font-size: 1.2rem; color: var(--bs-secondary-color); }
+
+    /* ── Event Card ── */
+    .event-card { border: 1px solid var(--bs-border-color); border-radius: 14px; overflow: hidden; background: var(--bs-body-bg); transition: transform .2s, box-shadow .2s; }
+    .event-card:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(0,0,0,.12); }
+    .event-card-img { height: 140px; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; background: linear-gradient(135deg, #0f2d1c, #1a7a4a); flex-shrink: 0; }
+    .event-card-body { padding: 1rem 1.1rem; }
+    .event-title-txt { font-weight: 700; font-size: 1rem; margin-bottom: 6px; line-height: 1.3; }
+    .event-meta-item { font-size: 0.8rem; color: var(--bs-secondary-color); margin-bottom: 3px; display: flex; align-items: flex-start; gap: 6px; }
+    .event-meta-item i { margin-top: 2px; flex-shrink: 0; }
+    .event-price { font-weight: 700; font-size: 0.95rem; color: var(--primary-green); margin-top: 8px; }
+    .event-card-footer { padding: 0.75rem 1.1rem; border-top: 1px solid var(--bs-border-color); display: flex; gap: 8px; align-items: center; }
+    .artist-chip { background: rgba(26,122,74,.12); color: var(--primary-green); border-radius: 99px; padding: 2px 10px; font-size: 0.75rem; font-weight: 600; }
+    [data-bs-theme="dark"] .artist-chip { background: rgba(26,122,74,.25); }
+    .cat-chip { background: var(--bs-secondary-bg); color: var(--bs-secondary-color); border-radius: 99px; padding: 2px 10px; font-size: 0.72rem; }
+
+    /* ── Tag Input ── */
+    .tag-input-wrap { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 10px; border: 1px solid var(--bs-border-color); border-radius: 8px; background: var(--bs-body-bg); min-height: 42px; align-items: center; }
+    .tag-input-wrap:focus-within { border-color: var(--primary-green); box-shadow: 0 0 0 .2rem rgba(26,122,74,.15); }
+    .tag-chip-edit { background: rgba(26,122,74,.12); color: var(--primary-green); border-radius: 99px; padding: 3px 10px; font-size: 0.78rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+    [data-bs-theme="dark"] .tag-chip-edit { background: rgba(26,122,74,.3); }
+    .tag-chip-edit .rm { cursor: pointer; font-size: 1rem; line-height: 1; }
+    .tag-chip-edit .rm:hover { color: #dc2626; }
+    #artistInput { border: none; outline: none; background: transparent; font-family: 'Inter', sans-serif; font-size: 0.88rem; flex: 1; min-width: 120px; color: var(--bs-body-color); }
+
+    /* ── Category rows ── */
+    .cat-row { display: grid; grid-template-columns: 1fr 130px 100px 36px; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .cat-row .form-control { font-size: 0.85rem; padding: 6px 10px; }
+    .cat-add-btn { background: none; border: 1.5px dashed var(--bs-border-color); border-radius: 8px; padding: 8px; color: var(--bs-secondary-color); cursor: pointer; width: 100%; font-size: 0.85rem; transition: all .2s; margin-top: 4px; }
+    .cat-add-btn:hover { border-color: var(--primary-green); color: var(--primary-green); }
+
+    /* ── Readonly ── */
+    .readonly-field { background: var(--bs-tertiary-bg); border: 1px solid var(--bs-border-color); border-radius: 8px; padding: 8px 12px; color: var(--bs-secondary-color); font-size: 0.88rem; }
+
+    @media (max-width: 992px) { .sidebar { left: -100%; } .main-content { margin-left: 0; } }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR  -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="bg-white text-success rounded-2 px-2 py-1" style="font-size:14px;">TT</div>
+    <span>TikTakTuk</span>
+  </div>
+  <div class="px-3 py-3" style="border-bottom:1px solid rgba(255,255,255,.08)">
+    <div class="d-flex align-items-center gap-2">
+      <div id="sb-avatar" class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold"
+           style="width:36px;height:36px;font-size:.85rem;background:#1a7a4a;flex-shrink:0">A</div>
+      <div>
+        <div id="sb-name" style="font-size:.85rem;color:white;font-weight:600">System Admin</div>
+        <span id="sb-role-badge" class="badge" style="font-size:.65rem;background:rgba(245,158,11,.25);color:#fcd34d">Administrator</span>
+      </div>
+    </div>
+  </div>
+  <ul class="nav-list mt-2" id="sidebarMenu"></ul>
+</aside>
+
+<!-- MAIN  -->
+<div class="main-content">
+  <header class="top-bar">
+    <div>
+      <h6 class="mb-0 fw-bold" id="topBarTitle">Jelajahi Acara</h6>
+    </div>
+    <div class="d-flex align-items-center gap-4">
+      <div class="theme-toggle-btn" onclick="toggleDarkMode()">
+        <i class="bi bi-moon-stars" id="themeIcon"></i>
+      </div>
+      <div class="dropdown dev-tool-dropdown">
+        <button class="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+          <i class="bi bi-person-gear"></i><span id="roleLabel">Admin</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+          <li><h6 class="dropdown-header">Simulasi Role</h6></li>
+          <li><a class="dropdown-item" href="#" onclick="updateRole('admin')"><i class="bi bi-shield-check me-2"></i>Administrator</a></li>
+          <li><a class="dropdown-item" href="#" onclick="updateRole('organizer')"><i class="bi bi-calendar-event me-2"></i>Organizer</a></li>
+          <li><a class="dropdown-item" href="#" onclick="updateRole('customer')"><i class="bi bi-person me-2"></i>Customer</a></li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <div class="p-4">
+    <div class="container-fluid">
+
+      <!-- Page Header -->
+      <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+          <h3 class="fw-bold mb-0" id="pageTitle">Jelajahi Acara</h3>
+          <p class="text-muted small mb-0" id="pageSubtitle">Temukan acara terbaik dan beli tiket favorit Anda</p>
+        </div>
+        <button class="btn btn-success d-none" id="btnBuatAcara" onclick="openCreateEvent()">
+          <i class="bi bi-plus-lg me-1"></i>Buat Acara
+        </button>
+      </div>
+
+      <!-- Search & Filter Toolbar -->
+      <div class="card border shadow-sm mb-4" style="border-radius:12px">
+        <div class="card-body">
+          <div class="row g-2 align-items-center">
+            <div class="col-md-5">
+              <div class="input-group">
+                <span class="input-group-text bg-transparent border-end-0">
+                  <i class="bi bi-search text-muted"></i>
+                </span>
+                <input type="text" class="form-control border-start-0" id="searchEvent"
+                       placeholder="Cari acara atau artis..." oninput="filterEvents()" />
+              </div>
+            </div>
+            <div class="col-md-3">
+              <select class="form-select" id="filterVenue" onchange="filterEvents()">
+                <option value="">Semua Venue</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <select class="form-select" id="filterArtist" onchange="filterEvents()">
+                <option value="">Semua Artis</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Event List -->
+      <div id="eventList"></div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CREATE EVENT -->
+<div class="modal fade" id="modalCreateEvent" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold"><i class="bi bi-calendar-plus me-2 text-success"></i>Buat Acara Baru</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3">
+
+          <!-- Judul Acara -->
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">JUDUL ACARA (EVENT_TITLE) <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="c-title" placeholder="cth. Konser Melodi Senja" />
+          </div>
+
+          <!-- Kategori Tiket (kolom kanan, mulai dari baris pertama) -->
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">KATEGORI TIKET (TICKET_CATEGORY) <span class="text-danger">*</span></label>
+            <div id="c-cats"></div>
+            <button type="button" class="cat-add-btn" onclick="addCatRow('c-cats')">
+              <i class="bi bi-plus-circle me-1"></i>Tambah Kategori
+            </button>
+          </div>
+
+          <!-- Tanggal & Waktu -->
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold">TANGGAL (DATE) <span class="text-danger">*</span></label>
+            <input type="date" class="form-control" id="c-date" />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold">WAKTU (TIME) <span class="text-danger">*</span></label>
+            <input type="time" class="form-control" id="c-time" />
+          </div>
+
+          <!-- Venue -->
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">VENUE (VENUE_ID) <span class="text-danger">*</span></label>
+            <select class="form-select" id="c-venue"></select>
+          </div>
+
+          <!-- Artis -->
+          <div class="col-12">
+            <label class="form-label small fw-semibold">ARTIS (EVENT_ARTIST)</label>
+            <div class="tag-input-wrap" id="c-artist-wrap" onclick="document.getElementById('c-artist-inp').focus()">
+              <input type="text" id="c-artist-inp" placeholder="Ketik nama artis lalu tekan Enter..." onkeydown="addArtistTag(event,'create')" />
+            </div>
+            <div class="form-text">Tekan Enter untuk menambah artis</div>
+          </div>
+
+          <!-- Deskripsi -->
+          <div class="col-12">
+            <label class="form-label small fw-semibold">DESKRIPSI</label>
+            <textarea class="form-control" id="c-desc" rows="2" placeholder="Deskripsi acara..."></textarea>
+          </div>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+        <button class="btn btn-success" onclick="saveCreateEvent()">
+          <i class="bi bi-calendar-check me-1"></i>Buat Acara
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: EDIT EVENT -->
+<div class="modal fade" id="modalEditEvent" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square me-2 text-primary"></i>Edit Acara</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="e-id" />
+        <div class="row g-3">
+
+          <!-- Judul Acara -->
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">JUDUL ACARA (EVENT_TITLE) <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="e-title" />
+          </div>
+
+          <!-- Kategori Tiket -->
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">KATEGORI TIKET (TICKET_CATEGORY) <span class="text-danger">*</span></label>
+            <div id="e-cats"></div>
+            <button type="button" class="cat-add-btn" onclick="addCatRow('e-cats')">
+              <i class="bi bi-plus-circle me-1"></i>Tambah Kategori
+            </button>
+          </div>
+
+          <!-- Tanggal & Waktu -->
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold">TANGGAL (DATE) <span class="text-danger">*</span></label>
+            <input type="date" class="form-control" id="e-date" />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold">WAKTU (TIME) <span class="text-danger">*</span></label>
+            <input type="time" class="form-control" id="e-time" />
+          </div>
+
+          <!-- Venue -->
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">VENUE (VENUE_ID) <span class="text-danger">*</span></label>
+            <select class="form-select" id="e-venue"></select>
+          </div>
+
+          <!-- Artis -->
+          <div class="col-12">
+            <label class="form-label small fw-semibold">ARTIS (EVENT_ARTIST)</label>
+            <div class="tag-input-wrap" id="e-artist-wrap" onclick="document.getElementById('e-artist-inp').focus()">
+              <input type="text" id="e-artist-inp" placeholder="Ketik nama artis lalu tekan Enter..." onkeydown="addArtistTag(event,'edit')" />
+            </div>
+            <div class="form-text">Tekan Enter untuk menambah artis</div>
+          </div>
+
+          <!-- Deskripsi -->
+          <div class="col-12">
+            <label class="form-label small fw-semibold">DESKRIPSI</label>
+            <textarea class="form-control" id="e-desc" rows="2"></textarea>
+          </div>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+        <button class="btn btn-primary" onclick="saveEditEvent()">
+          <i class="bi bi-check2 me-1"></i>Simpan
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ TOAST ════ -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:9999">
+  <div id="liveToast" class="toast align-items-center border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body fw-semibold" id="toastMsg"></div>
+      <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+
+//  SHARED CONFIG
+const ROLE_DATA = {
+  admin:     { name:'System Admin', initial:'A', color:'#b45309', badgeText:'Administrator', badgeStyle:'background:rgba(245,158,11,.25);color:#fcd34d' },
+  organizer: { name:'Andi Wijaya',  initial:'A', color:'#2563eb', badgeText:'Organizer',     badgeStyle:'background:rgba(37,99,235,.25);color:#93c5fd'  },
+  customer:  { name:'Budi Santoso', initial:'B', color:'#1a7a4a', badgeText:'Customer',      badgeStyle:'background:rgba(26,122,74,.25);color:#6ee7b7'   },
+};
+
+const ROLE_MENUS = {
+  admin: [
+    { label:'Dashboard',       icon:'bi-grid-1x2',          href:'dashboard.html' },
+    { label:'Manajemen Venue', icon:'bi-building',           href:'venue.html' },
+    { label:'Manajemen Kursi', icon:'bi-grid-3x3',           href:'#' },
+    { label:'Kategori Tiket',  icon:'bi-tags',               href:'#' },
+    { label:'Manajemen Tiket', icon:'bi-ticket-perforated',  href:'#' },
+    { label:'Semua Order',     icon:'bi-cart-check',         href:'#' },
+    { label:'Tiket (Aset)',    icon:'bi-collection',         href:'#' },
+    { label:'Order (Aset)',    icon:'bi-receipt',            href:'#' },
+    { label:'Profile',         icon:'bi-person-circle',      href:'dashboard.html' },
+  ],
+  organizer: [
+    { label:'Dashboard',       icon:'bi-grid-1x2',           href:'dashboard.html' },
+    { label:'Event Saya',      icon:'bi-calendar-event',     href:'event.html',    active:true },
+    { label:'Manajemen Venue', icon:'bi-building',           href:'venue.html' },
+    { label:'Manajemen Kursi', icon:'bi-grid-3x3',           href:'#' },
+    { label:'Kategori Tiket',  icon:'bi-tags',               href:'#' },
+    { label:'Manajemen Tiket', icon:'bi-ticket-perforated',  href:'#' },
+    { label:'Semua Order',     icon:'bi-cart-check',         href:'#' },
+    { label:'Tiket (Aset)',    icon:'bi-collection',         href:'#' },
+    { label:'Order (Aset)',    icon:'bi-receipt',            href:'#' },
+    { label:'Profile',         icon:'bi-person-circle',      href:'dashboard.html' },
+  ],
+  customer: [
+    { label:'Dashboard',       icon:'bi-grid-1x2',           href:'dashboard.html' },
+    { label:'Tiket Saya',      icon:'bi-ticket',             href:'#' },
+    { label:'Pesanan',         icon:'bi-bag-check',          href:'#' },
+    { label:'Cari Event',      icon:'bi-search',             href:'event.html',    active:true },
+    { label:'Promosi',         icon:'bi-megaphone',          href:'#' },
+    { label:'Venue',           icon:'bi-geo-alt',            href:'venue.html' },
+    { label:'Artis',           icon:'bi-people',             href:'#' },
+    { label:'Profile',         icon:'bi-person-circle',      href:'dashboard.html' },
+    { label:'Logout',          icon:'bi-box-arrow-right',    href:'#', isLogout:true },
+  ],
+};
+
+//  DUMMY DATA
+const venues = [
+  { id:'v1', name:'Jakarta Convention Center', city:'Jakarta',  capacity:1000 },
+  { id:'v2', name:'Taman Impian Jayakarta',    city:'Jakarta',  capacity:500  },
+  { id:'v3', name:'Bandung Hall Center',        city:'Bandung',  capacity:800  },
+  { id:'v4', name:'Surabaya Convention Hall',   city:'Surabaya', capacity:1200 },
+  { id:'v5', name:'Bali Arts Center',           city:'Bali',     capacity:600  },
+];
+
+let events = [
+  {
+    id:'e1', organizer:'organizer',
+    title:'Konser Melodi Senja',
+    date:'2024-05-15', time:'19:00',
+    venueId:'v1',
+    artists:['Fourtwnty','Hindia'],
+    cats:[{name:'WVIP',price:1500000,quota:50},{name:'VIP',price:750000,quota:150},{name:'Category 1',price:450000,quota:300},{name:'Category 2',price:250000,quota:500}],
+    desc:'Nikmati suasana senja dengan alunan musik indie yang menenangkan.',
+    emoji:'🎵',
+  },
+  {
+    id:'e2', organizer:'organizer',
+    title:'Festival Seni Budaya',
+    date:'2024-05-22', time:'10:00',
+    venueId:'v2',
+    artists:['Tulus','Yura Yunita'],
+    cats:[{name:'General Admission',price:150000,quota:500}],
+    desc:'Festival budaya tahunan yang menampilkan kesenian nusantara.',
+    emoji:'🎨',
+  },
+  {
+    id:'e3', organizer:'organizer',
+    title:'Malam Akustik Bandung',
+    date:'2024-06-10', time:'18:00',
+    venueId:'v3',
+    artists:['Pamungkas','Raisa'],
+    cats:[{name:'WVIP',price:2000000,quota:30},{name:'VIP',price:900000,quota:100},{name:'Regular',price:350000,quota:400}],
+    desc:'Malam penuh harmoni akustik di kota kembang.',
+    emoji:'🎸',
+  },
+  {
+    id:'e4', organizer:'organizer2',
+    title:'Jazz Under The Stars',
+    date:'2024-07-05', time:'20:00',
+    venueId:'v4',
+    artists:['Nadin Amizah','Rizky Febian'],
+    cats:[{name:'VIP',price:600000,quota:200},{name:'Regular',price:300000,quota:500}],
+    desc:'Nikmati jazz berkelas di bawah langit malam Surabaya.',
+    emoji:'🎷',
+  },
+  {
+    id:'e5', organizer:'organizer2',
+    title:'Bali Music Fest',
+    date:'2024-08-20', time:'16:00',
+    venueId:'v5',
+    artists:['Fourtwnty','Tulus','Raisa'],
+    cats:[{name:'Early Bird',price:400000,quota:150},{name:'Regular',price:600000,quota:400}],
+    desc:'Festival musik terbesar di pulau dewata.',
+    emoji:'🌴',
+  },
+  {
+    id:'e6', organizer:'organizer',
+    title:'Indie Pop Night Jakarta',
+    date:'2024-09-01', time:'19:30',
+    venueId:'v1',
+    artists:['Hindia','Pamungkas'],
+    cats:[{name:'VIP',price:800000,quota:100},{name:'Regular',price:300000,quota:400}],
+    desc:'Malam indie pop yang penuh energi di Jakarta.',
+    emoji:'✨',
+  },
+];
+
+let currentRole  = localStorage.getItem('role') || 'admin';
+let createArtists = [];
+let editArtists   = [];
+let catCounter    = 0;
+
+// ════════════════════════════════════════
+//  SIDEBAR
+// ════════════════════════════════════════
+function renderSidebar(role) {
+  const menu = document.getElementById('sidebarMenu');
+  menu.innerHTML = '';
+  (ROLE_MENUS[role] || []).forEach(item => {
+    const li = document.createElement('li');
+    li.className = 'nav-item-custom';
+    li.innerHTML = `<a href="${item.href||'#'}" class="nav-link-custom ${item.active?'active':''} ${item.isLogout?'text-warning':''}">
+      <i class="bi ${item.icon}"></i><span>${item.label}</span></a>`;
+    menu.appendChild(li);
+  });
+  const d = ROLE_DATA[role];
+  document.getElementById('sb-avatar').textContent      = d.initial;
+  document.getElementById('sb-avatar').style.background = d.color;
+  document.getElementById('sb-name').textContent        = d.name;
+  const badge = document.getElementById('sb-role-badge');
+  badge.textContent  = d.badgeText;
+  badge.style.cssText = `font-size:.65rem;${d.badgeStyle}`;
+  document.getElementById('roleLabel').textContent = d.badgeText;
+}
+
+function updateRole(role) {
+  currentRole = role;
+  localStorage.setItem('role', role);
+  renderSidebar(role);
+  updatePageUI();
+  populateFilters();
+  filterEvents();
+}
+
+//  PAGE UI (role-based)
+function updatePageUI() {
+  const canManage = currentRole === 'admin' || currentRole === 'organizer';
+  document.getElementById('btnBuatAcara').classList.toggle('d-none', !canManage);
+
+  if (currentRole === 'organizer') {
+    document.getElementById('pageTitle').textContent    = 'Acara Saya';
+    document.getElementById('pageSubtitle').textContent = 'Kelola acara yang Anda selenggarakan';
+    document.getElementById('topBarTitle').textContent  = 'Acara Saya';
+  } else if (currentRole === 'admin') {
+    document.getElementById('pageTitle').textContent    = 'Semua Acara';
+    document.getElementById('pageSubtitle').textContent = 'Kelola seluruh acara di platform TikTakTuk';
+    document.getElementById('topBarTitle').textContent  = 'Semua Acara';
+  } else {
+    document.getElementById('pageTitle').textContent    = 'Jelajahi Acara';
+    document.getElementById('pageSubtitle').textContent = 'Temukan acara terbaik dan beli tiket favorit Anda';
+    document.getElementById('topBarTitle').textContent  = 'Jelajahi Acara';
+  }
+}
+
+//  POPULATE FILTERS
+function populateFilters() {
+  // Venue filter
+  const vf   = document.getElementById('filterVenue');
+  const vprev = vf.value;
+  vf.innerHTML = '<option value="">Semua Venue</option>' +
+    venues.map(v => `<option value="${v.id}" ${vprev===v.id?'selected':''}>${v.name}</option>`).join('');
+
+  // Artist filter
+  const af   = document.getElementById('filterArtist');
+  const aprev = af.value;
+  const allArtists = [...new Set(events.flatMap(e => e.artists))].sort();
+  af.innerHTML = '<option value="">Semua Artis</option>' +
+    allArtists.map(a => `<option value="${a}" ${aprev===a?'selected':''}>${a}</option>`).join('');
+}
+
+//  FILTER & RENDER EVENTS
+function filterEvents() {
+  const q      = document.getElementById('searchEvent').value.toLowerCase();
+  const venId  = document.getElementById('filterVenue').value;
+  const artist = document.getElementById('filterArtist').value;
+  const canManage = currentRole === 'admin' || currentRole === 'organizer';
+
+  let list = events.filter(e => {
+    // Organizer: filtered by organizer id (hanya lihat acaranya sendiri)
+    if (currentRole === 'organizer' && e.organizer !== 'organizer') return false;
+    const matchQ = !q || e.title.toLowerCase().includes(q) || e.artists.some(a => a.toLowerCase().includes(q));
+    const matchV = !venId || e.venueId === venId;
+    const matchA = !artist || e.artists.includes(artist);
+    return matchQ && matchV && matchA;
+  });
+
+  const container = document.getElementById('eventList');
+  if (!list.length) {
+    container.innerHTML = `<div class="text-center py-5 text-muted">
+      <i class="bi bi-calendar-x" style="font-size:3rem"></i>
+      <p class="mt-2">Tidak ada acara ditemukan</p></div>`;
+    return;
+  }
+
+  container.innerHTML = `<div class="row g-4">${list.map(e => {
+    const v        = venues.find(x => x.id === e.venueId);
+    const minPrice = Math.min(...e.cats.map(c => c.price));
+    const catBadges = e.cats.slice(0,4).map(c =>
+      `<span class="cat-chip">${c.name}</span>`).join('');
+
+    return `<div class="col-md-6 col-lg-4">
+      <div class="event-card h-100 d-flex flex-column">
+        <div class="event-card-img">${e.emoji}</div>
+        <div class="event-card-body flex-grow-1">
+          <div class="d-flex flex-wrap gap-1 mb-2">
+            ${e.artists.map(a => `<span class="artist-chip">${a}</span>`).join('')}
+          </div>
+          <div class="event-title-txt">${e.title}</div>
+          <div class="event-meta-item"><i class="bi bi-calendar3"></i>${e.date} · ${e.time}</div>
+          <div class="event-meta-item"><i class="bi bi-geo-alt"></i>${v ? v.name + ', ' + v.city : '-'}</div>
+          <div class="event-price">Mulai Rp ${minPrice.toLocaleString('id')}</div>
+          <div class="d-flex flex-wrap gap-1 mt-2">${catBadges}</div>
+        </div>
+        <div class="event-card-footer">
+          ${currentRole === 'customer'
+            ? `<button class="btn btn-success btn-sm w-100" onclick="beliTiket('${e.id}')">
+                <i class="bi bi-ticket-perforated me-1"></i>Beli Tiket
+               </button>`
+            : `<button class="btn btn-outline-primary btn-sm flex-fill" onclick="openEditEvent('${e.id}')">
+                <i class="bi bi-pencil me-1"></i>Edit Acara
+               </button>
+               <span class="badge bg-success-subtle text-success ms-auto">Aktif</span>`
+          }
+        </div>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+//  BELI TIKET (Customer)
+function beliTiket(eventId) {
+  const e = events.find(x => x.id === eventId);
+  showToast(`Memilih tiket untuk: ${e.title}`, 'success');
+}
+
+//  TAG INPUT — ARTIS
+function addArtistTag(ev, mode) {
+  if (ev.key !== 'Enter') return;
+  ev.preventDefault();
+  const inp = document.getElementById(mode === 'create' ? 'c-artist-inp' : 'e-artist-inp');
+  const val = inp.value.trim();
+  if (!val) return;
+
+  const arr = mode === 'create' ? createArtists : editArtists;
+  if (arr.includes(val)) { inp.value = ''; return; }
+  arr.push(val);
+  inp.value = '';
+  renderArtistTags(mode);
+}
+
+function removeArtistTag(mode, idx) {
+  const arr = mode === 'create' ? createArtists : editArtists;
+  arr.splice(idx, 1);
+  renderArtistTags(mode);
+}
+
+function renderArtistTags(mode) {
+  const wrap = document.getElementById(mode === 'create' ? 'c-artist-wrap' : 'e-artist-wrap');
+  const inp  = document.getElementById(mode === 'create' ? 'c-artist-inp' : 'e-artist-inp');
+  const arr  = mode === 'create' ? createArtists : editArtists;
+  wrap.innerHTML = '';
+  arr.forEach((a, i) => {
+    const chip = document.createElement('span');
+    chip.className = 'tag-chip-edit';
+    chip.innerHTML = `${a} <span class="rm" onclick="removeArtistTag('${mode}',${i})">×</span>`;
+    wrap.appendChild(chip);
+  });
+  wrap.appendChild(inp);
+}
+
+//  CATEGORY ROWS
+function addCatRow(containerId, cat) {
+  const c   = cat || { name:'', price:'', quota:'' };
+  const idx = catCounter++;
+  const row = document.createElement('div');
+  row.className = 'cat-row';
+  row.id = `cat-row-${idx}`;
+  row.innerHTML = `
+    <input type="text"   class="form-control" placeholder="Nama Kategori (cth. VIP)" value="${c.name}"  id="cat-name-${idx}" />
+    <input type="number" class="form-control" placeholder="Harga (Rp)"               value="${c.price}" id="cat-price-${idx}" min="0" />
+    <input type="number" class="form-control" placeholder="Kuota"                    value="${c.quota}" id="cat-quota-${idx}" min="1" />
+    <button type="button" class="btn btn-outline-danger btn-sm px-2" onclick="document.getElementById('cat-row-${idx}').remove()">
+      <i class="bi bi-x-lg"></i>
+    </button>`;
+  document.getElementById(containerId).appendChild(row);
+}
+
+function collectCats(containerId) {
+  const rows = document.querySelectorAll(`#${containerId} .cat-row`);
+  const cats = [];
+  let err = false;
+  rows.forEach(row => {
+    const rid   = row.id.replace('cat-row-','');
+    const name  = document.getElementById(`cat-name-${rid}`).value.trim();
+    const price = parseFloat(document.getElementById(`cat-price-${rid}`).value);
+    const quota = parseInt(document.getElementById(`cat-quota-${rid}`).value);
+    if (!name || isNaN(price) || price < 0 || isNaN(quota) || quota <= 0) { err = true; return; }
+    cats.push({ name, price, quota });
+  });
+  return err ? null : cats;
+}
+
+//  POPULATE VENUE SELECT IN MODAL
+function populateVenueSelect(selectId, selectedVenueId) {
+  document.getElementById(selectId).innerHTML =
+    venues.map(v => `<option value="${v.id}" ${v.id===selectedVenueId?'selected':''}>${v.name} (${v.city})</option>`).join('');
+}
+
+//  CREATE EVENT
+function openCreateEvent() {
+  createArtists = [];
+  catCounter    = 0;
+  ['c-title','c-desc'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('c-date').value = '';
+  document.getElementById('c-time').value = '';
+  document.getElementById('c-cats').innerHTML = '';
+  renderArtistTags('create');
+  populateVenueSelect('c-venue', '');
+  addCatRow('c-cats');
+  new bootstrap.Modal(document.getElementById('modalCreateEvent')).show();
+}
+
+function saveCreateEvent() {
+  const title = document.getElementById('c-title').value.trim();
+  const date  = document.getElementById('c-date').value;
+  const time  = document.getElementById('c-time').value;
+  const venId = document.getElementById('c-venue').value;
+  const desc  = document.getElementById('c-desc').value.trim();
+  const cats  = collectCats('c-cats');
+
+  if (!title || !date || !time || !venId) { showToast('Judul, tanggal, waktu, dan venue wajib diisi!', 'danger'); return; }
+  if (!cats || !cats.length) { showToast('Lengkapi semua data kategori tiket! (nama, harga ≥ 0, kuota > 0)', 'danger'); return; }
+
+  // Validasi total kuota vs kapasitas venue
+  const v = venues.find(x => x.id === venId);
+  const totalQ = cats.reduce((a, c) => a + c.quota, 0);
+  if (v && totalQ > v.capacity) {
+    showToast(`Total kuota tiket (${totalQ}) melebihi kapasitas venue (${v.capacity})!`, 'danger'); return;
+  }
+
+  const emojis = ['🎵','🎸','🎺','🎷','🎹','🎤','🎭','🌟','🔥','✨'];
+  events.push({
+    id:       'e' + Date.now(),
+    organizer: currentRole === 'organizer' ? 'organizer' : 'admin',
+    title, date, time, venueId: venId, artists: [...createArtists], cats, desc,
+    emoji: emojis[Math.floor(Math.random() * emojis.length)],
+  });
+
+  bootstrap.Modal.getInstance(document.getElementById('modalCreateEvent')).hide();
+  populateFilters();
+  filterEvents();
+  showToast('Acara berhasil dibuat!', 'success');
+}
+
+//  EDIT EVENT
+function openEditEvent(id) {
+  const e = events.find(x => x.id === id);
+  if (!e) return;
+
+  editArtists = [...e.artists];
+  catCounter  = 0;
+
+  document.getElementById('e-id').value    = e.id;
+  document.getElementById('e-title').value = e.title;
+  document.getElementById('e-date').value  = e.date;
+  document.getElementById('e-time').value  = e.time;
+  document.getElementById('e-desc').value  = e.desc || '';
+  document.getElementById('e-cats').innerHTML = '';
+
+  populateVenueSelect('e-venue', e.venueId);
+  e.cats.forEach(c => addCatRow('e-cats', c));
+  renderArtistTags('edit');
+
+  new bootstrap.Modal(document.getElementById('modalEditEvent')).show();
+}
+
+function saveEditEvent() {
+  const id    = document.getElementById('e-id').value;
+  const title = document.getElementById('e-title').value.trim();
+  const date  = document.getElementById('e-date').value;
+  const time  = document.getElementById('e-time').value;
+  const venId = document.getElementById('e-venue').value;
+  const desc  = document.getElementById('e-desc').value.trim();
+  const cats  = collectCats('e-cats');
+
+  if (!title || !date || !time || !venId) { showToast('Judul, tanggal, waktu, dan venue wajib diisi!', 'danger'); return; }
+  if (!cats || !cats.length) { showToast('Lengkapi semua data kategori tiket! (nama, harga ≥ 0, kuota > 0)', 'danger'); return; }
+
+  const v = venues.find(x => x.id === venId);
+  const totalQ = cats.reduce((a, c) => a + c.quota, 0);
+  if (v && totalQ > v.capacity) {
+    showToast(`Total kuota tiket (${totalQ}) melebihi kapasitas venue (${v.capacity})!`, 'danger'); return;
+  }
+
+  const idx = events.findIndex(e => e.id === id);
+  events[idx] = { ...events[idx], title, date, time, venueId: venId, artists: [...editArtists], cats, desc };
+
+  bootstrap.Modal.getInstance(document.getElementById('modalEditEvent')).hide();
+  populateFilters();
+  filterEvents();
+  showToast('Acara berhasil diperbarui!', 'success');
+}
+
+//  DARK MODE
+function toggleDarkMode() {
+  const html = document.documentElement;
+  const icon = document.getElementById('themeIcon');
+  if (html.getAttribute('data-bs-theme') === 'light') {
+    html.setAttribute('data-bs-theme', 'dark');
+    icon.className = 'bi bi-sun';
+    localStorage.setItem('theme', 'dark');
+  } else {
+    html.setAttribute('data-bs-theme', 'light');
+    icon.className = 'bi bi-moon-stars';
+    localStorage.setItem('theme', 'light');
+  }
+}
+
+//  TOAST
+function showToast(msg, type = 'success') {
+  const el = document.getElementById('liveToast');
+  el.className = `toast align-items-center border-0 text-bg-${type}`;
+  document.getElementById('toastMsg').textContent = msg;
+  new bootstrap.Toast(el, { delay: 3500 }).show();
+}
+
+//  INIT
+const savedTheme = localStorage.getItem('theme') || 'light';
+document.documentElement.setAttribute('data-bs-theme', savedTheme);
+document.getElementById('themeIcon').className = savedTheme === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
+
+renderSidebar(currentRole);
+updatePageUI();
+populateFilters();
+filterEvents();
+</script>
+</body>
+</html>
