@@ -254,45 +254,52 @@
   const WARNA = ['#1a7a4a','#0a3880','#856404','#7c3aed','#b91c1c','#0e7490','#92400e','#065f46'];
 
   // MENU NAVBAR
-  const ROLE_MENUS = {
-    guest: [
-      { label: 'Login',      icon: 'bi-box-arrow-in-right', href: '/login/' },
-      { label: 'Registrasi', icon: 'bi-person-plus',        href: '/register/' }
-    ],
-    admin: [
-      { label: 'Dashboard',       icon: 'bi-grid-1x2',         href: '/admin/dashboard/' },
-      { label: 'Manajemen Venue', icon: 'bi-building',          href: '/admin/venue/' },
-      { label: 'Manajemen Kursi', icon: 'bi-grid-3x3',          href: '/admin/seats/' },
-      { label: 'Kategori Tiket',  icon: 'bi-tags',              href: '/admin/ticket-category/' },
-      { label: 'Manajemen Tiket', icon: 'bi-ticket-perforated', href: '/admin/tickets/' },
-      { label: 'Semua Order',     icon: 'bi-cart-check',        href: '/admin/orders/' },
-      { label: 'Tiket (Aset)',    icon: 'bi-collection',        href: '/admin/asset-tickets/' },
-      { label: 'Order (Aset)',    icon: 'bi-receipt',           href: '/admin/asset-orders/' },
-      { label: 'Profile',         icon: 'bi-person-circle',     href: '/admin/profile/' },
-    ],
-    organizer: [
-      { label: 'Dashboard',       icon: 'bi-grid-1x2',         href: '/organizer/dashboard/' },
-      { label: 'Event Saya',      icon: 'bi-calendar-event',   href: '/organizer/events/' },
-      { label: 'Manajemen Venue', icon: 'bi-building',          href: '/organizer/venue/' },
-      { label: 'Manajemen Kursi', icon: 'bi-grid-3x3',          href: '/organizer/seats/' },
-      { label: 'Kategori Tiket',  icon: 'bi-tags',              href: '/organizer/ticket-category/' },
-      { label: 'Manajemen Tiket', icon: 'bi-ticket-perforated', href: '/organizer/tickets/' },
-      { label: 'Semua Order',     icon: 'bi-cart-check',        href: '/organizer/orders/' },
-      { label: 'Tiket (Aset)',    icon: 'bi-collection',        href: '/organizer/asset-tickets/' },
-      { label: 'Order (Aset)',    icon: 'bi-receipt',           href: '/organizer/asset-orders/' },
-      { label: 'Profile',         icon: 'bi-person-circle',     href: '/organizer/profile/' },
-    ],
-    customer: [
-      { label: 'Dashboard',  icon: 'bi-grid-1x2',        href: '/customer/dashboard/' },
-      { label: 'Tiket Saya', icon: 'bi-ticket',          href: '/customer/tickets/' },
-      { label: 'Pesanan',    icon: 'bi-bag-check',       href: '/customer/orders/' },
-      { label: 'Cari Event', icon: 'bi-search',          href: '/customer/search/' },
-      { label: 'Promosi',    icon: 'bi-megaphone',       href: '/customer/promotions/' },
-      { label: 'Venue',      icon: 'bi-geo-alt',         href: '/customer/venues/' },
-      { label: 'Artis',      icon: 'bi-people',          href: '/artist/' },
-      { label: 'Logout',     icon: 'bi-box-arrow-right', href: '#', isLogout: true },
-    ]
-  };
+const ROLE_MENUS = {
+
+      guest: [
+        { label: 'Login',      icon: 'bi-box-arrow-in-right', href: '/login/' },
+        { label: 'Registrasi', icon: 'bi-person-plus',        href: '/register/' }
+      ],
+
+      admin: [
+        { label: 'Dashboard',       icon: 'bi-grid-1x2',          href: '/fitur_wajib/templates/dashboard.html' },
+        { label: 'Manajemen Venue', icon: 'bi-building',          href: '/admin/venue/' },
+        { label: 'Manajemen Kursi', icon: 'bi-grid-3x3',          href: '/admin/seats/' },
+        { label: 'Kategori Tiket',  icon: 'bi-tags',              href: '/fitur_hijau/templates/ticket_category_list.html' },
+        { label: 'Manajemen Tiket', icon: 'bi-ticket-perforated', href: '/admin/tickets/' },
+        { label: 'Semua Order',     icon: 'bi-cart-check',        href: '/admin/orders/' },
+        { label: 'Tiket (Aset)',    icon: 'bi-collection',        href: '/admin/asset-tickets/' },
+        { label: 'Order (Aset)',    icon: 'bi-receipt',           href: '/admin/asset-orders/' },
+        { label: 'Artis',           icon: 'bi-people',            href: '/fitur_hijau/templates/artist_list.html' }, // <-- SUDAH DITAMBAHKAN
+        { label: 'Profile',         icon: 'bi-person-circle',     href: '/admin/profile/' },
+      ],
+
+      organizer: [
+        { label: 'Dashboard',       icon: 'bi-grid-1x2',          href: '/fitur_wajib/templates/dashboard.html' },
+        { label: 'Event Saya',      icon: 'bi-calendar-event',    href: '/organizer/events/' },
+        { label: 'Manajemen Venue', icon: 'bi-building',          href: '/organizer/venue/' },
+        { label: 'Manajemen Kursi', icon: 'bi-grid-3x3',          href: '/organizer/seats/' },
+        { label: 'Kategori Tiket',  icon: 'bi-tags',              href: '/fitur_hijau/templates/ticket_category_list.html'},
+        { label: 'Manajemen Tiket', icon: 'bi-ticket-perforated', href: '/organizer/tickets/' },
+        { label: 'Semua Order',     icon: 'bi-cart-check',        href: '/organizer/orders/' },
+        { label: 'Tiket (Aset)',    icon: 'bi-collection',        href: '/organizer/asset-tickets/' },
+        { label: 'Order (Aset)',    icon: 'bi-receipt',           href: '/organizer/asset-orders/' },
+        { label: 'Artis',           icon: 'bi-people',            href: '/fitur_hijau/templates/artist_list.html' }, // <-- SUDAH DITAMBAHKAN
+        { label: 'Profile',         icon: 'bi-person-circle',     href: '/organizer/profile/' },
+      ],
+
+      customer: [
+        { label: 'Dashboard',  icon: 'bi-grid-1x2',          href: '/fitur_wajib/templates/dashboard.html' },
+        { label: 'Tiket Saya', icon: 'bi-ticket',            href: '/customer/tickets/' },
+        { label: 'Pesanan',    icon: 'bi-bag-check',         href: '/customer/orders/' },
+        { label: 'Cari Event', icon: 'bi-search',            href: '/customer/search/' },
+        { label: 'Promosi',    icon: 'bi-megaphone',         href: '/customer/promotions/' },
+        { label: 'Venue',      icon: 'bi-geo-alt',           href: '/customer/venues/' },
+        { label: 'Artis',      icon: 'bi-people',            href: '/fitur_hijau/templates/artist_list.html' },
+        { label: 'Logout',     icon: 'bi-box-arrow-right',   href: '#', isLogout: true },
+      ]
+
+    };
 
   const ROLE_DISPLAY_NAMES = {
     admin: 'Administrator', organizer: 'Event Organizer',
