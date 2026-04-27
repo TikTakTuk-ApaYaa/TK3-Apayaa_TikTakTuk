@@ -199,17 +199,10 @@
     // MENU 
     const ROLE_MENUS = {
 
-    guest: [
-        { 
-          label: 'Login', 
-          icon: 'bi-box-arrow-in-right', 
-          href: 'login.html' 
-        },
-        { 
-          label: 'Registrasi', 
-          icon: 'bi-person-plus', 
-          href: 'Cpengguna_pilihRole.html' 
-        }
+guest: [
+        { label: 'Login',      icon: 'bi-box-arrow-in-right', href: 'login.html' },
+        { label: 'Registrasi', icon: 'bi-person-plus',        href: 'Cpengguna_pilihRole.html' },
+        { label: 'Promo',      icon: 'bi-megaphone',         href: 'read_promo_guest.html' } 
       ],
 
       admin: [
@@ -218,7 +211,8 @@
         { label: 'Manajemen Kursi', icon: 'bi-grid-3x3',           href: '/admin/seats/' },
         { label: 'Kategori Tiket',  icon: 'bi-tags',               href: '/fitur_hijau/templates/ticket_category_list.html' },
         { label: 'Manajemen Tiket', icon: 'bi-ticket-perforated',  href: '/admin/tickets/' },
-        { label: 'Semua Order',     icon: 'bi-cart-check',         href: '/admin/orders/' },
+        { label: 'Semua Order',     icon: 'bi-cart-check',         href: '/fitur_biru/templates/read_order_admin.html' },
+        { label: 'Manajemen Promo', icon: 'bi-patch-check',       href: '/fitur_biru/templates/CRUD_promo_admin.html' }, // Fitur Biru
         { label: 'Tiket (Aset)',    icon: 'bi-collection',         href: '/admin/asset-tickets/' },
         { label: 'Order (Aset)',    icon: 'bi-receipt',            href: '/admin/asset-orders/' },
         { label: 'Profile',         icon: 'bi-person-circle',      href: '/admin/profile/' },
@@ -231,7 +225,8 @@
         { label: 'Manajemen Kursi', icon: 'bi-grid-3x3',           href: '/organizer/seats/' },
         { label: 'Kategori Tiket',  icon: 'bi-tags',               href: '/fitur_hijau/templates/ticket_category_list.html'},
         { label: 'Manajemen Tiket', icon: 'bi-ticket-perforated',  href: '/organizer/tickets/' },
-        { label: 'Semua Order',     icon: 'bi-cart-check',         href: '/organizer/orders/' },
+        { label: 'Semua Order',     icon: 'bi-cart-check',         href: '/fitur_biru/templates/read_order_organizer.html' },
+        { label: 'Daftar Promo',    icon: 'bi-megaphone',         href: '/fitur_biru/templates/read_promo_organizer.html' },
         { label: 'Tiket (Aset)',    icon: 'bi-collection',         href: '/organizer/asset-tickets/' },
         { label: 'Order (Aset)',    icon: 'bi-receipt',            href: '/organizer/asset-orders/' },
         { label: 'Profile',         icon: 'bi-person-circle',      href: '/organizer/profile/' },
@@ -240,9 +235,10 @@
       customer: [
         { label: 'Dashboard',  icon: 'bi-grid-1x2',          href: '/fitur_wajib/templates/dashboard.html' },
         { label: 'Tiket Saya', icon: 'bi-ticket',            href: '/customer/tickets/' },
-        { label: 'Pesanan',    icon: 'bi-bag-check',         href: '/customer/orders/' },
+        { label: 'Pesanan',    icon: 'bi-bag-check',         href: '/fitur_biru/templates/read_order_cust.html' },
         { label: 'Cari Event', icon: 'bi-search',            href: '/fitur_kuning/templates/event.html' },
-        { label: 'Promosi',    icon: 'bi-megaphone',         href: '/customer/promotions/' },
+        { label: 'Promosi',    icon: 'bi-megaphone',         href: '/fitur_biru/templates/read_promo_cust.html' },
+        { label: 'Beli Tiket',   icon: 'bi-cart-plus',       href: '/fitur_biru/templates/create_order.html' },    // Fitur Biru
         { label: 'Venue',      icon: 'bi-geo-alt',           href: '/fitur_kuning/templates/venue.html' },
         { label: 'Artis',      icon: 'bi-people',            href: '/fitur_hijau/templates/artist_list.html' },
         { label: 'Logout',     icon: 'bi-box-arrow-right',   href: '#', isLogout: true },
