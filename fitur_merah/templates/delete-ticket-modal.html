@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hapus Tiket</title>
+  <style>
+    :root {
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #737373;
+      --border: #e5e7eb;
+      --danger: #dc2626;
+      --danger-dark: #b91c1c;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: rgba(0, 0, 0, 0.35);
+      font-family: Inter, Arial, sans-serif;
+      color: var(--text);
+    }
+
+    .modal {
+      width: min(560px, calc(100vw - 32px));
+      background: var(--card);
+      border-radius: 10px;
+      padding: 27px 32px 31px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 10px;
+    }
+
+    .modal-title {
+      margin: 0;
+      color: var(--danger);
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .close-btn {
+      border: 0;
+      background: transparent;
+      color: #666;
+      font-size: 28px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .message {
+      max-width: 500px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.55;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 38px;
+    }
+
+    .btn {
+      min-width: 85px;
+      height: 44px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: white;
+      color: #242424;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+    }
+
+    .btn-danger {
+      border-color: var(--danger);
+      background: var(--danger);
+      color: white;
+      box-shadow: none;
+    }
+
+    .btn-danger:hover {
+      background: var(--danger-dark);
+    }
+  </style>
+</head>
+<body>
+  <form class="modal" method="post" action="{% url 'ticket_delete' ticket.id %}">
+    {% csrf_token %}
+
+    <div class="modal-header">
+      <h1 class="modal-title">Hapus Tiket</h1>
+      <button class="close-btn" type="button" aria-label="Tutup">&times;</button>
+    </div>
+
+    <p class="message">
+      Apakah Anda yakin ingin menghapus tiket ini? Relasi kursi akan dilepaskan. Tindakan ini tidak dapat dibatalkan.
+    </p>
+
+    <div class="actions">
+      <button class="btn" type="button">Batal</button>
+      <button class="btn btn-danger" type="submit">Hapus</button>
+    </div>
+  </form>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manajemen Kursi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50 p-8 font-sans">
+<div class="max-w-7xl mx-auto">
+
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-900">Manajemen Kursi</h2>
+            <div class="text-gray-600 mt-1">Kelola kursi dan denah tempat duduk venue</div>
+        </div>
+        <a href="#" onclick="openModal('createSeatModal')" class="bg-blue-600 text-white px-4 py-2 rounded-lg no-underline hover:bg-blue-700">+ Tambah Kursi</a>
+    </div>
+
+    <!-- STATS -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="bg-white p-6 rounded-lg shadow">
+            <div class="text-sm font-medium text-gray-500">TOTAL KURSI</div>
+            <div class="text-2xl font-bold text-gray-900">{{ total_seat }}</div>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow">
+            <div class="text-sm font-medium text-gray-500">TERSEDIA</div>
+            <div class="text-2xl font-bold text-gray-900">{{ total_available }}</div>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow">
+            <div class="text-sm font-medium text-gray-500">TERISI</div>
+            <div class="text-2xl font-bold text-gray-900">{{ total_filled }}</div>
+        </div>
+    </div>
+
+    <!-- FILTER -->
+    <div class="flex gap-4 mb-6">
+        <input type="text" placeholder="Cari section, baris, atau nomor..." class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <option>Semua Venue</option>
+            {% for v in venues %}
+            <option value="{{ v.id }}">{{ v.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- TABLE -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <table class="w-full">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SECTION</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">BARIS</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NO. KURSI</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">VENUE</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">STATUS</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                </tr>
+            </thead>
+
+            <tbody class="divide-y divide-gray-200">
+            {% for seat in seats %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ seat.section }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ seat.row }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ seat.number }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ seat.venue_name }}</td>
+
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {% if seat.is_assigned %}
+                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800">TERISI</span>
+                        {% else %}
+                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">TERSEDIA</span>
+                        {% endif %}
+                    </td>
+
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button class="text-indigo-600 hover:text-indigo-900 mr-2">✏️</button>
+
+                        {% if seat.is_assigned %}
+                            <button class="text-gray-400 cursor-not-allowed" title="Sudah dipakai">🗑️</button>
+                        {% else %}
+                            <button class="text-red-600 hover:text-red-900">🗑️</button>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- Modals -->
+{% include 'create-seat-modal.html' %}
+{% include 'update-seat-modal.html' %}
+{% include 'delete-seat-modal.html' %}
+
+<script>
+function openModal(modalId) {
+    document.getElementById(modalId).classList.remove('hidden');
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.add('hidden');
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('bg-black')) {
+        event.target.classList.add('hidden');
+    }
+});
+</script>
+
+</body>
+</html>

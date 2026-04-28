@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tickets</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50 p-8 font-sans">
+<div class="max-w-7xl mx-auto">
+
+    <!-- TITLE -->
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-900">
+                {% if is_admin %}Manajemen Tiket{% else %}Tiket Saya{% endif %}
+            </h2>
+            <div class="text-gray-600 mt-1">
+                {% if is_admin %}
+                Kelola tiket: tambah, ubah status, dan hapus tiket
+                {% else %}
+                Kelola dan akses tiket pertunjukan Anda
+                {% endif %}
+            </div>
+        </div>
+
+        {% if is_admin %}
+        <!-- <a href="#" onclick="openModal('createTicketModal')" class="bg-blue-600 text-white px-4 py-2 rounded-lg no-underline hover:bg-blue-700">+ Tambah Tiket</a> -->
+        {% endif %}
+    </div>
+
+    <!-- STATS -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="bg-white p-6 rounded-lg shadow">
+            <div class="text-sm font-medium text-gray-500">TOTAL TIKET</div>
+            <div class="text-2xl font-bold text-gray-900">{{ total_ticket }}</div>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow">
+            <div class="text-sm font-medium text-gray-500">VALID</div>
+            <div class="text-2xl font-bold text-gray-900">{{ total_valid }}</div>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow">
+            <div class="text-sm font-medium text-gray-500">TERPAKAI</div>
+            <div class="text-2xl font-bold text-gray-900">{{ total_used }}</div>
+        </div>
+    </div>
+
+    <!-- FILTER -->
+    <div class="flex gap-4 mb-6">
+        <input type="text" placeholder="Cari kode tiket atau nama acara..." class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <option>Semua Status</option>
+            <option>Valid</option>
+            <option>Terpakai</option>
+        </select>
+    </div>
+
+    <!-- TICKETS -->
+    {% for ticket in tickets %}
+    <div class="bg-white rounded-lg shadow p-6 mb-4 flex justify-between items-start">
+
+        <div class="flex gap-4">
+            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg"></div>
+
+            <div class="flex-1">
+                <div class="flex gap-2 mb-2">
+                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">{{ ticket.status }}</span>
+                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">{{ ticket.category }}</span>
+                </div>
+
+                <h3 class="text-lg font-semibold text-gray-900">{{ ticket.event_name }}</h3>
+                <p class="text-sm text-gray-600 mb-4">{{ ticket.ticket_code }}</p>
+
+                <div class="grid grid-cols-3 gap-4 text-sm mb-4">
+                    <div>
+                        <div class="font-medium text-gray-500">Jadwal</div>
+                        <div class="text-gray-900">{{ ticket.event_datetime }}</div>
+                    </div>
+                    <div>
+                        <div class="font-medium text-gray-500">Lokasi</div>
+                        <div class="text-gray-900">{{ ticket.venue }}</div>
+                    </div>
+                    <div>
+                        <div class="font-medium text-gray-500">Kursi</div>
+                        <div class="text-gray-900">{{ ticket.seat }}</div>
+                    </div>
+                    <div>
+                        <div class="font-medium text-gray-500">Harga</div>
+                        <div class="text-gray-900">{{ ticket.price }}</div>
+                    </div>
+                    <div>
+                        <div class="font-medium text-gray-500">Order</div>
+                        <div class="text-gray-900">{{ ticket.order_id }}</div>
+                    </div>
+
+                    {% if is_admin %}
+                    <div>
+                        <div class="font-medium text-gray-500">Pelanggan</div>
+                        <div class="text-gray-900">{{ ticket.customer_name }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="flex gap-2">
+                    {% if not is_admin %}
+                    <button class="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800">Tampilkan QR</button>
+                    {% else %}
+                    <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Update</button>
+                    <button class="bg-red-100 text-red-600 px-4 py-2 rounded-lg hover:bg-red-200">Hapus</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="w-24 h-24 bg-gray-200 rounded-lg"></div>
+
+    </div>
+    {% endfor %}
+
+</div>
+
+<!-- Modals -->
+<!-- {% include 'create-ticket-modal.html' %} -->
+<!-- {% include 'update-ticket-modal.html' %} -->
+<!-- {% include 'delete-ticket-modal.html' %} -->
+
+<script>
+function openModal(modalId) {
+    document.getElementById(modalId).classList.remove('hidden');
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.add('hidden');
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('bg-black')) {
+        event.target.classList.add('hidden');
+    }
+});
+</script>
+
+</body>
+</html>

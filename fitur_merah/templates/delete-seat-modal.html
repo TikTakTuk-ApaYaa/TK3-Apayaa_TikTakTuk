@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hapus Kursi</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: Arial, sans-serif;
+      background: rgba(0, 0, 0, 0.35);
+      color: #111827;
+    }
+    .modal {
+      width: 560px;
+      background: #fff;
+      border-radius: 10px;
+      padding: 28px 32px 30px;
+      box-shadow: 0 18px 48px rgba(15, 23, 42, 0.18);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+    .modal-title {
+      margin: 0;
+      color: #dc2626;
+      font-size: 25px;
+      font-weight: 800;
+    }
+    .close {
+      border: 0;
+      background: transparent;
+      color: #4b5563;
+      font-size: 30px;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .message {
+      margin: 0 0 34px;
+      color: #6b7280;
+      font-size: 18px;
+      line-height: 1.55;
+    }
+    .warning {
+      margin-top: 10px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #fef2f2;
+      color: #b91c1c;
+      font-size: 15px;
+      font-style: italic;
+    }
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+    .btn {
+      min-width: 88px;
+      height: 46px;
+      padding: 0 22px;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .btn-cancel { background: #fff; color: #2b2f36; }
+    .btn-danger { background: #dc2626; color: #fff; border-color: #dc2626; }
+    .btn-danger:disabled {
+      background: #d1d5db;
+      border-color: #d1d5db;
+      color: #6b7280;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="modal">
+    <div class="modal-header">
+      <h1 class="modal-title">Hapus Kursi</h1>
+      <button type="button" class="close" aria-label="Tutup">&times;</button>
+    </div>
+
+    {% if seat_is_assigned %}
+      <p class="message">
+        Kursi ini sudah di-assign ke tiket dan tidak dapat dihapus.
+      </p>
+      <div class="warning">
+        Hapus atau ubah tiket terlebih dahulu sebelum menghapus kursi ini.
+      </div>
+      <div class="actions">
+        <button type="button" class="btn btn-cancel">Batal</button>
+        <button type="button" class="btn btn-danger" disabled>Hapus</button>
+      </div>
+    {% else %}
+      <p class="message">
+        Apakah Anda yakin ingin menghapus kursi ini? Tindakan ini tidak dapat dibatalkan.
+      </p>
+      <form method="post">
+        {% csrf_token %}
+        <div class="actions">
+          <button type="button" class="btn btn-cancel">Batal</button>
+          <button type="submit" class="btn btn-danger">Hapus</button>
+        </div>
+      </form>
+    {% endif %}
+  </div>
+</body>
+</html>
