@@ -104,7 +104,17 @@ CREATE TABLE TICKET_CATEGORY (
     FOREIGN KEY (tevent_id) REFERENCES EVENT(event_id)
 );
 
--- 12. Tabel TICKET
+-- 12. Tabel ORDER
+CREATE TABLE ORDER (
+    order_id UUID PRIMARY KEY,
+    order_date TIMESTAMP NOT NULL,
+    payment_status VARCHAR(20) NOT NULL,
+    total_amount NUMERIC(12,2) NOT NULL CHECK (total_amount >= 0),
+    customer_id UUID NOT NULL,
+    FOREIGN KEY (customer_id) REFERENCES CUSTOMER(customer_id)
+);
+
+-- 13. Tabel TICKET
 CREATE TABLE TICKET (
     ticket_id UUID PRIMARY KEY,
     ticket_code VARCHAR(100) UNIQUE NOT NULL,
@@ -114,23 +124,13 @@ CREATE TABLE TICKET (
     FOREIGN KEY (torder_id) REFERENCES "ORDER"(order_id)
 );
 
--- 13. Tabel HAS_RELATIONSHIP 
+-- 14. Tabel HAS_RELATIONSHIP 
 CREATE TABLE HAS_RELATIONSHIP (
     seat_id UUID,
     ticket_id UUID,
     PRIMARY KEY (seat_id, ticket_id),
     FOREIGN KEY (seat_id) REFERENCES SEAT(seat_id),
     FOREIGN KEY (ticket_id) REFERENCES TICKET(ticket_id)
-);
-
--- 14. Tabel ORDER 
-CREATE TABLE "ORDER" (
-    order_id UUID PRIMARY KEY,
-    order_date TIMESTAMP NOT NULL,
-    payment_status VARCHAR(20) NOT NULL,
-    total_amount NUMERIC(12,2) NOT NULL CHECK (total_amount >= 0),
-    customer_id UUID NOT NULL,
-    FOREIGN KEY (customer_id) REFERENCES CUSTOMER(customer_id)
 );
 
 -- 15. Tabel PROMOTION
@@ -317,7 +317,7 @@ INSERT INTO PROMOTION (promotion_id, promo_code, discount_type, discount_value, 
 ('a0000000-0000-0000-0000-000000000006', 'FLASH11', 'PERCENTAGE', 11.00, '2026-11-11', '2026-11-12', 1000);
 
 -- 13. ORDER 
-INSERT INTO "ORDER" (order_id, order_date, payment_status, total_amount, customer_id) VALUES
+INSERT INTO ORDER (order_id, order_date, payment_status, total_amount, customer_id) VALUES
 ('b0000000-0000-0000-0000-000000000001', '2026-05-10 10:00:00', 'PAID', 11000000, '30000000-0000-0000-0000-000000000001'),
 ('b0000000-0000-0000-0000-000000000002', '2026-05-11 11:30:00', 'PAID', 3000000, '30000000-0000-0000-0000-000000000001'),
 ('b0000000-0000-0000-0000-000000000003', '2026-06-01 09:15:00', 'PAID', 7000000, '30000000-0000-0000-0000-000000000002'),

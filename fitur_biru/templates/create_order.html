@@ -177,7 +177,7 @@
 
   function changeQty(val) {
     let next = currentQty + val;
-    if (next >= 1 && next <= 10) { 
+    if (next >= 1 && next <= 10) { // Sesuai spek: maks 10
       currentQty = next;
       updateUI();
     }
@@ -195,8 +195,10 @@
   }
 
   function handlePayment() {
+    // Simulasi pembuatan record ORDER
+    // payment_status: "Pending"
     alert("Pesanan Dibuat!\nStatus: Pending\nTotal: " + document.getElementById('summTotal').innerText);
-    window.location.href = "login.html"; 
+    window.location.href = "login.html"; // Redirect sesuai skenario
   }
 </script>
 
