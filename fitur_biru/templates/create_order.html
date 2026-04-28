@@ -1,26 +1,41 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" data-bs-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Checkout Tiket - TikTakTuk</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
   <style>
-    body { background: #f8faff; font-family: 'Inter', sans-serif; color: #333; }
-    
-    /* Header Nav Minimalis */
+    /* ===================== NAVBAR STYLES ===================== */
+    :root { --sidebar-width: 260px; --primary-green: #1a7a4a; --transition-speed: 0.3s; }
+    body { font-family: 'Inter', sans-serif; background-color: var(--bs-body-bg); transition: background-color var(--transition-speed), color var(--transition-speed); }
+    .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; left: 0; top: 0; background: #111827; color: white; transition: all var(--transition-speed); z-index: 1000; border-right: 1px solid rgba(255,255,255,0.1); overflow-y: auto; }
+    [data-bs-theme="dark"] .sidebar { background: #000; }
+    .sidebar-header { padding: 1.5rem; font-weight: 800; font-size: 1.25rem; color: var(--primary-green); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .nav-list { list-style: none; padding: 1rem; margin: 0; }
+    .nav-item-custom { margin-bottom: 4px; }
+    .nav-link-custom { display: flex; align-items: center; gap: 12px; padding: 0.75rem 1rem; color: #9ca3af; text-decoration: none; border-radius: 8px; font-size: 0.875rem; font-weight: 500; transition: all 0.2s; }
+    .nav-link-custom:hover { background: rgba(255,255,255,0.05); color: white; }
+    .nav-link-custom.active { background: var(--primary-green); color: white; }
+    .nav-link-custom.logout-link { color: #f87171; }
+    .nav-link-custom.logout-link:hover { background: rgba(248,113,113,0.1); color: #f87171; }
+    .main-content { margin-left: var(--sidebar-width); padding: 0; min-height: 100vh; }
+    .top-bar { height: 70px; background: var(--bs-body-bg); border-bottom: 1px solid var(--bs-border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; position: sticky; top: 0; z-index: 999; }
+    .dev-tool-dropdown .dropdown-toggle::after { display: none; }
+    .theme-toggle-btn { cursor: pointer; font-size: 1.2rem; color: var(--bs-secondary-color); transition: color 0.2s; }
+    .theme-toggle-btn:hover { color: var(--primary-green); }
+    @media (max-width: 992px) { .sidebar { left: -100%; } .main-content { margin-left: 0; } }
+
+    /* ===================== PAGE STYLES ===================== */
     .checkout-nav { font-size: 0.8rem; color: #6c757d; }
     .checkout-nav span.active { color: #2b59ff; font-weight: bold; }
-
     .main-container { max-width: 1100px; margin: 40px auto; }
     .card-custom { border-radius: 12px; border: 1px solid #eef2f7; background: #fff; padding: 24px; margin-bottom: 20px; }
-    
-    /* Event Header */
     .event-icon { background: #4d61fc; color: #fff; width: 56px; height: 56px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
     .event-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 4px; }
     .event-info { font-size: 0.85rem; color: #6c757d; display: flex; gap: 15px; }
-
-    /* Category Selection */
     .cat-item { border: 1px solid #eef2f7; border-radius: 12px; padding: 16px 20px; margin-bottom: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
     .cat-item:hover { border-color: #2b59ff; }
     .cat-item.selected { border: 2px solid #2b59ff; background: #f0f4ff; position: relative; }
@@ -28,20 +43,14 @@
     .cat-name { font-weight: 700; font-size: 0.95rem; }
     .cat-quota { font-size: 0.8rem; color: #6c757d; }
     .cat-price { font-weight: 700; color: #2b59ff; }
-
-    /* Controls (Qty & Seat) */
     .control-label { font-weight: 700; font-size: 0.9rem; margin-bottom: 15px; display: block; }
     .qty-btn { border: 1px solid #dee2e6; background: #fff; width: 34px; height: 34px; border-radius: 6px; font-weight: bold; }
     .seat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
     .seat-btn { border: 1px solid #dee2e6; background: #fff; border-radius: 6px; padding: 6px 0; font-size: 0.75rem; color: #495057; }
     .seat-btn:hover { border-color: #2b59ff; }
-
-    /* Promo */
     .promo-input { border-radius: 10px 0 0 10px; border-right: none; }
     .promo-btn { border-radius: 0 10px 10px 0; font-weight: 600; padding: 0 20px; }
     .promo-error { color: #dc3545; font-size: 0.75rem; margin-top: 8px; }
-
-    /* Sidebar Summary */
     .summary-card { border-top: 4px solid #2b59ff; }
     .summary-total { font-size: 1.4rem; font-weight: 800; }
     .btn-pay { background: #2b59ff; border: none; padding: 14px; border-radius: 10px; font-weight: 700; transition: 0.3s; }
@@ -50,118 +59,161 @@
 </head>
 <body>
 
-<div class="container main-container">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h3 class="fw-bold m-0">Checkout Tiket</h3>
-    <div class="checkout-nav">
-      <span class="active">Pilih</span> &nbsp;›&nbsp; <span>Bayar</span> &nbsp;›&nbsp; <span>Selesai</span>
-    </div>
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="bg-white text-success rounded-2 px-2 py-1" style="font-size:14px;">TT</div>
+    <span>TikTakTuk</span>
   </div>
+  <ul class="nav-list" id="sidebarMenu"></ul>
+</aside>
 
-  <div class="row">
-    <div class="col-lg-7">
-      
-      <div class="card-custom">
-        <div class="d-flex align-items-center gap-3">
-          <div class="event-icon">♫</div>
-          <div>
-            <div class="event-title">Konser Melodi Senja</div>
-            <div class="mb-2">
-              <span class="badge bg-light text-muted fw-normal">Fourtwnty</span>
-              <span class="badge bg-light text-muted fw-normal">Hindia</span>
-            </div>
-            <div class="event-info">
-              <span>📅 2024-05-15 - 19:00</span>
-              <span>📍 Jakarta Convention Center</span>
-            </div>
-          </div>
-        </div>
+<!-- MAIN CONTENT -->
+<div class="main-content">
+
+  <!-- TOP BAR -->
+  <header class="top-bar">
+    <h6 class="mb-0 fw-bold">Checkout Tiket</h6>
+    <div class="d-flex align-items-center gap-3">
+      <div class="theme-toggle-btn" onclick="toggleDarkMode()">
+        <i id="themeIcon" class="bi bi-moon-stars"></i>
       </div>
+      <div class="dropdown dev-tool-dropdown">
+        <button class="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+          <i class="bi bi-eye"></i><span id="roleLabel">Guest</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+          <li><h6 class="dropdown-header">Switch Role</h6></li>
+          <li><a class="dropdown-item" href="#" onclick="updateRole('admin')"><i class="bi bi-shield-check me-2"></i>Administrator</a></li>
+          <li><a class="dropdown-item" href="#" onclick="updateRole('organizer')"><i class="bi bi-calendar-event me-2"></i>Event Organizer</a></li>
+          <li><a class="dropdown-item" href="#" onclick="updateRole('customer')"><i class="bi bi-person me-2"></i>Customer</a></li>
+        </ul>
+      </div>
+    </div>
+  </header>
 
-      <div class="card-custom">
-        <span class="control-label">Pilih Kategori Tiket</span>
-        <p class="text-muted small mt-n2 mb-4">Setiap kategori memiliki fasilitas berbeda</p>
-        
-        <div class="cat-item" onclick="selectTicket(this, 1500000, 'WVIP')">
-          <div><div class="cat-name">WVIP</div><div class="cat-quota">Kuota: 50 tiket</div></div>
-          <div class="cat-price">Rp 1,500,000</div>
-        </div>
-        <div class="cat-item" onclick="selectTicket(this, 750000, 'VIP')">
-          <div><div class="cat-name">VIP</div><div class="cat-quota">Kuota: 150 tiket</div></div>
-          <div class="cat-price">Rp 750,000</div>
-        </div>
-        <div class="cat-item" onclick="selectTicket(this, 450000, 'Category 1')">
-          <div><div class="cat-name">Category 1</div><div class="cat-quota">Kuota: 300 tiket</div></div>
-          <div class="cat-price">Rp 450,000</div>
-        </div>
-        <div class="cat-item selected" onclick="selectTicket(this, 250000, 'Category 2')">
-          <div><div class="cat-name">Category 2</div><div class="cat-quota">Kuota: 500 tiket</div></div>
-          <div class="cat-price">Rp 250,000</div>
+  <!-- KONTEN -->
+  <div class="p-4">
+    <div class="container main-container">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold m-0">Checkout Tiket</h3>
+        <div class="checkout-nav">
+          <span class="active">Pilih</span> &nbsp;›&nbsp; <span>Bayar</span> &nbsp;›&nbsp; <span>Selesai</span>
         </div>
       </div>
 
       <div class="row">
-        <div class="col-md-5">
+        <div class="col-lg-7">
+          
           <div class="card-custom">
-            <span class="control-label">Jumlah Tiket</span>
-            <div class="d-flex align-items-center gap-3 mb-2">
-              <button class="qty-btn" onclick="changeQty(-1)">-</button>
-              <span id="qtyVal" class="fw-bold">2</span>
-              <button class="qty-btn" onclick="changeQty(1)">+</button>
+            <div class="d-flex align-items-center gap-3">
+              <div class="event-icon">♫</div>
+              <div>
+                <div class="event-title">Konser Melodi Senja</div>
+                <div class="mb-2">
+                  <span class="badge bg-light text-muted fw-normal">Fourtwnty</span>
+                  <span class="badge bg-light text-muted fw-normal">Hindia</span>
+                </div>
+                <div class="event-info">
+                  <span>📅 2024-05-15 - 19:00</span>
+                  <span>📍 Jakarta Convention Center</span>
+                </div>
+              </div>
             </div>
-            <span class="text-muted" style="font-size: 0.7rem;">Max 10 tiket per transaksi</span>
+          </div>
+
+          <div class="card-custom">
+            <span class="control-label">Pilih Kategori Tiket</span>
+            <p class="text-muted small mt-n2 mb-4">Setiap kategori memiliki fasilitas berbeda</p>
+            
+            <div class="cat-item" onclick="selectTicket(this, 1500000, 'WVIP')">
+              <div><div class="cat-name">WVIP</div><div class="cat-quota">Kuota: 50 tiket</div></div>
+              <div class="cat-price">Rp 1,500,000</div>
+            </div>
+            <div class="cat-item" onclick="selectTicket(this, 750000, 'VIP')">
+              <div><div class="cat-name">VIP</div><div class="cat-quota">Kuota: 150 tiket</div></div>
+              <div class="cat-price">Rp 750,000</div>
+            </div>
+            <div class="cat-item" onclick="selectTicket(this, 450000, 'Category 1')">
+              <div><div class="cat-name">Category 1</div><div class="cat-quota">Kuota: 300 tiket</div></div>
+              <div class="cat-price">Rp 450,000</div>
+            </div>
+            <div class="cat-item selected" onclick="selectTicket(this, 250000, 'Category 2')">
+              <div><div class="cat-name">Category 2</div><div class="cat-quota">Kuota: 500 tiket</div></div>
+              <div class="cat-price">Rp 250,000</div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-5">
+              <div class="card-custom">
+                <span class="control-label">Jumlah Tiket</span>
+                <div class="d-flex align-items-center gap-3 mb-2">
+                  <button class="qty-btn" onclick="changeQty(-1)">-</button>
+                  <span id="qtyVal" class="fw-bold">2</span>
+                  <button class="qty-btn" onclick="changeQty(1)">+</button>
+                </div>
+                <span class="text-muted" style="font-size: 0.7rem;">Max 10 tiket per transaksi</span>
+              </div>
+            </div>
+
+            <div class="col-md-7">
+              <div class="card-custom">
+                <span class="control-label">Pilih Kursi</span>
+                <div class="seat-grid">
+                  <button class="seat-btn">A1</button><button class="seat-btn">A2</button>
+                  <button class="seat-btn">A3</button><button class="seat-btn">A4</button>
+                  <button class="seat-btn">A5</button><button class="seat-btn">B1</button>
+                  <button class="seat-btn">B2</button><button class="seat-btn">B3</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-custom">
+            <span class="control-label">Kode Promo</span>
+            <div class="input-group">
+              <input type="text" class="form-control promo-input" placeholder="CONTOH: TIKTAK20">
+              <button class="btn btn-outline-primary promo-btn" type="button">Terapkan</button>
+            </div>
           </div>
         </div>
 
-        <div class="col-md-7">
-          <div class="card-custom">
-            <span class="control-label">Pilih Kursi</span>
-            <div class="seat-grid">
-              <button class="seat-btn">A1</button><button class="seat-btn">A2</button>
-              <button class="seat-btn">A3</button><button class="seat-btn">A4</button>
-              <button class="seat-btn">A5</button><button class="seat-btn">B1</button>
-              <button class="seat-btn">B2</button><button class="seat-btn">B3</button>
+        <div class="col-lg-5">
+          <div class="card-custom summary-card">
+            <h6 class="fw-bold mb-4">Ringkasan Pesanan</h6>
+            
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted"><span id="summCat">Category 2</span> x <span id="summQty">2</span></span>
+              <span id="summSubtotal">Rp 500,000</span>
             </div>
+            <div class="d-flex justify-content-between mb-4">
+              <span class="text-muted">Biaya Layanan</span>
+              <span>Rp 0</span>
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <span class="fw-bold">Total</span>
+              <span class="summary-total" id="summTotal">Rp 500,000</span>
+            </div>
+
+            <button class="btn btn-primary btn-pay w-100" onclick="handlePayment()">Bayar Sekarang</button>
+            <p class="text-center text-muted small mt-3" style="font-size: 0.75rem;">
+              Konfirmasi tiket akan dikirim ke admin@example.com
+            </p>
           </div>
         </div>
-      </div>
-
-      <div class="card-custom">
-        <span class="control-label">Kode Promo</span>
-        <div class="input-group">
-          <input type="text" class="form-control promo-input" placeholder="CONTOH: TIKTAK20">
-          <button class="btn btn-outline-primary promo-btn" type="button">Terapkan</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-lg-5">
-      <div class="card-custom summary-card">
-        <h6 class="fw-bold mb-4">Ringkasan Pesanan</h6>
-        
-        <div class="d-flex justify-content-between mb-2">
-          <span class="text-muted"><span id="summCat">Category 2</span> x <span id="summQty">2</span></span>
-          <span id="summSubtotal">Rp 500,000</span>
-        </div>
-        <div class="d-flex justify-content-between mb-4">
-          <span class="text-muted">Biaya Layanan</span>
-          <span>Rp 0</span>
-        </div>
-        
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <span class="fw-bold">Total</span>
-          <span class="summary-total" id="summTotal">Rp 500,000</span>
-        </div>
-
-        <button class="btn btn-primary btn-pay w-100" onclick="handlePayment()">Bayar Sekarang</button>
-        <p class="text-center text-muted small mt-3" style="font-size: 0.75rem;">
-          Konfirmasi tiket akan dikirim ke admin@example.com
-        </p>
       </div>
     </div>
   </div>
+
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="../../fitur_wajib/templates/navbar.js"></script>
+
+<!-- Script khusus halaman create_order saja -->
 <script>
   let pricePerTicket = 250000;
   let currentQty = 2;
@@ -177,7 +229,7 @@
 
   function changeQty(val) {
     let next = currentQty + val;
-    if (next >= 1 && next <= 10) { // Sesuai spek: maks 10
+    if (next >= 1 && next <= 10) {
       currentQty = next;
       updateUI();
     }
@@ -195,10 +247,8 @@
   }
 
   function handlePayment() {
-    // Simulasi pembuatan record ORDER
-    // payment_status: "Pending"
     alert("Pesanan Dibuat!\nStatus: Pending\nTotal: " + document.getElementById('summTotal').innerText);
-    window.location.href = "login.html"; // Redirect sesuai skenario
+    window.location.href = "login.html";
   }
 </script>
 
