@@ -14,30 +14,29 @@
 
     body { font-family: 'Inter', sans-serif; background-color: var(--bs-body-bg); transition: background-color var(--transition-speed), color var(--transition-speed); }
 
-    /* ── Sidebar ── */
-    .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; left: 0; top: 0; background: #111827; color: white; z-index: 1000; border-right: 1px solid rgba(255,255,255,0.1); overflow-y: auto; }
+    .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; left: 0; top: 0; background: #111827; color: white; transition: all var(--transition-speed); z-index: 1000; border-right: 1px solid rgba(255,255,255,0.1); overflow-y: auto; }
     [data-bs-theme="dark"] .sidebar { background: #000; }
-    .sidebar-header { padding: 1.5rem; font-weight: 800; font-size: 1.25rem; color: var(--primary-green); display: flex; align-items: center; gap: 10px; }
-    .nav-list { list-style: none; padding: 0 1rem; }
-    .nav-item-custom { margin-bottom: 5px; }
-    .nav-link-custom { display: flex; align-items: center; gap: 12px; padding: 0.8rem 1rem; color: #9ca3af; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 500; transition: all 0.2s; }
+    .sidebar-header { padding: 1.5rem; font-weight: 800; font-size: 1.25rem; color: var(--primary-green); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .nav-list { list-style: none; padding: 1rem; margin: 0; }
+    .nav-item-custom { margin-bottom: 4px; }
+    .nav-link-custom { display: flex; align-items: center; gap: 12px; padding: 0.75rem 1rem; color: #9ca3af; text-decoration: none; border-radius: 8px; font-size: 0.875rem; font-weight: 500; transition: all 0.2s; }
     .nav-link-custom:hover { background: rgba(255,255,255,0.05); color: white; }
     .nav-link-custom.active { background: var(--primary-green); color: white; }
+    .nav-link-custom.logout-link { color: #f87171; }
+    .nav-link-custom.logout-link:hover { background: rgba(248,113,113,0.1); color: #f87171; }
 
-    /* ── Layout ── */
     .main-content { margin-left: var(--sidebar-width); padding: 0; min-height: 100vh; }
     .top-bar { height: 70px; background: var(--bs-body-bg); border-bottom: 1px solid var(--bs-border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; position: sticky; top: 0; z-index: 999; }
     .dev-tool-dropdown .dropdown-toggle::after { display: none; }
-    .theme-toggle-btn { cursor: pointer; font-size: 1.2rem; color: var(--bs-secondary-color); }
+    .theme-toggle-btn { cursor: pointer; font-size: 1.2rem; color: var(--bs-secondary-color); transition: color 0.2s; }
+    .theme-toggle-btn:hover { color: var(--primary-green); }
 
-    /* ── Stat cards ── */
     .stat-card { border: none; border-radius: 12px; }
     .stat-label { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--bs-secondary-color); margin-bottom: 6px; }
     .stat-value { font-size: 1.9rem; font-weight: 800; line-height: 1.1; }
     .stat-sub   { font-size: 0.78rem; color: var(--bs-secondary-color); margin-top: 4px; }
     .stat-icon-wrap { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
 
-    /* ── Venue Cards ── */
     .venue-card { border: 1px solid var(--bs-border-color); border-radius: 12px; padding: 1.25rem; background: var(--bs-body-bg); transition: box-shadow .2s, transform .15s; cursor: default; }
     .venue-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.1); }
     .venue-icon-wrap { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; background: rgba(26,122,74,.1); flex-shrink: 0; }
@@ -48,7 +47,6 @@
     .venue-meta-item strong { margin-left: 4px; }
     .venue-actions { display: flex; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--bs-border-color); }
 
-    /* ── Readonly field ── */
     .readonly-field { background: var(--bs-tertiary-bg); border: 1px solid var(--bs-border-color); border-radius: 8px; padding: 8px 12px; color: var(--bs-secondary-color); font-size: 0.9rem; }
 
     @media (max-width: 992px) { .sidebar { left: -100%; } .main-content { margin-left: 0; } }
@@ -56,26 +54,15 @@
 </head>
 <body>
 
-<!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sidebar-header">
     <div class="bg-white text-success rounded-2 px-2 py-1" style="font-size:14px;">TT</div>
     <span>TikTakTuk</span>
   </div>
-  <div class="px-3 py-3" style="border-bottom:1px solid rgba(255,255,255,.08)">
-    <div class="d-flex align-items-center gap-2">
-      <div id="sb-avatar" class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold"
-           style="width:36px;height:36px;font-size:.85rem;background:#1a7a4a;flex-shrink:0">A</div>
-      <div>
-        <div id="sb-name" style="font-size:.85rem;color:white;font-weight:600">System Admin</div>
-        <span id="sb-role-badge" class="badge" style="font-size:.65rem;background:rgba(245,158,11,.25);color:#fcd34d">Administrator</span>
-      </div>
-    </div>
-  </div>
+  
   <ul class="nav-list mt-2" id="sidebarMenu"></ul>
 </aside>
 
-<!-- MAIN -->
 <div class="main-content">
   <header class="top-bar">
     <div>
@@ -102,18 +89,16 @@
   <div class="p-4">
     <div class="container-fluid">
 
-      <!-- Page Header -->
       <div class="d-flex justify-content-between align-items-start mb-4">
         <div>
           <h3 class="fw-bold mb-0">Manajemen Venue</h3>
           <p class="text-muted small mb-0">Kelola lokasi pertunjukan dan kapasitas tempat duduk</p>
         </div>
-        <button class="btn btn-success" id="btnTambahVenue" onclick="openCreateVenue()">
+        <button class="btn btn-success d-none" id="btnTambahVenue" onclick="openCreateVenue()">
           <i class="bi bi-plus-lg me-1"></i>Tambah Venue
         </button>
       </div>
 
-      <!-- Stat Cards -->
       <div class="row g-3 mb-4">
         <div class="col-md-4 col-sm-6">
           <div class="card stat-card shadow-sm h-100">
@@ -156,7 +141,6 @@
         </div>
       </div>
 
-      <!-- Search & Filter Toolbar -->
       <div class="card border shadow-sm mb-4" style="border-radius:12px">
         <div class="card-body">
           <div class="row g-2 align-items-center">
@@ -185,14 +169,12 @@
         </div>
       </div>
 
-      <!-- Venue List -->
       <div id="venueList"></div>
 
     </div>
   </div>
 </div>
 
-<!-- MODAL: CREATE VENUE -->
 <div class="modal fade" id="modalCreateVenue" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -234,7 +216,6 @@
   </div>
 </div>
 
-<!-- MODAL: EDIT VENUE -->
 <div class="modal fade" id="modalEditVenue" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -277,7 +258,6 @@
   </div>
 </div>
 
-<!-- MODAL: DELETE VENUE -->
 <div class="modal fade" id="modalDeleteVenue" tabindex="-1">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
@@ -300,7 +280,6 @@
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:9999">
   <div id="liveToast" class="toast align-items-center border-0" role="alert">
     <div class="d-flex">
@@ -311,94 +290,35 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="../../fitur_wajib/templates/navbar.js"></script>
+
 <script>
-
-
-//  SHARED DATA
-const ROLE_DATA = {
-  admin:     { name:'System Admin',  initial:'A', color:'#b45309', badgeText:'Administrator', badgeStyle:'background:rgba(245,158,11,.25);color:#fcd34d' },
-  organizer: { name:'Andi Wijaya',   initial:'A', color:'#2563eb', badgeText:'Organizer',     badgeStyle:'background:rgba(37,99,235,.25);color:#93c5fd' },
-  customer:  { name:'Budi Santoso',  initial:'B', color:'#1a7a4a', badgeText:'Customer',      badgeStyle:'background:rgba(26,122,74,.25);color:#6ee7b7' },
-};
-
-const ROLE_MENUS = {
-  admin: [
-    { label:'Dashboard',       icon:'bi-grid-1x2',          href:'dashboard.html' },
-    { label:'Manajemen Venue', icon:'bi-building',           href:'venue.html',    active:true },
-    { label:'Manajemen Kursi', icon:'bi-grid-3x3',           href:'#' },
-    { label:'Kategori Tiket',  icon:'bi-tags',               href:'#' },
-    { label:'Manajemen Tiket', icon:'bi-ticket-perforated',  href:'#' },
-    { label:'Semua Order',     icon:'bi-cart-check',         href:'#' },
-    { label:'Tiket (Aset)',    icon:'bi-collection',         href:'#' },
-    { label:'Order (Aset)',    icon:'bi-receipt',            href:'#' },
-    { label:'Profile',         icon:'bi-person-circle',      href:'dashboard.html' },
-  ],
-  organizer: [
-    { label:'Dashboard',       icon:'bi-grid-1x2',           href:'dashboard.html' },
-    { label:'Event Saya',      icon:'bi-calendar-event',     href:'event.html' },
-    { label:'Manajemen Venue', icon:'bi-building',           href:'venue.html',    active:true },
-    { label:'Manajemen Kursi', icon:'bi-grid-3x3',           href:'#' },
-    { label:'Kategori Tiket',  icon:'bi-tags',               href:'#' },
-    { label:'Manajemen Tiket', icon:'bi-ticket-perforated',  href:'#' },
-    { label:'Semua Order',     icon:'bi-cart-check',         href:'#' },
-    { label:'Tiket (Aset)',    icon:'bi-collection',         href:'#' },
-    { label:'Order (Aset)',    icon:'bi-receipt',            href:'#' },
-    { label:'Profile',         icon:'bi-person-circle',      href:'dashboard.html' },
-  ],
-  customer: [
-    { label:'Dashboard',       icon:'bi-grid-1x2',           href:'dashboard.html' },
-    { label:'Tiket Saya',      icon:'bi-ticket',             href:'#' },
-    { label:'Pesanan',         icon:'bi-bag-check',          href:'#' },
-    { label:'Cari Event',      icon:'bi-search',             href:'event.html' },
-    { label:'Promosi',         icon:'bi-megaphone',          href:'#' },
-    { label:'Venue',           icon:'bi-geo-alt',            href:'venue.html',    active:true },
-    { label:'Artis',           icon:'bi-people',             href:'#' },
-    { label:'Profile',         icon:'bi-person-circle',      href:'dashboard.html' },
-    { label:'Logout',          icon:'bi-box-arrow-right',    href:'#', isLogout:true },
-  ],
-};
-
-
 //  DUMMY DATA VENUES
 let venues = [
-  { id:'v1', name:'Jakarta Convention Center', address:'Jl. Gatot Subroto No.1', city:'Jakarta', capacity:1000, reserved:true  },
-  { id:'v2', name:'Taman Impian Jayakarta',    address:'Jl. Lodan Timur No.1, Jakarta Utara', city:'Jakarta', capacity:500, reserved:false },
-  { id:'v3', name:'Bandung Hall Center',        address:'Jl. Asia Afrika No.8', city:'Bandung', capacity:800, reserved:true  },
-  { id:'v4', name:'Surabaya Convention Hall',   address:'Jl. Pemuda No.31', city:'Surabaya', capacity:1200, reserved:false },
-  { id:'v5', name:'Bali Arts Center',           address:'Jl. Nusa Indah, Denpasar', city:'Bali', capacity:600, reserved:true  },
+  { id:'50000000-0000-0000-0000-000000000001', name:'Gelora Bung Karno', address:'Jl. Pintu Satu Senayan', city:'Jakarta', capacity:77000, reserved:true },
+  { id:'50000000-0000-0000-0000-000000000002', name:'Istora Senayan', address:'Kompleks Olahraga GBK', city:'Jakarta', capacity:7000, reserved:true },
+  { id:'50000000-0000-0000-0000-000000000003', name:'JIExpo Kemayoran', address:'Arena JIExpo Kemayoran', city:'Jakarta', capacity:15000, reserved:false },
+  { id:'50000000-0000-0000-0000-000000000004', name:'Sentul International Convention Center', address:'Jl. Jend. Sudirman, Sentul', city:'Bogor', capacity:10000, reserved:true },
+  { id:'50000000-0000-0000-0000-000000000005', name:'BCC Bandung', address:'Jl. Soekarno Hatta', city:'Bandung', capacity:5000, reserved:false }
 ];
 
 let currentRole = localStorage.getItem('role') || 'admin';
 let pendingDeleteId = null;
 
-//  SIDEBAR
-function renderSidebar(role) {
-  const menu = document.getElementById('sidebarMenu');
-  menu.innerHTML = '';
-  (ROLE_MENUS[role] || []).forEach(item => {
-    const li = document.createElement('li');
-    li.className = 'nav-item-custom';
-    li.innerHTML = `<a href="${item.href||'#'}" class="nav-link-custom ${item.active?'active':''} ${item.isLogout?'text-warning':''}">
-      <i class="bi ${item.icon}"></i><span>${item.label}</span></a>`;
-    menu.appendChild(li);
-  });
-  const d = ROLE_DATA[role];
-  document.getElementById('sb-avatar').textContent = d.initial;
-  document.getElementById('sb-avatar').style.background = d.color;
-  document.getElementById('sb-name').textContent = d.name;
-  const badge = document.getElementById('sb-role-badge');
-  badge.textContent = d.badgeText;
-  badge.style.cssText = `font-size:.65rem;${d.badgeStyle}`;
-  document.getElementById('roleLabel').textContent = d.badgeText;
-}
-
-function updateRole(role) {
+window.updateRole = function(role) {
   currentRole = role;
   localStorage.setItem('role', role);
-  renderSidebar(role);
+  
+  if (typeof renderSidebar === 'function') {
+      renderSidebar(role);
+  }
+  
   updateVenueUI();
+  populateCityFilter();
+  updateStats();
   filterVenues();
-}
+};
 
 //  VENUE UI (show/hide CUD buttons)
 function updateVenueUI() {
@@ -552,21 +472,6 @@ function confirmDeleteVenue() {
   showToast('Venue berhasil dihapus.', 'success');
 }
 
-//  DARK MODE
-function toggleDarkMode() {
-  const html = document.documentElement;
-  const icon = document.getElementById('themeIcon');
-  if (html.getAttribute('data-bs-theme') === 'light') {
-    html.setAttribute('data-bs-theme', 'dark');
-    icon.className = 'bi bi-sun';
-    localStorage.setItem('theme', 'dark');
-  } else {
-    html.setAttribute('data-bs-theme', 'light');
-    icon.className = 'bi bi-moon-stars';
-    localStorage.setItem('theme', 'light');
-  }
-}
-
 //  TOAST
 function showToast(msg, type = 'success') {
   const el = document.getElementById('liveToast');
@@ -575,16 +480,22 @@ function showToast(msg, type = 'success') {
   new bootstrap.Toast(el, { delay: 3000 }).show();
 }
 
-//  INIT
-const savedTheme = localStorage.getItem('theme') || 'light';
-document.documentElement.setAttribute('data-bs-theme', savedTheme);
-document.getElementById('themeIcon').className = savedTheme === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
-
-renderSidebar(currentRole);
-updateVenueUI();
-populateCityFilter();
-updateStats();
-filterVenues();
+// INIT LOKAL
+document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(() => {
+     updateVenueUI();
+     populateCityFilter();
+     updateStats();
+     filterVenues();
+     
+     document.querySelectorAll('.nav-link-custom').forEach(link => {
+       const text = link.textContent.trim().toLowerCase();
+       if (text.includes('venue')) {
+         link.classList.add('active');
+       }
+     });
+  }, 100); 
+});
 </script>
 </body>
 </html>

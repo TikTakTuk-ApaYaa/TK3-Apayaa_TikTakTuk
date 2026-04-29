@@ -14,26 +14,25 @@
 
     body { font-family: 'Inter', sans-serif; background-color: var(--bs-body-bg); transition: background-color var(--transition-speed), color var(--transition-speed); }
 
-    /* ── Sidebar ── */
-    .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; left: 0; top: 0; background: #111827; color: white; z-index: 1000; border-right: 1px solid rgba(255,255,255,0.1); overflow-y: auto; }
+    .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; left: 0; top: 0; background: #111827; color: white; transition: all var(--transition-speed); z-index: 1000; border-right: 1px solid rgba(255,255,255,0.1); overflow-y: auto; }
     [data-bs-theme="dark"] .sidebar { background: #000; }
-    .sidebar-header { padding: 1.5rem; font-weight: 800; font-size: 1.25rem; color: var(--primary-green); display: flex; align-items: center; gap: 10px; }
-    .nav-list { list-style: none; padding: 0 1rem; }
-    .nav-item-custom { margin-bottom: 5px; }
-    .nav-link-custom { display: flex; align-items: center; gap: 12px; padding: 0.8rem 1rem; color: #9ca3af; text-decoration: none; border-radius: 8px; font-size: 0.9rem; font-weight: 500; transition: all 0.2s; }
+    .sidebar-header { padding: 1.5rem; font-weight: 800; font-size: 1.25rem; color: var(--primary-green); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .nav-list { list-style: none; padding: 1rem; margin: 0; }
+    .nav-item-custom { margin-bottom: 4px; }
+    .nav-link-custom { display: flex; align-items: center; gap: 12px; padding: 0.75rem 1rem; color: #9ca3af; text-decoration: none; border-radius: 8px; font-size: 0.875rem; font-weight: 500; transition: all 0.2s; }
     .nav-link-custom:hover { background: rgba(255,255,255,0.05); color: white; }
     .nav-link-custom.active { background: var(--primary-green); color: white; }
+    .nav-link-custom.logout-link { color: #f87171; }
+    .nav-link-custom.logout-link:hover { background: rgba(248,113,113,0.1); color: #f87171; }
 
-    /* ── Layout ── */
     .main-content { margin-left: var(--sidebar-width); padding: 0; min-height: 100vh; }
     .top-bar { height: 70px; background: var(--bs-body-bg); border-bottom: 1px solid var(--bs-border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; position: sticky; top: 0; z-index: 999; }
     .dev-tool-dropdown .dropdown-toggle::after { display: none; }
     .theme-toggle-btn { cursor: pointer; font-size: 1.2rem; color: var(--bs-secondary-color); }
 
-    /* ── Event Card ── */
     .event-card { border: 1px solid var(--bs-border-color); border-radius: 14px; overflow: hidden; background: var(--bs-body-bg); transition: transform .2s, box-shadow .2s; }
     .event-card:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(0,0,0,.12); }
-    .event-card-img { height: 140px; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; background: linear-gradient(135deg, #0f2d1c, #1a7a4a); flex-shrink: 0; }
+    .event-card-img { height: 140px; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; background: linear-gradient(135deg, #0f2d1c, #1a7a4a); flex-shrink: 0; position: relative; }
     .event-card-body { padding: 1rem 1.1rem; }
     .event-title-txt { font-weight: 700; font-size: 1rem; margin-bottom: 6px; line-height: 1.3; }
     .event-meta-item { font-size: 0.8rem; color: var(--bs-secondary-color); margin-bottom: 3px; display: flex; align-items: flex-start; gap: 6px; }
@@ -44,7 +43,6 @@
     [data-bs-theme="dark"] .artist-chip { background: rgba(26,122,74,.25); }
     .cat-chip { background: var(--bs-secondary-bg); color: var(--bs-secondary-color); border-radius: 99px; padding: 2px 10px; font-size: 0.72rem; }
 
-    /* ── Tag Input ── */
     .tag-input-wrap { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 10px; border: 1px solid var(--bs-border-color); border-radius: 8px; background: var(--bs-body-bg); min-height: 42px; align-items: center; }
     .tag-input-wrap:focus-within { border-color: var(--primary-green); box-shadow: 0 0 0 .2rem rgba(26,122,74,.15); }
     .tag-chip-edit { background: rgba(26,122,74,.12); color: var(--primary-green); border-radius: 99px; padding: 3px 10px; font-size: 0.78rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
@@ -53,13 +51,11 @@
     .tag-chip-edit .rm:hover { color: #dc2626; }
     #artistInput { border: none; outline: none; background: transparent; font-family: 'Inter', sans-serif; font-size: 0.88rem; flex: 1; min-width: 120px; color: var(--bs-body-color); }
 
-    /* ── Category rows ── */
     .cat-row { display: grid; grid-template-columns: 1fr 130px 100px 36px; gap: 8px; align-items: center; margin-bottom: 8px; }
     .cat-row .form-control { font-size: 0.85rem; padding: 6px 10px; }
     .cat-add-btn { background: none; border: 1.5px dashed var(--bs-border-color); border-radius: 8px; padding: 8px; color: var(--bs-secondary-color); cursor: pointer; width: 100%; font-size: 0.85rem; transition: all .2s; margin-top: 4px; }
     .cat-add-btn:hover { border-color: var(--primary-green); color: var(--primary-green); }
 
-    /* ── Readonly ── */
     .readonly-field { background: var(--bs-tertiary-bg); border: 1px solid var(--bs-border-color); border-radius: 8px; padding: 8px 12px; color: var(--bs-secondary-color); font-size: 0.88rem; }
 
     @media (max-width: 992px) { .sidebar { left: -100%; } .main-content { margin-left: 0; } }
@@ -67,26 +63,15 @@
 </head>
 <body>
 
-<!-- SIDEBAR  -->
 <aside class="sidebar">
   <div class="sidebar-header">
     <div class="bg-white text-success rounded-2 px-2 py-1" style="font-size:14px;">TT</div>
     <span>TikTakTuk</span>
   </div>
-  <div class="px-3 py-3" style="border-bottom:1px solid rgba(255,255,255,.08)">
-    <div class="d-flex align-items-center gap-2">
-      <div id="sb-avatar" class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold"
-           style="width:36px;height:36px;font-size:.85rem;background:#1a7a4a;flex-shrink:0">A</div>
-      <div>
-        <div id="sb-name" style="font-size:.85rem;color:white;font-weight:600">System Admin</div>
-        <span id="sb-role-badge" class="badge" style="font-size:.65rem;background:rgba(245,158,11,.25);color:#fcd34d">Administrator</span>
-      </div>
-    </div>
-  </div>
+  
   <ul class="nav-list mt-2" id="sidebarMenu"></ul>
 </aside>
 
-<!-- MAIN  -->
 <div class="main-content">
   <header class="top-bar">
     <div>
@@ -113,7 +98,6 @@
   <div class="p-4">
     <div class="container-fluid">
 
-      <!-- Page Header -->
       <div class="d-flex justify-content-between align-items-start mb-4">
         <div>
           <h3 class="fw-bold mb-0" id="pageTitle">Jelajahi Acara</h3>
@@ -124,7 +108,6 @@
         </button>
       </div>
 
-      <!-- Search & Filter Toolbar -->
       <div class="card border shadow-sm mb-4" style="border-radius:12px">
         <div class="card-body">
           <div class="row g-2 align-items-center">
@@ -151,14 +134,12 @@
         </div>
       </div>
 
-      <!-- Event List -->
       <div id="eventList"></div>
 
     </div>
   </div>
 </div>
 
-<!-- MODAL: CREATE EVENT -->
 <div class="modal fade" id="modalCreateEvent" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
@@ -169,13 +150,11 @@
       <div class="modal-body">
         <div class="row g-3">
 
-          <!-- Judul Acara -->
           <div class="col-md-6">
             <label class="form-label small fw-semibold">JUDUL ACARA (EVENT_TITLE) <span class="text-danger">*</span></label>
             <input type="text" class="form-control" id="c-title" placeholder="cth. Konser Melodi Senja" />
           </div>
 
-          <!-- Kategori Tiket (kolom kanan, mulai dari baris pertama) -->
           <div class="col-md-6">
             <label class="form-label small fw-semibold">KATEGORI TIKET (TICKET_CATEGORY) <span class="text-danger">*</span></label>
             <div id="c-cats"></div>
@@ -184,7 +163,6 @@
             </button>
           </div>
 
-          <!-- Tanggal & Waktu -->
           <div class="col-md-3">
             <label class="form-label small fw-semibold">TANGGAL (DATE) <span class="text-danger">*</span></label>
             <input type="date" class="form-control" id="c-date" />
@@ -194,13 +172,11 @@
             <input type="time" class="form-control" id="c-time" />
           </div>
 
-          <!-- Venue -->
           <div class="col-md-6">
             <label class="form-label small fw-semibold">VENUE (VENUE_ID) <span class="text-danger">*</span></label>
             <select class="form-select" id="c-venue"></select>
           </div>
 
-          <!-- Artis -->
           <div class="col-12">
             <label class="form-label small fw-semibold">ARTIS (EVENT_ARTIST)</label>
             <div class="tag-input-wrap" id="c-artist-wrap" onclick="document.getElementById('c-artist-inp').focus()">
@@ -209,7 +185,6 @@
             <div class="form-text">Tekan Enter untuk menambah artis</div>
           </div>
 
-          <!-- Deskripsi -->
           <div class="col-12">
             <label class="form-label small fw-semibold">DESKRIPSI</label>
             <textarea class="form-control" id="c-desc" rows="2" placeholder="Deskripsi acara..."></textarea>
@@ -227,7 +202,6 @@
   </div>
 </div>
 
-<!-- MODAL: EDIT EVENT -->
 <div class="modal fade" id="modalEditEvent" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
@@ -239,13 +213,11 @@
         <input type="hidden" id="e-id" />
         <div class="row g-3">
 
-          <!-- Judul Acara -->
           <div class="col-md-6">
             <label class="form-label small fw-semibold">JUDUL ACARA (EVENT_TITLE) <span class="text-danger">*</span></label>
             <input type="text" class="form-control" id="e-title" />
           </div>
 
-          <!-- Kategori Tiket -->
           <div class="col-md-6">
             <label class="form-label small fw-semibold">KATEGORI TIKET (TICKET_CATEGORY) <span class="text-danger">*</span></label>
             <div id="e-cats"></div>
@@ -254,7 +226,6 @@
             </button>
           </div>
 
-          <!-- Tanggal & Waktu -->
           <div class="col-md-3">
             <label class="form-label small fw-semibold">TANGGAL (DATE) <span class="text-danger">*</span></label>
             <input type="date" class="form-control" id="e-date" />
@@ -264,13 +235,11 @@
             <input type="time" class="form-control" id="e-time" />
           </div>
 
-          <!-- Venue -->
           <div class="col-md-6">
             <label class="form-label small fw-semibold">VENUE (VENUE_ID) <span class="text-danger">*</span></label>
             <select class="form-select" id="e-venue"></select>
           </div>
 
-          <!-- Artis -->
           <div class="col-12">
             <label class="form-label small fw-semibold">ARTIS (EVENT_ARTIST)</label>
             <div class="tag-input-wrap" id="e-artist-wrap" onclick="document.getElementById('e-artist-inp').focus()">
@@ -279,7 +248,6 @@
             <div class="form-text">Tekan Enter untuk menambah artis</div>
           </div>
 
-          <!-- Deskripsi -->
           <div class="col-12">
             <label class="form-label small fw-semibold">DESKRIPSI</label>
             <textarea class="form-control" id="e-desc" rows="2"></textarea>
@@ -297,7 +265,6 @@
   </div>
 </div>
 
-<!-- ════ TOAST ════ -->
 <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:9999">
   <div id="liveToast" class="toast align-items-center border-0" role="alert">
     <div class="d-flex">
@@ -308,6 +275,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../../fitur_wajib/templates/navbar.js"></script>
 <script>
 
 //  SHARED CONFIG
@@ -317,151 +285,119 @@ const ROLE_DATA = {
   customer:  { name:'Budi Santoso', initial:'B', color:'#1a7a4a', badgeText:'Customer',      badgeStyle:'background:rgba(26,122,74,.25);color:#6ee7b7'   },
 };
 
-const ROLE_MENUS = {
-  admin: [
-    { label:'Dashboard',       icon:'bi-grid-1x2',          href:'dashboard.html' },
-    { label:'Manajemen Venue', icon:'bi-building',           href:'venue.html' },
-    { label:'Manajemen Kursi', icon:'bi-grid-3x3',           href:'#' },
-    { label:'Kategori Tiket',  icon:'bi-tags',               href:'#' },
-    { label:'Manajemen Tiket', icon:'bi-ticket-perforated',  href:'#' },
-    { label:'Semua Order',     icon:'bi-cart-check',         href:'#' },
-    { label:'Tiket (Aset)',    icon:'bi-collection',         href:'#' },
-    { label:'Order (Aset)',    icon:'bi-receipt',            href:'#' },
-    { label:'Profile',         icon:'bi-person-circle',      href:'dashboard.html' },
-  ],
-  organizer: [
-    { label:'Dashboard',       icon:'bi-grid-1x2',           href:'dashboard.html' },
-    { label:'Event Saya',      icon:'bi-calendar-event',     href:'event.html',    active:true },
-    { label:'Manajemen Venue', icon:'bi-building',           href:'venue.html' },
-    { label:'Manajemen Kursi', icon:'bi-grid-3x3',           href:'#' },
-    { label:'Kategori Tiket',  icon:'bi-tags',               href:'#' },
-    { label:'Manajemen Tiket', icon:'bi-ticket-perforated',  href:'#' },
-    { label:'Semua Order',     icon:'bi-cart-check',         href:'#' },
-    { label:'Tiket (Aset)',    icon:'bi-collection',         href:'#' },
-    { label:'Order (Aset)',    icon:'bi-receipt',            href:'#' },
-    { label:'Profile',         icon:'bi-person-circle',      href:'dashboard.html' },
-  ],
-  customer: [
-    { label:'Dashboard',       icon:'bi-grid-1x2',           href:'dashboard.html' },
-    { label:'Tiket Saya',      icon:'bi-ticket',             href:'#' },
-    { label:'Pesanan',         icon:'bi-bag-check',          href:'#' },
-    { label:'Cari Event',      icon:'bi-search',             href:'event.html',    active:true },
-    { label:'Promosi',         icon:'bi-megaphone',          href:'#' },
-    { label:'Venue',           icon:'bi-geo-alt',            href:'venue.html' },
-    { label:'Artis',           icon:'bi-people',             href:'#' },
-    { label:'Profile',         icon:'bi-person-circle',      href:'dashboard.html' },
-    { label:'Logout',          icon:'bi-box-arrow-right',    href:'#', isLogout:true },
-  ],
-};
 
-//  DUMMY DATA
+//  DUMMY DATA 
 const venues = [
-  { id:'v1', name:'Jakarta Convention Center', city:'Jakarta',  capacity:1000 },
-  { id:'v2', name:'Taman Impian Jayakarta',    city:'Jakarta',  capacity:500  },
-  { id:'v3', name:'Bandung Hall Center',        city:'Bandung',  capacity:800  },
-  { id:'v4', name:'Surabaya Convention Hall',   city:'Surabaya', capacity:1200 },
-  { id:'v5', name:'Bali Arts Center',           city:'Bali',     capacity:600  },
+  { id:'50000000-0000-0000-0000-000000000001', name:'Gelora Bung Karno', city:'Jakarta', capacity:77000 },
+  { id:'50000000-0000-0000-0000-000000000002', name:'Istora Senayan', city:'Jakarta', capacity:7000 },
+  { id:'50000000-0000-0000-0000-000000000003', name:'JIExpo Kemayoran', city:'Jakarta', capacity:15000 },
+  { id:'50000000-0000-0000-0000-000000000004', name:'Sentul International Convention Center', city:'Bogor', capacity:10000 },
+  { id:'50000000-0000-0000-0000-000000000005', name:'BCC Bandung', city:'Bandung', capacity:5000 }
 ];
 
 let events = [
   {
-    id:'e1', organizer:'organizer',
-    title:'Konser Melodi Senja',
-    date:'2024-05-15', time:'19:00',
-    venueId:'v1',
-    artists:['Fourtwnty','Hindia'],
-    cats:[{name:'WVIP',price:1500000,quota:50},{name:'VIP',price:750000,quota:150},{name:'Category 1',price:450000,quota:300},{name:'Category 2',price:250000,quota:500}],
-    desc:'Nikmati suasana senja dengan alunan musik indie yang menenangkan.',
-    emoji:'🎵',
+    id:'80000000-0000-0000-0000-000000000001', organizer:'organizer',
+    title:'Coldplay: Music of the Spheres',
+    date:'2026-11-15', time:'19:30',
+    venueId:'50000000-0000-0000-0000-000000000001',
+    artists:['Coldplay', 'Isyana Sarasvati'],
+    cats:[
+      {name:'Ultimate Experience', price:11000000, quota:100},
+      {name:'CAT 1', price:5000000, quota:2000},
+      {name:'Festival', price:3500000, quota:10000}
+    ],
+    desc:'Konser tur dunia Coldplay di Jakarta',
+    emoji:'🌍'
   },
   {
-    id:'e2', organizer:'organizer',
-    title:'Festival Seni Budaya',
-    date:'2024-05-22', time:'10:00',
-    venueId:'v2',
-    artists:['Tulus','Yura Yunita'],
-    cats:[{name:'General Admission',price:150000,quota:500}],
-    desc:'Festival budaya tahunan yang menampilkan kesenian nusantara.',
-    emoji:'🎨',
+    id:'80000000-0000-0000-0000-000000000002', organizer:'organizer',
+    title:'Konser Monokrom Tulus',
+    date:'2026-08-20', time:'20:00',
+    venueId:'50000000-0000-0000-0000-000000000002',
+    artists:['Tulus'],
+    cats:[
+      {name:'VIP A', price:1500000, quota:500},
+      {name:'VIP B', price:1200000, quota:500},
+      {name:'Regular', price:750000, quota:3000}
+    ],
+    desc:'Konser tunggal Tulus merayakan album Monokrom',
+    emoji:'🎤'
   },
   {
-    id:'e3', organizer:'organizer',
-    title:'Malam Akustik Bandung',
-    date:'2024-06-10', time:'18:00',
-    venueId:'v3',
-    artists:['Pamungkas','Raisa'],
-    cats:[{name:'WVIP',price:2000000,quota:30},{name:'VIP',price:900000,quota:100},{name:'Regular',price:350000,quota:400}],
-    desc:'Malam penuh harmoni akustik di kota kembang.',
-    emoji:'🎸',
+    id:'80000000-0000-0000-0000-000000000003', organizer:'organizer',
+    title:'Pesta Semalam Minggu Vol 3',
+    date:'2026-09-10', time:'15:00',
+    venueId:'50000000-0000-0000-0000-000000000003',
+    artists:['Hindia', 'Nadin Amizah', 'Maliq & D Essentials'],
+    cats:[
+      {name:'Early Bird', price:250000, quota:1000},
+      {name:'Presale 1', price:350000, quota:2000},
+      {name:'Normal', price:500000, quota:5000}
+    ],
+    desc:'Festival musik indie terbesar tahun ini',
+    emoji:'🎸'
   },
   {
-    id:'e4', organizer:'organizer2',
-    title:'Jazz Under The Stars',
-    date:'2024-07-05', time:'20:00',
-    venueId:'v4',
-    artists:['Nadin Amizah','Rizky Febian'],
-    cats:[{name:'VIP',price:600000,quota:200},{name:'Regular',price:300000,quota:500}],
-    desc:'Nikmati jazz berkelas di bawah langit malam Surabaya.',
-    emoji:'🎷',
+    id:'80000000-0000-0000-0000-000000000004', organizer:'organizer2',
+    title:'Java Jazz Special Edition',
+    date:'2026-07-05', time:'18:30',
+    venueId:'50000000-0000-0000-0000-000000000004',
+    artists:['Maliq & D Essentials', 'Tulus'],
+    cats:[
+      {name:'Daily Pass', price:800000, quota:3000}
+    ],
+    desc:'Edisi spesial Java Jazz Festival 2026',
+    emoji:'🎷'
   },
   {
-    id:'e5', organizer:'organizer2',
-    title:'Bali Music Fest',
-    date:'2024-08-20', time:'16:00',
-    venueId:'v5',
-    artists:['Fourtwnty','Tulus','Raisa'],
-    cats:[{name:'Early Bird',price:400000,quota:150},{name:'Regular',price:600000,quota:400}],
-    desc:'Festival musik terbesar di pulau dewata.',
-    emoji:'🌴',
+    id:'80000000-0000-0000-0000-000000000005', organizer:'organizer',
+    title:'Dewa 19: 30 Tahun Berkarya',
+    date:'2026-12-12', time:'19:00',
+    venueId:'50000000-0000-0000-0000-000000000001',
+    artists:['Dewa 19', 'Tulus'],
+    cats:[
+      {name:'Platinum', price:2000000, quota:1000},
+      {name:'Gold', price:1500000, quota:2000}
+    ],
+    desc:'Perayaan 30 tahun Dewa 19 di industri musik',
+    emoji:'🔥'
   },
   {
-    id:'e6', organizer:'organizer',
-    title:'Indie Pop Night Jakarta',
-    date:'2024-09-01', time:'19:30',
-    venueId:'v1',
-    artists:['Hindia','Pamungkas'],
-    cats:[{name:'VIP',price:800000,quota:100},{name:'Regular',price:300000,quota:400}],
-    desc:'Malam indie pop yang penuh energi di Jakarta.',
-    emoji:'✨',
-  },
+    id:'80000000-0000-0000-0000-000000000006', organizer:'organizer2',
+    title:'Tunggu Aku di Bandung SO7',
+    date:'2026-10-25', time:'19:00',
+    venueId:'50000000-0000-0000-0000-000000000005',
+    artists:['Sheila On 7', 'Isyana Sarasvati'],
+    cats:[
+      {name:'CAT 1', price:1000000, quota:1000},
+      {name:'CAT 2', price:750000, quota:2000}
+    ],
+    desc:'Tur Tunggu Aku Di konser Sheila On 7',
+    emoji:'✨'
+  }
 ];
 
-let currentRole  = localStorage.getItem('role') || 'admin';
+let currentRole  = localStorage.getItem('role') || 'guest';
 let createArtists = [];
 let editArtists   = [];
 let catCounter    = 0;
 
-// ════════════════════════════════════════
-//  SIDEBAR
-// ════════════════════════════════════════
-function renderSidebar(role) {
-  const menu = document.getElementById('sidebarMenu');
-  menu.innerHTML = '';
-  (ROLE_MENUS[role] || []).forEach(item => {
-    const li = document.createElement('li');
-    li.className = 'nav-item-custom';
-    li.innerHTML = `<a href="${item.href||'#'}" class="nav-link-custom ${item.active?'active':''} ${item.isLogout?'text-warning':''}">
-      <i class="bi ${item.icon}"></i><span>${item.label}</span></a>`;
-    menu.appendChild(li);
-  });
-  const d = ROLE_DATA[role];
-  document.getElementById('sb-avatar').textContent      = d.initial;
-  document.getElementById('sb-avatar').style.background = d.color;
-  document.getElementById('sb-name').textContent        = d.name;
-  const badge = document.getElementById('sb-role-badge');
-  badge.textContent  = d.badgeText;
-  badge.style.cssText = `font-size:.65rem;${d.badgeStyle}`;
-  document.getElementById('roleLabel').textContent = d.badgeText;
-}
-
-function updateRole(role) {
+// Timpa updateRole milik navbar.js dengan updateRole lokal khusus Event
+window.updateRole = function(role) {
   currentRole = role;
   localStorage.setItem('role', role);
-  renderSidebar(role);
+  
+  // Panggil fungsi renderSidebar milik navbar.js
+  if (typeof renderSidebar === 'function') {
+      renderSidebar(role);
+  }
+  
+  // Refresh UI Event
   updatePageUI();
   populateFilters();
   filterEvents();
-}
+};
 
 //  PAGE UI (role-based)
 function updatePageUI() {
@@ -529,9 +465,19 @@ function filterEvents() {
     const catBadges = e.cats.slice(0,4).map(c =>
       `<span class="cat-chip">${c.name}</span>`).join('');
 
+    // ICON LOVE KHUSUS CUSTOMER (Ukuran lebih kecil & warna merah)
+    const favIcon = currentRole === 'customer' 
+      ? `<i class="bi bi-heart text-danger" 
+            style="position:absolute; top:12px; right:14px; font-size: 1.2rem; cursor:pointer; z-index:10; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));"
+            onclick="this.classList.toggle('bi-heart'); this.classList.toggle('bi-heart-fill'); event.stopPropagation();"></i>`
+      : '';
+
     return `<div class="col-md-6 col-lg-4">
       <div class="event-card h-100 d-flex flex-column">
-        <div class="event-card-img">${e.emoji}</div>
+        <div class="event-card-img">
+          ${favIcon}
+          ${e.emoji}
+        </div>
         <div class="event-card-body flex-grow-1">
           <div class="d-flex flex-wrap gap-1 mb-2">
             ${e.artists.map(a => `<span class="artist-chip">${a}</span>`).join('')}
@@ -566,51 +512,74 @@ function beliTiket(eventId) {
 
 //  TAG INPUT — ARTIS
 function addArtistTag(ev, mode) {
+  // Hanya eksekusi kalau user menekan tombol Enter
   if (ev.key !== 'Enter') return;
-  ev.preventDefault();
-  const inp = document.getElementById(mode === 'create' ? 'c-artist-inp' : 'e-artist-inp');
+  
+  // Mencegah kelakuan default Enter (biar modal ngga tiba-tiba ketutup/reload)
+  ev.preventDefault(); 
+  
+  const inpId = mode === 'create' ? 'c-artist-inp' : 'e-artist-inp';
+  const inp = document.getElementById(inpId);
   const val = inp.value.trim();
+  
+  // Kalau input kosong, jangan lakukan apa-apa
   if (!val) return;
 
   const arr = mode === 'create' ? createArtists : editArtists;
-  if (arr.includes(val)) { inp.value = ''; return; }
-  arr.push(val);
-  inp.value = '';
+  
+  // Cek apakah artis sudah ada di list, kalau belum, tambahkan
+  if (!arr.includes(val)) { 
+    arr.push(val);
+  }
+  
+  // Kosongkan inputan setelah tekan Enter
+  inp.value = ''; 
   renderArtistTags(mode);
 }
 
 function removeArtistTag(mode, idx) {
   const arr = mode === 'create' ? createArtists : editArtists;
+  // Hapus 1 artis berdasarkan posisinya (index)
   arr.splice(idx, 1);
   renderArtistTags(mode);
 }
 
 function renderArtistTags(mode) {
-  const wrap = document.getElementById(mode === 'create' ? 'c-artist-wrap' : 'e-artist-wrap');
-  const inp  = document.getElementById(mode === 'create' ? 'c-artist-inp' : 'e-artist-inp');
+  const wrapId = mode === 'create' ? 'c-artist-wrap' : 'e-artist-wrap';
+  const inpId  = mode === 'create' ? 'c-artist-inp' : 'e-artist-inp';
+  const wrap = document.getElementById(wrapId);
+  const inp  = document.getElementById(inpId);
   const arr  = mode === 'create' ? createArtists : editArtists;
-  wrap.innerHTML = '';
+  
+  // Hapus HANYA chip artis yang ijo-ijo (jangan hapus kotak inputnya)
+  const existingChips = wrap.querySelectorAll('.tag-chip-edit');
+  existingChips.forEach(chip => chip.remove());
+
+  // Sisipkan ulang chip artis tepat DI SEBELUM kotak input
   arr.forEach((a, i) => {
     const chip = document.createElement('span');
     chip.className = 'tag-chip-edit';
-    chip.innerHTML = `${a} <span class="rm" onclick="removeArtistTag('${mode}',${i})">×</span>`;
-    wrap.appendChild(chip);
+    chip.innerHTML = `${a} <span class="rm" style="cursor:pointer;" onclick="removeArtistTag('${mode}',${i})">×</span>`;
+    wrap.insertBefore(chip, inp);
   });
-  wrap.appendChild(inp);
+  
+  // Kembalikan fokus ke kotak ketik supaya bisa ngetik artis selanjutnya dengan cepat
+  inp.focus();
 }
 
-//  CATEGORY ROWS
+//  CATEGORY ROWS (DIUBAH AGAR TIDAK CONFLICT ID)
 function addCatRow(containerId, cat) {
   const c   = cat || { name:'', price:'', quota:'' };
   const idx = catCounter++;
+  const rowId = `${containerId}-row-${idx}`;
   const row = document.createElement('div');
   row.className = 'cat-row';
-  row.id = `cat-row-${idx}`;
+  row.id = rowId;
   row.innerHTML = `
-    <input type="text"   class="form-control" placeholder="Nama Kategori (cth. VIP)" value="${c.name}"  id="cat-name-${idx}" />
-    <input type="number" class="form-control" placeholder="Harga (Rp)"               value="${c.price}" id="cat-price-${idx}" min="0" />
-    <input type="number" class="form-control" placeholder="Kuota"                    value="${c.quota}" id="cat-quota-${idx}" min="1" />
-    <button type="button" class="btn btn-outline-danger btn-sm px-2" onclick="document.getElementById('cat-row-${idx}').remove()">
+    <input type="text"   class="form-control" placeholder="Nama Kategori (cth. VIP)" value="${c.name}"  id="${containerId}-name-${idx}" />
+    <input type="number" class="form-control" placeholder="Harga (Rp)"               value="${c.price}" id="${containerId}-price-${idx}" min="0" />
+    <input type="number" class="form-control" placeholder="Kuota"                    value="${c.quota}" id="${containerId}-quota-${idx}" min="1" />
+    <button type="button" class="btn btn-outline-danger btn-sm px-2" onclick="document.getElementById('${rowId}').remove()">
       <i class="bi bi-x-lg"></i>
     </button>`;
   document.getElementById(containerId).appendChild(row);
@@ -621,10 +590,10 @@ function collectCats(containerId) {
   const cats = [];
   let err = false;
   rows.forEach(row => {
-    const rid   = row.id.replace('cat-row-','');
-    const name  = document.getElementById(`cat-name-${rid}`).value.trim();
-    const price = parseFloat(document.getElementById(`cat-price-${rid}`).value);
-    const quota = parseInt(document.getElementById(`cat-quota-${rid}`).value);
+    const rid   = row.id.replace(`${containerId}-row-`, '');
+    const name  = document.getElementById(`${containerId}-name-${rid}`).value.trim();
+    const price = parseFloat(document.getElementById(`${containerId}-price-${rid}`).value);
+    const quota = parseInt(document.getElementById(`${containerId}-quota-${rid}`).value);
     if (!name || isNaN(price) || price < 0 || isNaN(quota) || quota <= 0) { err = true; return; }
     cats.push({ name, price, quota });
   });
@@ -659,10 +628,15 @@ function saveCreateEvent() {
   const desc  = document.getElementById('c-desc').value.trim();
   const cats  = collectCats('c-cats');
 
+  const pendingArtist = document.getElementById('c-artist-inp').value.trim();
+  if (pendingArtist && !createArtists.includes(pendingArtist)) {
+    createArtists.push(pendingArtist);
+  }
+
+
   if (!title || !date || !time || !venId) { showToast('Judul, tanggal, waktu, dan venue wajib diisi!', 'danger'); return; }
   if (!cats || !cats.length) { showToast('Lengkapi semua data kategori tiket! (nama, harga ≥ 0, kuota > 0)', 'danger'); return; }
 
-  // Validasi total kuota vs kapasitas venue
   const v = venues.find(x => x.id === venId);
   const totalQ = cats.reduce((a, c) => a + c.quota, 0);
   if (v && totalQ > v.capacity) {
@@ -714,6 +688,11 @@ function saveEditEvent() {
   const desc  = document.getElementById('e-desc').value.trim();
   const cats  = collectCats('e-cats');
 
+  const pendingArtist = document.getElementById('e-artist-inp').value.trim();
+  if (pendingArtist && !editArtists.includes(pendingArtist)) {
+    editArtists.push(pendingArtist);
+  }
+
   if (!title || !date || !time || !venId) { showToast('Judul, tanggal, waktu, dan venue wajib diisi!', 'danger'); return; }
   if (!cats || !cats.length) { showToast('Lengkapi semua data kategori tiket! (nama, harga ≥ 0, kuota > 0)', 'danger'); return; }
 
@@ -732,21 +711,6 @@ function saveEditEvent() {
   showToast('Acara berhasil diperbarui!', 'success');
 }
 
-//  DARK MODE
-function toggleDarkMode() {
-  const html = document.documentElement;
-  const icon = document.getElementById('themeIcon');
-  if (html.getAttribute('data-bs-theme') === 'light') {
-    html.setAttribute('data-bs-theme', 'dark');
-    icon.className = 'bi bi-sun';
-    localStorage.setItem('theme', 'dark');
-  } else {
-    html.setAttribute('data-bs-theme', 'light');
-    icon.className = 'bi bi-moon-stars';
-    localStorage.setItem('theme', 'light');
-  }
-}
-
 //  TOAST
 function showToast(msg, type = 'success') {
   const el = document.getElementById('liveToast');
@@ -755,15 +719,21 @@ function showToast(msg, type = 'success') {
   new bootstrap.Toast(el, { delay: 3500 }).show();
 }
 
-//  INIT
-const savedTheme = localStorage.getItem('theme') || 'light';
-document.documentElement.setAttribute('data-bs-theme', savedTheme);
-document.getElementById('themeIcon').className = savedTheme === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
-
-renderSidebar(currentRole);
-updatePageUI();
-populateFilters();
-filterEvents();
+// INIT LOKAL
+document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(() => {
+     updatePageUI();
+     populateFilters();
+     filterEvents();
+     
+     document.querySelectorAll('.nav-link-custom').forEach(link => {
+       const text = link.textContent.trim().toLowerCase();
+       if (text.includes('event')) {
+         link.classList.add('active');
+       }
+     });
+  }, 100); 
+});
 </script>
 </body>
 </html>

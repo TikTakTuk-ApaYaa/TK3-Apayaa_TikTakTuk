@@ -53,8 +53,9 @@ CREATE TABLE VENUE (
     venue_name VARCHAR(100) NOT NULL,
     capacity INTEGER NOT NULL CHECK (capacity > 0),
     address TEXT NOT NULL,
-    city VARCHAR(100) NOT NULL
-);
+    city VARCHAR(100) NOT NULL,
+    is_reserved BOOLEAN NOT NULL 
+
 
 -- 7. Tabel SEAT
 CREATE TABLE SEAT (
@@ -71,6 +72,7 @@ CREATE TABLE EVENT (
     event_id UUID PRIMARY KEY,
     event_datetime TIMESTAMP NOT NULL,
     event_title VARCHAR(200) NOT NULL,
+    description TEXT, -- [KOLOM BARU] Menyimpan deskripsi acara
     venue_id UUID NOT NULL,
     organizer_id UUID NOT NULL,
     FOREIGN KEY (venue_id) REFERENCES VENUE(venue_id),
@@ -105,7 +107,7 @@ CREATE TABLE TICKET_CATEGORY (
 );
 
 -- 12. Tabel ORDER
-CREATE TABLE ORDER (
+CREATE TABLE "ORDER" (
     order_id UUID PRIMARY KEY,
     order_date TIMESTAMP NOT NULL,
     payment_status VARCHAR(20) NOT NULL,
@@ -213,12 +215,12 @@ INSERT INTO ORGANIZER (organizer_id, organizer_name, contact_email, user_id) VAL
 ('40000000-0000-0000-0000-000000000004', 'Jazz Promotor', 'jazz@promotor.com', '20000000-0000-0000-0000-000000000006');
 
 -- 6. VENUE 
-INSERT INTO VENUE (venue_id, venue_name, capacity, address, city) VALUES
-('50000000-0000-0000-0000-000000000001', 'Gelora Bung Karno', 77000, 'Jl. Pintu Satu Senayan', 'Jakarta'),
-('50000000-0000-0000-0000-000000000002', 'Istora Senayan', 7000, 'Kompleks Olahraga GBK', 'Jakarta'),
-('50000000-0000-0000-0000-000000000003', 'JIExpo Kemayoran', 15000, 'Arena JIExpo Kemayoran', 'Jakarta'),
-('50000000-0000-0000-0000-000000000004', 'Sentul International Convention Center', 10000, 'Jl. Jend. Sudirman, Sentul', 'Bogor'),
-('50000000-0000-0000-0000-000000000005', 'BCC Bandung', 5000, 'Jl. Soekarno Hatta', 'Bandung');
+INSERT INTO VENUE (venue_id, venue_name, capacity, address, city, is_reserved) VALUES
+('50000000-0000-0000-0000-000000000001', 'Gelora Bung Karno', 77000, 'Jl. Pintu Satu Senayan', 'Jakarta', TRUE),
+('50000000-0000-0000-0000-000000000002', 'Istora Senayan', 7000, 'Kompleks Olahraga GBK', 'Jakarta', TRUE),
+('50000000-0000-0000-0000-000000000003', 'JIExpo Kemayoran', 15000, 'Arena JIExpo Kemayoran', 'Jakarta', FALSE),
+('50000000-0000-0000-0000-000000000004', 'Sentul International Convention Center', 10000, 'Jl. Jend. Sudirman, Sentul', 'Bogor', TRUE),
+('50000000-0000-0000-0000-000000000005', 'BCC Bandung', 5000, 'Jl. Soekarno Hatta', 'Bandung', FALSE);
 
 -- 7. SEAT 
 INSERT INTO SEAT (seat_id, section, seat_number, row_number, venue_id) VALUES
@@ -256,13 +258,13 @@ INSERT INTO SEAT (seat_id, section, seat_number, row_number, venue_id) VALUES
 ('60000000-0000-0000-0000-000000000030', 'CAT 2', '27', 'D', '50000000-0000-0000-0000-000000000004');
 
 -- 8. EVENT 
-INSERT INTO EVENT (event_id, event_datetime, event_title, venue_id, organizer_id) VALUES
-('80000000-0000-0000-0000-000000000001', '2026-11-15 19:30:00', 'Coldplay: Music of the Spheres', '50000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001'),
-('80000000-0000-0000-0000-000000000002', '2026-08-20 20:00:00', 'Konser Monokrom Tulus', '50000000-0000-0000-0000-000000000002', '40000000-0000-0000-0000-000000000002'),
-('80000000-0000-0000-0000-000000000003', '2026-09-10 15:00:00', 'Pesta Semalam Minggu Vol 3', '50000000-0000-0000-0000-000000000003', '40000000-0000-0000-0000-000000000003'),
-('80000000-0000-0000-0000-000000000004', '2026-07-05 18:30:00', 'Java Jazz Special Edition', '50000000-0000-0000-0000-000000000004', '40000000-0000-0000-0000-000000000004'),
-('80000000-0000-0000-0000-000000000005', '2026-12-12 19:00:00', 'Dewa 19: 30 Tahun Berkarya', '50000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001'),
-('80000000-0000-0000-0000-000000000006', '2026-10-25 19:00:00', 'Tunggu Aku di Bandung SO7', '50000000-0000-0000-0000-000000000005', '40000000-0000-0000-0000-000000000002');
+INSERT INTO EVENT (event_id, event_datetime, event_title, description, venue_id, organizer_id) VALUES
+('80000000-0000-0000-0000-000000000001', '2026-11-15 19:30:00', 'Coldplay: Music of the Spheres', 'Konser tur dunia Coldplay di Jakarta', '50000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001'),
+('80000000-0000-0000-0000-000000000002', '2026-08-20 20:00:00', 'Konser Monokrom Tulus', 'Konser tunggal Tulus merayakan album Monokrom', '50000000-0000-0000-0000-000000000002', '40000000-0000-0000-0000-000000000002'),
+('80000000-0000-0000-0000-000000000003', '2026-09-10 15:00:00', 'Pesta Semalam Minggu Vol 3', 'Festival musik indie terbesar tahun ini', '50000000-0000-0000-0000-000000000003', '40000000-0000-0000-0000-000000000003'),
+('80000000-0000-0000-0000-000000000004', '2026-07-05 18:30:00', 'Java Jazz Special Edition', 'Edisi spesial Java Jazz Festival 2026', '50000000-0000-0000-0000-000000000004', '40000000-0000-0000-0000-000000000004'),
+('80000000-0000-0000-0000-000000000005', '2026-12-12 19:00:00', 'Dewa 19: 30 Tahun Berkarya', 'Perayaan 30 tahun Dewa 19 di industri musik', '50000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001'),
+('80000000-0000-0000-0000-000000000006', '2026-10-25 19:00:00', 'Tunggu Aku di Bandung SO7', 'Tur Tunggu Aku Di konser Sheila On 7', '50000000-0000-0000-0000-000000000005', '40000000-0000-0000-0000-000000000002');
 
 -- 9. ARTIST 
 INSERT INTO ARTIST (artist_id, name, genre) VALUES
