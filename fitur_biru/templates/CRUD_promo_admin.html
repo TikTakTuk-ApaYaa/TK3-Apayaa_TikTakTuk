@@ -1,179 +1,226 @@
+/* fitur_biru/templates/CRUD_promo_admin.html */
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" data-bs-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Manajemen Promosi Admin - TikTakTuk</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <style>
-    body { background: #ffffff; font-family: 'Inter', sans-serif; color: #333; }
+    /* NAVBAR STYLES */
+    :root { --sidebar-width: 260px; --primary-green: #1a7a4a; --transition-speed: 0.3s; }
+    body { font-family: 'Inter', sans-serif; background-color: var(--bs-body-bg); transition: background-color var(--transition-speed), color var(--transition-speed); }
+    .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; left: 0; top: 0; background: #111827; color: white; transition: all var(--transition-speed); z-index: 1000; border-right: 1px solid rgba(255,255,255,0.1); overflow-y: auto; }
+    [data-bs-theme="dark"] .sidebar { background: #000; }
+    .sidebar-header { padding: 1.5rem; font-weight: 800; font-size: 1.25rem; color: var(--primary-green); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .nav-list { list-style: none; padding: 1rem; margin: 0; }
+    .nav-item-custom { margin-bottom: 4px; }
+    .nav-link-custom { display: flex; align-items: center; gap: 12px; padding: 0.75rem 1rem; color: #9ca3af; text-decoration: none; border-radius: 8px; font-size: 0.875rem; font-weight: 500; transition: all 0.2s; }
+    .nav-link-custom:hover { background: rgba(255,255,255,0.05); color: white; }
+    .nav-link-custom.active { background: var(--primary-green); color: white; }
+    .nav-link-custom.logout-link { color: #f87171; }
+    .nav-link-custom.logout-link:hover { background: rgba(248,113,113,0.1); color: #f87171; }
+    .main-content { margin-left: var(--sidebar-width); padding: 0; min-height: 100vh; }
+    .top-bar { height: 70px; background: var(--bs-body-bg); border-bottom: 1px solid var(--bs-border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; position: sticky; top: 0; z-index: 999; }
+    .dev-tool-dropdown .dropdown-toggle::after { display: none; }
+    .theme-toggle-btn { cursor: pointer; font-size: 1.2rem; color: var(--bs-secondary-color); transition: color 0.2s; }
+    .theme-toggle-btn:hover { color: var(--primary-green); }
+    @media (max-width: 992px) { .sidebar { left: -100%; } .main-content { margin-left: 0; } }
+
+    /* PAGE STYLES  */
     .container { max-width: 1000px; margin-top: 40px; padding-bottom: 50px; }
-    
     .header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
     .header-section h4 { font-weight: 800; margin: 0; }
     .btn-create { background-color: #2b59ff; color: white; border-radius: 12px; padding: 10px 20px; font-weight: 700; border: none; transition: 0.2s; }
     .btn-create:hover { background-color: #1a44d6; }
-
-    /* Box Informasi Atas */
     .stat-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
     .stat-box { padding: 25px; border-radius: 15px; border: 1px solid #f0f0f0; background: #fafafa; }
     .stat-label { font-size: 0.8rem; color: #888; display: block; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; }
     .stat-value { font-size: 1.5rem; font-weight: 800; color: #000; }
-
-    /* Search & Filter */
     .filter-section { display: flex; gap: 15px; margin-bottom: 25px; }
     .search-wrapper { position: relative; flex: 3; }
     .search-wrapper i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #aaa; }
     .search-input { width: 100%; border-radius: 12px; border: 1px solid #eee; padding: 12px 12px 12px 40px; font-size: 0.9rem; }
     .status-select { border-radius: 12px; border: 1px solid #eee; padding: 12px; font-size: 0.9rem; flex: 1; background-color: white; cursor: pointer; color: #666; }
-
-    /* Table Styling */
     .promo-table-card { border: 1px solid #f0f0f0; border-radius: 15px; overflow: hidden; }
     .table { margin-bottom: 0; }
     .table thead { background-color: #fcfcfc; }
     .table thead th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: #bbb; padding: 15px; border-bottom: 2px solid #f8f9fa; }
     .table tbody td { padding: 20px 15px; vertical-align: middle; font-size: 0.9rem; border-bottom: 1px solid #f5f5f5; }
-
     .promo-code { font-weight: 800; color: #1a1a1a; display: flex; align-items: center; gap: 8px; }
     .badge-promo { padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 0.7rem; }
     .type-persentase { background-color: #f0f3ff; color: #2b59ff; }
     .type-nominal { background-color: #fff4e5; color: #ff9800; }
-
     .action-icons { display: flex; gap: 15px; justify-content: flex-end; }
     .btn-icon { border: none; background: none; padding: 0; color: #ccc; transition: color 0.2s; font-size: 1.2rem; cursor: pointer; }
     .btn-icon:hover { color: #2b59ff; }
     .icon-delete:hover { color: #dc3545; }
-
-    /* CUSTOM MODAL STYLE */
     .modal-content { border: 3px solid #000 !important; border-radius: 40px !important; padding: 20px; }
     .modal-header { border: none; padding-bottom: 0; }
     .modal-title { font-weight: 800; font-size: 1.8rem; }
     .btn-close { background-color: #eee; border-radius: 50%; padding: 10px; opacity: 1; border: 2px solid #000; }
-    
     .modal-body label { font-weight: 700; text-transform: uppercase; font-size: 0.85rem; margin-bottom: 8px; display: block; }
     .form-bold { border: 2px solid #000 !important; border-radius: 15px !important; padding: 12px 18px !important; font-weight: 600 !important; }
     .form-bold:focus { box-shadow: 4px 4px 0px #000; background-color: #f8faff; }
-
     .btn-modal-batal { border: 2px solid #000 !important; border-radius: 30px !important; font-weight: 800 !important; padding: 12px !important; background: #fff; }
     .btn-modal-buat { background-color: #004dc0 !important; color: white !important; border: 2px solid #000 !important; border-radius: 30px !important; font-weight: 800 !important; padding: 12px !important; }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <div class="header-section">
-    <div>
-        <h4>Manajemen Promosi</h4>
-        <p class="text-muted small m-0">Kelola kode promo dan kampanye diskon</p>
-    </div>
-    <button class="btn-create" data-bs-toggle="modal" data-bs-target="#modalPromo" data-mode="buat">
-        <i class="bi bi-plus-lg me-2"></i>Buat Promo
-    </button>
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="bg-white text-success rounded-2 px-2 py-1" style="font-size:14px;">TT</div>
+    <span>TikTakTuk</span>
   </div>
+  <ul class="nav-list" id="sidebarMenu"></ul>
+</aside>
 
-  <div class="stat-container">
-    <div class="stat-box">
-      <span class="stat-label">Total Promo</span>
-      <span class="stat-value">4</span>
-    </div>
-    <div class="stat-box">
-      <span class="stat-label">Total Penggunaan</span>
-      <span class="stat-value">189x</span>
-    </div>
-    <div class="stat-box">
-      <span class="stat-label">Tipe Persentase</span>
-      <span class="stat-value">3</span>
-    </div>
-  </div>
+<!-- MAIN CONTENT -->
+<div class="main-content">
 
-  <div class="filter-section">
-    <div class="search-wrapper">
-        <i class="bi bi-search"></i>
-        <input type="text" class="search-input" placeholder="Cari kode promo...">
+  <!-- TOP BAR -->
+  <header class="top-bar">
+    <h6 class="mb-0 fw-bold">Manajemen Promosi</h6>
+    <div class="d-flex align-items-center gap-3">
+      <div class="theme-toggle-btn" onclick="toggleDarkMode()">
+        <i id="themeIcon" class="bi bi-moon-stars"></i>
+      </div>
+      <div class="dropdown dev-tool-dropdown">
+        <button class="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+          <i class="bi bi-eye"></i><span id="roleLabel">Guest</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+          <li><h6 class="dropdown-header">Switch Role</h6></li>
+          <li><a class="dropdown-item" href="#" onclick="updateRole('admin')"><i class="bi bi-shield-check me-2"></i>Administrator</a></li>
+          <li><a class="dropdown-item" href="#" onclick="updateRole('organizer')"><i class="bi bi-calendar-event me-2"></i>Event Organizer</a></li>
+          <li><a class="dropdown-item" href="#" onclick="updateRole('customer')"><i class="bi bi-person me-2"></i>Customer</a></li>
+        </ul>
+      </div>
     </div>
-    <select class="status-select">
-      <option value="all">Semua Tipe</option>
-      <option value="persentase">Persentase</option>
-      <option value="nominal">Nominal</option>
-    </select>
-  </div>
+  </header>
 
-  <div class="promo-table-card">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Kode Promo</th>
-          <th>Tipe</th>
-          <th>Nilai</th>
-          <th>Mulai</th>
-          <th>Berakhir</th>
-          <th>Penggunaan</th>
-          <th class="text-end">Aksi</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><span class="promo-code"><i class="bi bi-ticket-perforated text-primary"></i> TIKTAK20</span></td>
-          <td><span class="badge badge-promo type-persentase">PERSENTASE</span></td>
-          <td class="fw-bold">20%</td>
-          <td>2024-01-01</td>
-          <td>2024-12-31</td>
-          <td>45 / 100</td>
-          <td>
-            <div class="action-icons">
-                <button class="btn-icon" data-bs-toggle="modal" data-bs-target="#modalPromo" data-mode="edit"><i class="bi bi-pencil-square"></i></button>
-                <button class="btn-icon icon-delete" data-bs-toggle="modal" data-bs-target="#modalDelete"><i class="bi bi-trash"></i></button>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td><span class="promo-code"><i class="bi bi-ticket-perforated text-warning"></i> HEMAT50K</span></td>
-          <td><span class="badge badge-promo type-nominal">NOMINAL</span></td>
-          <td class="fw-bold">Rp 50,000</td>
-          <td>2024-01-01</td>
-          <td>2024-12-31</td>
-          <td>12 / 50</td>
-          <td>
-            <div class="action-icons">
-                <button class="btn-icon" data-bs-toggle="modal" data-bs-target="#modalPromo" data-mode="edit"><i class="bi bi-pencil-square"></i></button>
-                <button class="btn-icon icon-delete" data-bs-toggle="modal" data-bs-target="#modalDelete"><i class="bi bi-trash"></i></button>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td><span class="promo-code"><i class="bi bi-ticket-perforated text-primary"></i> NEWUSER30</span></td>
-          <td><span class="badge badge-promo type-persentase">PERSENTASE</span></td>
-          <td class="fw-bold">30%</td>
-          <td>2024-03-01</td>
-          <td>2024-06-30</td>
-          <td>87 / 200</td>
-          <td>
-            <div class="action-icons">
-                <button class="btn-icon" data-bs-toggle="modal" data-bs-target="#modalPromo" data-mode="edit"><i class="bi bi-pencil-square"></i></button>
-                <button class="btn-icon icon-delete" data-bs-toggle="modal" data-bs-target="#modalDelete"><i class="bi bi-trash"></i></button>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td><span class="promo-code"><i class="bi bi-ticket-perforated text-primary"></i> MUDIKASIK</span></td>
-          <td><span class="badge badge-promo type-persentase">PERSENTASE</span></td>
-          <td class="fw-bold">15%</td>
-          <td>2024-04-10</td>
-          <td>2024-05-10</td>
-          <td>45 / 300</td>
-          <td>
-            <div class="action-icons">
-                <button class="btn-icon" data-bs-toggle="modal" data-bs-target="#modalPromo" data-mode="edit"><i class="bi bi-pencil-square"></i></button>
-                <button class="btn-icon icon-delete" data-bs-toggle="modal" data-bs-target="#modalDelete"><i class="bi bi-trash"></i></button>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- KONTEN -->
+  <div class="p-4">
+    <div class="container">
+      <div class="header-section">
+        <div>
+          <h4>Manajemen Promosi</h4>
+          <p class="text-muted small m-0">Kelola kode promo dan kampanye diskon</p>
+        </div>
+        <button class="btn-create" data-bs-toggle="modal" data-bs-target="#modalPromo" data-mode="buat">
+          <i class="bi bi-plus-lg me-2"></i>Buat Promo
+        </button>
+      </div>
+
+      <div class="stat-container">
+        <div class="stat-box">
+          <span class="stat-label">Total Promo</span>
+          <span class="stat-value">4</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Total Penggunaan</span>
+          <span class="stat-value">189x</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Tipe Persentase</span>
+          <span class="stat-value">3</span>
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <div class="search-wrapper">
+          <i class="bi bi-search"></i>
+          <input type="text" class="search-input" placeholder="Cari kode promo...">
+        </div>
+        <select class="status-select">
+          <option value="all">Semua Tipe</option>
+          <option value="persentase">Persentase</option>
+          <option value="nominal">Nominal</option>
+        </select>
+      </div>
+
+      <div class="promo-table-card">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Kode Promo</th>
+              <th>Tipe</th>
+              <th>Nilai</th>
+              <th>Mulai</th>
+              <th>Berakhir</th>
+              <th>Penggunaan</th>
+              <th class="text-end">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="promo-code"><i class="bi bi-ticket-perforated text-primary"></i> TIKTAK20</span></td>
+              <td><span class="badge badge-promo type-persentase">PERSENTASE</span></td>
+              <td class="fw-bold">20%</td>
+              <td>2024-01-01</td>
+              <td>2024-12-31</td>
+              <td>45 / 100</td>
+              <td>
+                <div class="action-icons">
+                  <button class="btn-icon" data-bs-toggle="modal" data-bs-target="#modalPromo" data-mode="edit"><i class="bi bi-pencil-square"></i></button>
+                  <button class="btn-icon icon-delete" data-bs-toggle="modal" data-bs-target="#modalDelete"><i class="bi bi-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><span class="promo-code"><i class="bi bi-ticket-perforated text-warning"></i> HEMAT50K</span></td>
+              <td><span class="badge badge-promo type-nominal">NOMINAL</span></td>
+              <td class="fw-bold">Rp 50,000</td>
+              <td>2024-01-01</td>
+              <td>2024-12-31</td>
+              <td>12 / 50</td>
+              <td>
+                <div class="action-icons">
+                  <button class="btn-icon" data-bs-toggle="modal" data-bs-target="#modalPromo" data-mode="edit"><i class="bi bi-pencil-square"></i></button>
+                  <button class="btn-icon icon-delete" data-bs-toggle="modal" data-bs-target="#modalDelete"><i class="bi bi-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><span class="promo-code"><i class="bi bi-ticket-perforated text-primary"></i> NEWUSER30</span></td>
+              <td><span class="badge badge-promo type-persentase">PERSENTASE</span></td>
+              <td class="fw-bold">30%</td>
+              <td>2024-03-01</td>
+              <td>2024-06-30</td>
+              <td>87 / 200</td>
+              <td>
+                <div class="action-icons">
+                  <button class="btn-icon" data-bs-toggle="modal" data-bs-target="#modalPromo" data-mode="edit"><i class="bi bi-pencil-square"></i></button>
+                  <button class="btn-icon icon-delete" data-bs-toggle="modal" data-bs-target="#modalDelete"><i class="bi bi-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><span class="promo-code"><i class="bi bi-ticket-perforated text-primary"></i> MUDIKASIK</span></td>
+              <td><span class="badge badge-promo type-persentase">PERSENTASE</span></td>
+              <td class="fw-bold">15%</td>
+              <td>2024-04-10</td>
+              <td>2024-05-10</td>
+              <td>45 / 300</td>
+              <td>
+                <div class="action-icons">
+                  <button class="btn-icon" data-bs-toggle="modal" data-bs-target="#modalPromo" data-mode="edit"><i class="bi bi-pencil-square"></i></button>
+                  <button class="btn-icon icon-delete" data-bs-toggle="modal" data-bs-target="#modalDelete"><i class="bi bi-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 
+<!-- MODAL PROMO -->
 <div class="modal fade" id="modalPromo" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -201,6 +248,7 @@
   </div>
 </div>
 
+<!-- MODAL DELETE -->
 <div class="modal fade" id="modalDelete" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-sm">
     <div class="modal-content" style="border-radius: 30px !important;">
@@ -218,14 +266,19 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- EXTEND NAVBAR -->
+<script src="../../fitur_wajib/templates/navbar.js"></script>
+
 <script>
-    const modalPromo = document.getElementById('modalPromo');
-    modalPromo.addEventListener('show.bs.modal', function (event) {
-        const button = event.relatedTarget;
-        const mode = button.getAttribute('data-mode');
-        document.getElementById('modalTitle').textContent = mode === 'edit' ? 'Edit Promo' : 'Buat Promo';
-        document.getElementById('btnSubmit').textContent = mode === 'edit' ? 'UPDATE' : 'BUAT';
-    });
+  const modalPromo = document.getElementById('modalPromo');
+  modalPromo.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    const mode = button.getAttribute('data-mode');
+    document.getElementById('modalTitle').textContent = mode === 'edit' ? 'Edit Promo' : 'Buat Promo';
+    document.getElementById('btnSubmit').textContent = mode === 'edit' ? 'UPDATE' : 'BUAT';
+  });
 </script>
+
 </body>
 </html>

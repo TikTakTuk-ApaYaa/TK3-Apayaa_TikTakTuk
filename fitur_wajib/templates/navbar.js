@@ -14,7 +14,7 @@ const ROLE_MENUS = {
     { label: 'Semua Order',     icon: 'bi-cart-check',         href: '/fitur_biru/templates/read_order_admin.html' },
     { label: 'Tiket (Aset)',    icon: 'bi-collection',         href: '/admin/asset-tickets/' },
     { label: 'Order (Aset)',    icon: 'bi-receipt',            href: '/admin/asset-orders/' },
-    { label: 'Profile',         icon: 'bi-person-circle',      href: '/admin/profile/' },
+    { label: 'Profile',         icon: 'bi-person-circle',      href: '#', action: "showPage('profile')" },
   ],
 
   organizer: [
@@ -27,7 +27,7 @@ const ROLE_MENUS = {
     { label: 'Semua Order',     icon: 'bi-cart-check',         href: '/fitur_biru/templates/read_order_organizer.html' },
     { label: 'Tiket (Aset)',    icon: 'bi-collection',         href: '/organizer/asset-tickets/' },
     { label: 'Order (Aset)',    icon: 'bi-receipt',            href: '/organizer/asset-orders/' },
-    { label: 'Profile',         icon: 'bi-person-circle',      href: '/organizer/profile/' },
+    { label: 'Profile',         icon: 'bi-person-circle',      href: '#', action: "showPage('profile')" },
   ],
 
   customer: [
@@ -63,14 +63,27 @@ function renderSidebar(role) {
   }
 
   menuContainer.innerHTML = '';
+
+  const currentFileName = window.location.pathname.split('/').pop();
+  
   items.forEach(item => {
     const li = document.createElement('li');
+
+    const isActive = item.href !== '#' && window.location.pathname.includes(item.href);
+
     li.className = 'nav-item-custom';
 
-    const onClickHandler = item.isLogout ? 'onclick="simulateLogout(event)"' : '';
+    let onClickHandler = '';
+    if (item.isLogout) {
+      onClickHandler = 'onclick="simulateLogout(event)"';
+    } else if (item.action) {
+      onClickHandler = `onclick="${item.action}; return false;"`; 
+    }
+
+    //const onClickHandler = item.isLogout ? 'onclick="simulateLogout(event)"' : '';
 
     li.innerHTML = `
-      <a href="${item.href}" class="nav-link-custom ${item.isLogout ? 'logout-link' : ''}" ${onClickHandler}>
+      <a href="${item.href}" class="nav-link-custom ${isActive ? 'active' : ''} ${item.isLogout ? 'logout-link' : ''}" ${onClickHandler}>
         <i class="bi ${item.icon}"></i>
         <span>${item.label}</span>
       </a>`;
