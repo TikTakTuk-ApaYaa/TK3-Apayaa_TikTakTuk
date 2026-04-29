@@ -1,196 +1,273 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" data-bs-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Riwayat Pesanan - TikTakTuk</title>
+  <title>Pesanan Saya - TikTakTuk</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <style>
-    body { background: #ffffff; font-family: 'Inter', sans-serif; color: #333; }
-    .container { max-width: 700px; margin-top: 40px; padding-bottom: 50px; }
-    
+  
+    :root { --sidebar-width: 260px; --primary-green: #1a7a4a; --transition-speed: 0.3s; }
+    body { font-family: 'Inter', sans-serif; background-color: var(--bs-body-bg); transition: background-color var(--transition-speed), color var(--transition-speed); color: #333; }
+    .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; left: 0; top: 0; background: #111827; color: white; transition: all var(--transition-speed); z-index: 1000; border-right: 1px solid rgba(255,255,255,0.1); overflow-y: auto; }
+    [data-bs-theme="dark"] .sidebar { background: #000; }
+    .sidebar-header { padding: 1.5rem; font-weight: 800; font-size: 1.25rem; color: var(--primary-green); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .nav-list { list-style: none; padding: 1rem; margin: 0; }
+    .nav-item-custom { margin-bottom: 4px; }
+    .nav-link-custom { display: flex; align-items: center; gap: 12px; padding: 0.75rem 1rem; color: #9ca3af; text-decoration: none; border-radius: 8px; font-size: 0.875rem; font-weight: 500; transition: all 0.2s; }
+    .nav-link-custom:hover { background: rgba(255,255,255,0.05); color: white; }
+    .nav-link-custom.active { background: var(--primary-green); color: white; }
+    .nav-link-custom.logout-link { color: #f87171; }
+    .nav-link-custom.logout-link:hover { background: rgba(248,113,113,0.1); color: #f87171; }
+    .main-content { margin-left: var(--sidebar-width); padding: 0; min-height: 100vh; }
+    .top-bar { height: 70px; background: var(--bs-body-bg); border-bottom: 1px solid var(--bs-border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; position: sticky; top: 0; z-index: 999; }
+    .dev-tool-dropdown .dropdown-toggle::after { display: none; }
+    .theme-toggle-btn { cursor: pointer; font-size: 1.2rem; color: var(--bs-secondary-color); transition: color 0.2s; }
+    .theme-toggle-btn:hover { color: var(--primary-green); }
+    @media (max-width: 992px) { .sidebar { left: -100%; } .main-content { margin-left: 0; } }
+
+    .container { max-width: 800px; margin-top: 40px; padding-bottom: 50px; }
     .header-section { margin-bottom: 25px; }
     .header-section h4 { font-weight: 800; }
-
-    /* Box Informasi / Stat Cards */
     .stat-container { display: flex; gap: 12px; margin-bottom: 30px; }
-    .stat-box { 
-      flex: 1; 
-      padding: 15px; 
-      border-radius: 12px; 
-      border: 1px solid #f0f0f0;
-      background: #fafafa;
-    }
+    .stat-box { flex: 1; padding: 15px; border-radius: 12px; border: 1px solid #f0f0f0; background: #fafafa; }
     .stat-label { font-size: 0.75rem; color: #888; display: block; font-weight: 600; }
     .stat-value { font-size: 1.2rem; font-weight: 800; color: #2b59ff; }
-    .stat-sub { font-size: 0.65rem; color: #aaa; display: block; }
-
-    /* Search & Filter Section */
     .filter-section { display: flex; gap: 10px; margin-bottom: 20px; }
     .search-input { border-radius: 10px; border: 1px solid #eee; padding: 10px 15px; font-size: 0.9rem; flex: 2; }
-    .status-select { border-radius: 10px; border: 1px solid #eee; padding: 10px; font-size: 0.9rem; flex: 1; color: #666; cursor: pointer; }
-
-    /* Order List Styling */
-    .order-list-header { 
-      display: grid; 
-      grid-template-columns: 1.5fr 1fr 1fr 1fr; 
-      padding: 10px 0; 
-      border-bottom: 2px solid #f8f9fa;
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: #999;
-      text-transform: uppercase;
-    }
-    
-    .order-item {
-      display: grid;
-      grid-template-columns: 1.5fr 1fr 1fr 1fr;
-      align-items: center;
-      padding: 18px 0;
-      border-bottom: 1px solid #f0f0f0;
-      text-decoration: none;
-      color: inherit;
-      transition: background 0.2s;
-    }
+    .status-select { border-radius: 10px; border: 1px solid #eee; padding: 10px; font-size: 0.9rem; flex: 1; color: #666; cursor: pointer; background: white; }
+    .order-list-header { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; padding: 10px 15px; border-bottom: 2px solid #f8f9fa; font-size: 0.8rem; font-weight: 700; color: #999; text-transform: uppercase; }
+    .order-item { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; align-items: center; padding: 18px 15px; border-bottom: 1px solid #f0f0f0; text-decoration: none; color: inherit; transition: background 0.2s; }
     .order-item:hover { background: #fcfcfc; }
-
     .order-id { font-weight: 700; color: #2b59ff; font-size: 0.9rem; }
     .order-date { font-size: 0.85rem; color: #666; }
     .order-total { font-weight: 800; font-size: 0.9rem; }
-    
     .status-text { font-size: 0.75rem; font-weight: 700; }
     .status-lunas { color: #00ab66; }
     .status-pending { color: #ff9800; }
-
-    .btn-back { color: #2b59ff; text-decoration: none; font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 15px; }
+    .status-dibatalkan { color: #dc3545; }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <a href="pilih-role.html" class="btn-back">← Kembali</a>
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="bg-white text-success rounded-2 px-2 py-1" style="font-size:14px;">TT</div>
+      <span>TikTakTuk</span>
+    </div>
+    <ul class="nav-list mt-2" id="sidebarMenu"></ul>
+  </aside>
+
+  <div class="main-content">
+    
+    <header class="top-bar">
+      <div>
+        <h6 class="mb-0 fw-bold" id="currentSectionTitle">Pesanan</h6>
+      </div>
+      <div class="d-flex align-items-center gap-3">
+        <div class="theme-toggle-btn" onclick="toggleDarkMode()">
+          <i id="themeIcon" class="bi bi-moon-stars"></i>
+        </div>
+        <div class="dropdown dev-tool-dropdown">
+          <button class="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+            <i class="bi bi-eye"></i><span id="roleLabel">Guest</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+            <li><h6 class="dropdown-header">Switch Role</h6></li>
+            <li><a class="dropdown-item" href="#" onclick="updateRole('admin')"><i class="bi bi-shield-check me-2"></i>Administrator</a></li>
+            <li><a class="dropdown-item" href="#" onclick="updateRole('organizer')"><i class="bi bi-calendar-event me-2"></i>Event Organizer</a></li>
+            <li><a class="dropdown-item" href="#" onclick="updateRole('customer')"><i class="bi bi-person me-2"></i>Customer</a></li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <div class="container">
+      
+      <div class="header-section">
+        <h4>Pesanan Saya</h4>
+      </div>
+
+      <div class="stat-container">
+        <div class="stat-box">
+          <span class="stat-label">Total Order</span>
+          <span class="stat-value" id="statTotalOrder">12</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Lunas</span>
+          <span class="stat-value" id="statLunas" style="color: #00ab66;">9</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Pending</span>
+          <span class="stat-value" id="statPending" style="color: #ff9800;">3</span>
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <input type="text" id="searchInput" class="search-input" placeholder="Cari ID Tiket (Contoh: #ORD-99)..." oninput="filterOrders()">
+        <select id="statusFilter" class="status-select" onchange="filterOrders()">
+          <option value="all">Semua Status</option>
+          <option value="lunas">Lunas</option>
+          <option value="pending">Pending</option>
+          <option value="dibatalkan">Dibatalkan</option>
+        </select>
+      </div>
+
+      <div class="order-list-header">
+        <span>Order ID</span>
+        <span>Tanggal</span>
+        <span>Status</span>
+        <span>Total</span>
+      </div>
+
+      <div class="order-list" id="orderListContainer">
+        <a href="#" class="order-item">
+          <span class="order-id">#ORD-99281</span>
+          <span class="order-date">23/04/2026</span>
+          <span class="status-text status-pending">PENDING</span>
+          <span class="order-total">Rp 500.000</span>
+        </a>
+
+        <a href="#" class="order-item">
+          <span class="order-id">#ORD-98772</span>
+          <span class="order-date">15/04/2026</span>
+          <span class="status-text status-lunas">LUNAS</span>
+          <span class="order-total">Rp 750.000</span>
+        </a>
+
+        <a href="#" class="order-item">
+          <span class="order-id">#ORD-98773</span>
+          <span class="order-date">15/04/2026</span>
+          <span class="status-text status-lunas">LUNAS</span>
+          <span class="order-total">Rp 450.000</span>
+        </a>
+
+        <a href="#" class="order-item">
+          <span class="order-id">#ORD-98790</span>
+          <span class="order-date">16/04/2026</span>
+          <span class="status-text status-pending">PENDING</span>
+          <span class="order-total">Rp 150.000</span>
+        </a>
+
+        <a href="#" class="order-item">
+          <span class="order-id">#ORD-98803</span>
+          <span class="order-date">19/04/2026</span>
+          <span class="status-text status-lunas">LUNAS</span>
+          <span class="order-total">Rp 750.000</span>
+        </a>
+
+        <a href="#" class="order-item">
+          <span class="order-id">#ORD-98804</span>
+          <span class="order-date">19/04/2026</span>
+          <span class="status-text status-lunas">LUNAS</span>
+          <span class="order-total">Rp 300.000</span>
+        </a>
+
+        <a href="#" class="order-item">
+          <span class="order-id">#ORD-98832</span>
+          <span class="order-date">23/04/2026</span>
+          <span class="status-text status-pending">PENDING</span>
+          <span class="order-total">Rp 1.250.000</span>
+        </a>
+
+        <a href="#" class="order-item">
+          <span class="order-id">#ORD-98875</span>
+          <span class="order-date">28/04/2026</span>
+          <span class="status-text status-lunas">LUNAS</span>
+          <span class="order-total">Rp 750.000</span>
+        </a>
+
+        <a href="#" class="order-item">
+          <span class="order-id">#ORD-98890</span>
+          <span class="order-date">29/04/2026</span>
+          <span class="status-text status-lunas">LUNAS</span>
+          <span class="order-total">Rp 300.000</span>
+        </a>
+
+        <a href="#" class="order-item">
+          <span class="order-id">#ORD-98900</span>
+          <span class="order-date">03/05/2026</span>
+          <span class="status-text status-lunas">LUNAS</span>
+          <span class="order-total">Rp 980.000</span>
+        </a>
+
+        <a href="#" class="order-item">
+          <span class="order-id">#ORD-98930</span>
+          <span class="order-date">09/05/2026</span>
+          <span class="status-text status-lunas">LUNAS</span>
+          <span class="order-total">Rp 1.500.000</span>
+        </a>
+
+        <a href="#" class="order-item">
+          <span class="order-id">#ORD-99900</span>
+          <span class="order-date">25/07/2026</span>
+          <span class="status-text status-lunas">LUNAS</span>
+          <span class="order-total">Rp 450.000</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../../fitur_wajib/templates/navbar.js"></script>
   
-  <div class="header-section">
-    <h4>Pesanan Saya</h4>
-  </div>
+  <script>
+    function calculateStats() {
+      const items = document.querySelectorAll('.order-item');
+      let total = 0, lunas = 0, pending = 0;
 
-  <div class="stat-container">
-    <div class="stat-box">
-      <span class="stat-label">Total Order</span>
-      <span class="stat-value">12</span>
-    </div>
-    <div class="stat-box">
-      <span class="stat-label">Lunas</span>
-      <span class="stat-value" style="color: #00ab66;">9</span>
-    </div>
-    <div class="stat-box">
-      <span class="stat-label">Pending</span>
-      <span class="stat-value" style="color: #ff9800;">3</span>
-    </div>
-  </div>
+      items.forEach(item => {
+        if (item.style.display !== 'none') {
+          total++;
+          const status = item.querySelector('.status-text').innerText.toLowerCase();
+          
+          if (status === 'lunas') {
+            lunas++;
+          } else if (status === 'pending') {
+            pending++;
+          }
+        }
+      });
 
-  <div class="filter-section">
-    <input type="text" class="search-input" placeholder="Cari ID Tiket (Contoh: #ORD-99)...">
-    <select class="status-select">
-      <option value="all">Semua Status</option>
-      <option value="lunas">Lunas</option>
-      <option value="pending">Pending</option>
-    </select>
-  </div>
+      document.getElementById('statTotalOrder').innerText = total;
+      document.getElementById('statLunas').innerText = lunas;
+      document.getElementById('statPending').innerText = pending;
+    }
 
-  <div class="order-list-header">
-    <span>Order ID</span>
-    <span>Tanggal</span>
-    <span>Status</span>
-    <span>Total</span>
-  </div>
+    function filterOrders() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const statusFilter = document.getElementById('statusFilter').value.toLowerCase();
+      const items = document.querySelectorAll('.order-item');
 
-  <div class="order-list">
-    <a href="#" class="order-item">
-      <span class="order-id">#ORD-99281</span>
-      <span class="order-date">23/04/2024</span>
-      <span class="status-text status-pending">PENDING</span>
-      <span class="order-total">Rp 500.000</span>
-    </a>
+      items.forEach(item => {
+        const idText = item.querySelector('.order-id').innerText.toLowerCase();
+        const statusText = item.querySelector('.status-text').innerText.toLowerCase();
 
-    <a href="#" class="order-item">
-      <span class="order-id">#ORD-98772</span>
-      <span class="order-date">15/04/2024</span>
-      <span class="status-text status-lunas">LUNAS</span>
-      <span class="order-total">Rp 750.000</span>
-    </a>
+        const matchSearch = idText.includes(query);
+        const matchStatus = statusFilter === 'all' || statusText === statusFilter;
 
-    <a href="#" class="order-item">
-      <span class="order-id">#ORD-98773</span>
-      <span class="order-date">15/04/2024</span>
-      <span class="status-text status-lunas">LUNAS</span>
-      <span class="order-total">Rp 450.000</span>
-    </a>
+        if (matchSearch && matchStatus) {
+          item.style.display = 'grid'; 
+        } else {
+          item.style.display = 'none'; 
+        }
+      });
+      calculateStats();
+    }
 
-    <a href="#" class="order-item">
-      <span class="order-id">#ORD-98790</span>
-      <span class="order-date">16/04/2024</span>
-      <span class="status-text status-pending">PENDING</span>
-      <span class="order-total">Rp 150.000</span>
-    </a>
-
-    <a href="#" class="order-item">
-      <span class="order-id">#ORD-98803</span>
-      <span class="order-date">19/04/2024</span>
-      <span class="status-text status-lunas">LUNAS</span>
-      <span class="order-total">Rp 750.000</span>
-    </a>
-
-    <a href="#" class="order-item">
-      <span class="order-id">#ORD-98804</span>
-      <span class="order-date">19/04/2024</span>
-      <span class="status-text status-lunas">LUNAS</span>
-      <span class="order-total">Rp 300.000</span>
-    </a>
-
-    <a href="#" class="order-item">
-      <span class="order-id">#ORD-98832</span>
-      <span class="order-date">23/04/2024</span>
-      <span class="status-text status-pending">PENDING</span>
-      <span class="order-total">Rp 1.250.000</span>
-    </a>
-
-    <a href="#" class="order-item">
-      <span class="order-id">#ORD-98875</span>
-      <span class="order-date">28/04/2024</span>
-      <span class="status-text status-lunas">LUNAS</span>
-      <span class="order-total">Rp 750.000</span>
-    </a>
-
-    <a href="#" class="order-item">
-      <span class="order-id">#ORD-98890</span>
-      <span class="order-date">29/04/2024</span>
-      <span class="status-text status-lunas">LUNAS</span>
-      <span class="order-total">Rp 300.000</span>
-    </a>
-
-    <a href="#" class="order-item">
-      <span class="order-id">#ORD-98900</span>
-      <span class="order-date">03/05/2024</span>
-      <span class="status-text status-lunas">LUNAS</span>
-      <span class="order-total">Rp 980.000</span>
-    </a>
-
-    <a href="#" class="order-item">
-      <span class="order-id">#ORD-98930</span>
-      <span class="order-date">09/05/2024</span>
-      <span class="status-text status-lunas">LUNAS</span>
-      <span class="order-total">Rp 1.500.000</span>
-    </a>
-
-    <a href="#" class="order-item">
-      <span class="order-id">#ORD-99900</span>
-      <span class="order-date">25/07/2024</span>
-      <span class="status-text status-lunas">LUNAS</span>
-      <span class="order-total">Rp 450.000</span>
-    </a>
-  </div>
-</div>
-
+    document.addEventListener("DOMContentLoaded", () => {
+      calculateStats();
+      setTimeout(() => {
+        document.querySelectorAll('.nav-link-custom').forEach(link => {
+          const text = link.textContent.trim().toLowerCase();
+          if (text.includes('pesanan') || text.includes('semua order')) {
+            link.classList.add('active');
+          }
+        });
+      }, 100);
+    });
+  </script>
 </body>
 </html>

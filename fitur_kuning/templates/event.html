@@ -286,76 +286,96 @@ const ROLE_DATA = {
 };
 
 
-//  DUMMY DATA
+//  DUMMY DATA 
 const venues = [
-  { id:'v1', name:'Jakarta Convention Center', city:'Jakarta',  capacity:1000 },
-  { id:'v2', name:'Taman Impian Jayakarta',    city:'Jakarta',  capacity:500  },
-  { id:'v3', name:'Bandung Hall Center',        city:'Bandung',  capacity:800  },
-  { id:'v4', name:'Surabaya Convention Hall',   city:'Surabaya', capacity:1200 },
-  { id:'v5', name:'Bali Arts Center',           city:'Bali',     capacity:600  },
+  { id:'50000000-0000-0000-0000-000000000001', name:'Gelora Bung Karno', city:'Jakarta', capacity:77000 },
+  { id:'50000000-0000-0000-0000-000000000002', name:'Istora Senayan', city:'Jakarta', capacity:7000 },
+  { id:'50000000-0000-0000-0000-000000000003', name:'JIExpo Kemayoran', city:'Jakarta', capacity:15000 },
+  { id:'50000000-0000-0000-0000-000000000004', name:'Sentul International Convention Center', city:'Bogor', capacity:10000 },
+  { id:'50000000-0000-0000-0000-000000000005', name:'BCC Bandung', city:'Bandung', capacity:5000 }
 ];
 
 let events = [
   {
-    id:'e1', organizer:'organizer',
-    title:'Konser Melodi Senja',
-    date:'2024-05-15', time:'19:00',
-    venueId:'v1',
-    artists:['Fourtwnty','Hindia'],
-    cats:[{name:'WVIP',price:1500000,quota:50},{name:'VIP',price:750000,quota:150},{name:'Category 1',price:450000,quota:300},{name:'Category 2',price:250000,quota:500}],
-    desc:'Nikmati suasana senja dengan alunan musik indie yang menenangkan.',
-    emoji:'🎵',
+    id:'80000000-0000-0000-0000-000000000001', organizer:'organizer',
+    title:'Coldplay: Music of the Spheres',
+    date:'2026-11-15', time:'19:30',
+    venueId:'50000000-0000-0000-0000-000000000001',
+    artists:['Coldplay', 'Isyana Sarasvati'],
+    cats:[
+      {name:'Ultimate Experience', price:11000000, quota:100},
+      {name:'CAT 1', price:5000000, quota:2000},
+      {name:'Festival', price:3500000, quota:10000}
+    ],
+    desc:'Konser tur dunia Coldplay di Jakarta',
+    emoji:'🌍'
   },
   {
-    id:'e2', organizer:'organizer',
-    title:'Festival Seni Budaya',
-    date:'2024-05-22', time:'10:00',
-    venueId:'v2',
-    artists:['Tulus','Yura Yunita'],
-    cats:[{name:'General Admission',price:150000,quota:500}],
-    desc:'Festival budaya tahunan yang menampilkan kesenian nusantara.',
-    emoji:'🎨',
+    id:'80000000-0000-0000-0000-000000000002', organizer:'organizer',
+    title:'Konser Monokrom Tulus',
+    date:'2026-08-20', time:'20:00',
+    venueId:'50000000-0000-0000-0000-000000000002',
+    artists:['Tulus'],
+    cats:[
+      {name:'VIP A', price:1500000, quota:500},
+      {name:'VIP B', price:1200000, quota:500},
+      {name:'Regular', price:750000, quota:3000}
+    ],
+    desc:'Konser tunggal Tulus merayakan album Monokrom',
+    emoji:'🎤'
   },
   {
-    id:'e3', organizer:'organizer',
-    title:'Malam Akustik Bandung',
-    date:'2024-06-10', time:'18:00',
-    venueId:'v3',
-    artists:['Pamungkas','Raisa'],
-    cats:[{name:'WVIP',price:2000000,quota:30},{name:'VIP',price:900000,quota:100},{name:'Regular',price:350000,quota:400}],
-    desc:'Malam penuh harmoni akustik di kota kembang.',
-    emoji:'🎸',
+    id:'80000000-0000-0000-0000-000000000003', organizer:'organizer',
+    title:'Pesta Semalam Minggu Vol 3',
+    date:'2026-09-10', time:'15:00',
+    venueId:'50000000-0000-0000-0000-000000000003',
+    artists:['Hindia', 'Nadin Amizah', 'Maliq & D Essentials'],
+    cats:[
+      {name:'Early Bird', price:250000, quota:1000},
+      {name:'Presale 1', price:350000, quota:2000},
+      {name:'Normal', price:500000, quota:5000}
+    ],
+    desc:'Festival musik indie terbesar tahun ini',
+    emoji:'🎸'
   },
   {
-    id:'e4', organizer:'organizer2',
-    title:'Jazz Under The Stars',
-    date:'2024-07-05', time:'20:00',
-    venueId:'v4',
-    artists:['Nadin Amizah','Rizky Febian'],
-    cats:[{name:'VIP',price:600000,quota:200},{name:'Regular',price:300000,quota:500}],
-    desc:'Nikmati jazz berkelas di bawah langit malam Surabaya.',
-    emoji:'🎷',
+    id:'80000000-0000-0000-0000-000000000004', organizer:'organizer2',
+    title:'Java Jazz Special Edition',
+    date:'2026-07-05', time:'18:30',
+    venueId:'50000000-0000-0000-0000-000000000004',
+    artists:['Maliq & D Essentials', 'Tulus'],
+    cats:[
+      {name:'Daily Pass', price:800000, quota:3000}
+    ],
+    desc:'Edisi spesial Java Jazz Festival 2026',
+    emoji:'🎷'
   },
   {
-    id:'e5', organizer:'organizer2',
-    title:'Bali Music Fest',
-    date:'2024-08-20', time:'16:00',
-    venueId:'v5',
-    artists:['Fourtwnty','Tulus','Raisa'],
-    cats:[{name:'Early Bird',price:400000,quota:150},{name:'Regular',price:600000,quota:400}],
-    desc:'Festival musik terbesar di pulau dewata.',
-    emoji:'🌴',
+    id:'80000000-0000-0000-0000-000000000005', organizer:'organizer',
+    title:'Dewa 19: 30 Tahun Berkarya',
+    date:'2026-12-12', time:'19:00',
+    venueId:'50000000-0000-0000-0000-000000000001',
+    artists:['Dewa 19', 'Tulus'],
+    cats:[
+      {name:'Platinum', price:2000000, quota:1000},
+      {name:'Gold', price:1500000, quota:2000}
+    ],
+    desc:'Perayaan 30 tahun Dewa 19 di industri musik',
+    emoji:'🔥'
   },
   {
-    id:'e6', organizer:'organizer',
-    title:'Indie Pop Night Jakarta',
-    date:'2024-09-01', time:'19:30',
-    venueId:'v1',
-    artists:['Hindia','Pamungkas'],
-    cats:[{name:'VIP',price:800000,quota:100},{name:'Regular',price:300000,quota:400}],
-    desc:'Malam indie pop yang penuh energi di Jakarta.',
-    emoji:'✨',
-  },
+    id:'80000000-0000-0000-0000-000000000006', organizer:'organizer2',
+    title:'Tunggu Aku di Bandung SO7',
+    date:'2026-10-25', time:'19:00',
+    venueId:'50000000-0000-0000-0000-000000000005',
+    artists:['Sheila On 7', 'Isyana Sarasvati'],
+    cats:[
+      {name:'CAT 1', price:1000000, quota:1000},
+      {name:'CAT 2', price:750000, quota:2000}
+    ],
+    desc:'Tur Tunggu Aku Di konser Sheila On 7',
+    emoji:'✨'
+  }
 ];
 
 let currentRole  = localStorage.getItem('role') || 'guest';
