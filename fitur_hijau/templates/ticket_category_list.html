@@ -49,6 +49,7 @@
       <div class="theme-toggle-btn" onclick="toggleDarkMode()">
         <i id="themeIcon" class="bi bi-moon-stars"></i>
       </div>
+      <!-- Dropdown switch role: ditambah Guest untuk keperluan demo -->
       <div class="dropdown dev-tool-dropdown">
         <button class="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
           <i class="bi bi-eye"></i><span id="roleLabel">Guest</span>
@@ -58,6 +59,7 @@
           <li><a class="dropdown-item" href="#" onclick="updateRole('admin')"><i class="bi bi-shield-check me-2"></i>Administrator</a></li>
           <li><a class="dropdown-item" href="#" onclick="updateRole('organizer')"><i class="bi bi-calendar-event me-2"></i>Event Organizer</a></li>
           <li><a class="dropdown-item" href="#" onclick="updateRole('customer')"><i class="bi bi-person me-2"></i>Customer</a></li>
+          <li><a class="dropdown-item" href="#" onclick="updateRole('guest')"><i class="bi bi-person-dash me-2"></i>Guest</a></li>
         </ul>
       </div>
       <div id="topbarRight"></div>
@@ -276,13 +278,11 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-
-<!-- EXTEND NAVBAR    -->
+<!-- EXTEND NAVBAR -->
 <script src="../../fitur_wajib/templates/navbar.js"></script>
 
 <script>
 
-  // DATA DUMMY - 14 data sesuai ketentuan
   let daftarKategori = [
     { id:'cat-001', nama:'WVIP',             acara:'Konser Melodi Senja',   harga:1500000, kuota:50  },
     { id:'cat-002', nama:'VIP',              acara:'Konser Melodi Senja',   harga:750000,  kuota:150 },
@@ -306,16 +306,15 @@
     return 'Rp ' + angka.toLocaleString('id-ID');
   }
 
+  // Override renderSidebar dari navbar.js
   const _renderSidebar = renderSidebar;
   renderSidebar = function(role) {
-    _renderSidebar(role); 
-
+    _renderSidebar(role);
     const canEdit = role === 'admin' || role === 'organizer';
     document.getElementById('btnTambah').classList.toggle('d-none', !canEdit);
     document.getElementById('thAction').classList.toggle('d-none', !canEdit);
     renderTabel(daftarKategori);
   };
-
 
   // ISI FILTER ACARA
   function isiFilterAcara() {

@@ -104,7 +104,7 @@ function updateRole(newRole) {
 function simulateLogout(event) {
   event.preventDefault();
   localStorage.removeItem('role');
-  window.location.href = '/fitur_wajib/templates/login.html';
+  window.location.href = '/fitur_wajib/templates/navbar.html';
 }
 
 // DARK MODE
