@@ -734,8 +734,7 @@
 
         // BELI TIKET (Customer) 
         function beliTiket(eventId) {
-            const e = events.find(x => x.id === eventId);
-            showToast(`Memilih tiket untuk: ${e.title}`, 'success');
+            window.location.href = '../../fitur_biru/templates/create_order.html';
         }
 
         // TAG INPUT — ARTIS 
