@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="id" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TikTakTuk - Profil Saya</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+
+  <style>
+    :root { --sidebar-width: 260px; --primary-green: #1a7a4a; --transition-speed: 0.3s; }
+    body { font-family: 'Inter', sans-serif; background-color: var(--bs-body-bg); transition: background-color var(--transition-speed), color var(--transition-speed); }
+    .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; left: 0; top: 0; background: #111827; color: white; transition: all var(--transition-speed); z-index: 1000; border-right: 1px solid rgba(255,255,255,0.1); overflow-y: auto; }
+    [data-bs-theme="dark"] .sidebar { background: #000; }
+    .sidebar-header { padding: 1.5rem; font-weight: 800; font-size: 1.25rem; color: var(--primary-green); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .nav-list { list-style: none; padding: 1rem; margin: 0; }
+    .nav-item-custom { margin-bottom: 4px; }
+    .nav-link-custom { display: flex; align-items: center; gap: 12px; padding: 0.75rem 1rem; color: #9ca3af; text-decoration: none; border-radius: 8px; font-size: 0.875rem; font-weight: 500; transition: all 0.2s; }
+    .nav-link-custom:hover { background: rgba(255,255,255,0.05); color: white; }
+    .nav-link-custom.active { background: var(--primary-green); color: white; }
+    .nav-link-custom.logout-link { color: #f87171; }
+    .nav-link-custom.logout-link:hover { background: rgba(248,113,113,0.1); color: #f87171; }
+    .main-content { margin-left: var(--sidebar-width); padding: 0; min-height: 100vh; }
+    .top-bar { height: 70px; background: var(--bs-body-bg); border-bottom: 1px solid var(--bs-border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; position: sticky; top: 0; z-index: 999; }
+    .dev-tool-dropdown .dropdown-toggle::after { display: none; }
+    .theme-toggle-btn { cursor: pointer; font-size: 1.2rem; color: var(--bs-secondary-color); }
+    @media (max-width: 992px) { .sidebar { left: -100%; } .main-content { margin-left: 0; } }
+
+    .section-card { border: none; border-radius: 12px; }
+    .section-card .card-header { background: transparent; border-bottom: 1px solid var(--bs-border-color); font-weight: 700; font-size: 0.95rem; padding: 1rem 1.25rem; }
+    .profile-avatar { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 800; flex-shrink: 0; color: white; }
+    .info-row { padding: 10px 0; border-bottom: 1px solid var(--bs-border-color); display: flex; flex-direction: column; gap: 2px; }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--bs-secondary-color); }
+    .info-value { font-size: 0.95rem; font-weight: 600; }
+    .readonly-field { background: var(--bs-tertiary-bg); border: 1px solid var(--bs-border-color); border-radius: 8px; padding: 8px 12px; color: var(--bs-secondary-color); font-size: 0.9rem; width: 100%; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="bg-white text-success rounded-2 px-2 py-1" style="font-size:14px;">TT</div>
+    <span>TikTakTuk</span>
+  </div>
+  <ul class="nav-list mt-2" id="sidebarMenu"></ul>
+</aside>
+
+<div class="main-content">
+  <header class="top-bar">
+    <div>
+      <h6 class="mb-0 fw-bold">Profil</h6>
+    </div>
+    <div class="d-flex align-items-center gap-4">
+      <div class="theme-toggle-btn" onclick="toggleDarkMode()">
+        <i class="bi bi-moon-stars" id="themeIcon"></i>
+      </div>
+      <div class="dropdown dev-tool-dropdown">
+        <button class="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+          <i class="bi bi-person-gear"></i>
+          <span id="roleLabel">Admin</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+          <li><h6 class="dropdown-header">Simulasi Role</h6></li>
+          <li><a class="dropdown-item" href="#" onclick="updateRoleLocal('admin')"><i class="bi bi-shield-check me-2"></i>Administrator</a></li>
+          <li><a class="dropdown-item" href="#" onclick="updateRoleLocal('organizer')"><i class="bi bi-calendar-event me-2"></i>Organizer</a></li>
+          <li><a class="dropdown-item" href="#" onclick="updateRoleLocal('customer')"><i class="bi bi-person me-2"></i>Customer</a></li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <div class="p-4">
+    <div class="container-fluid">
+      <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+          <h3 class="fw-bold mb-0">Profil Saya</h3>
+          <p class="text-muted small mb-0">Kelola informasi pribadi dan preferensi akun Anda</p>
+        </div>
+      </div>
+
+      <div class="row g-4" style="max-width:780px">
+        <div class="col-12">
+          <div class="card section-card shadow-sm border">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <span><i class="bi bi-person-circle me-2"></i>Informasi Profil</span>
+              <button class="btn btn-outline-secondary btn-sm" id="editProfileBtn" onclick="openEditProfile()">
+                <i class="bi bi-pencil me-1"></i>Edit
+              </button>
+            </div>
+            <div class="card-body">
+              <div class="d-flex align-items-center gap-3 p-3 rounded-3 mb-3" style="background:var(--bs-tertiary-bg)">
+                <div id="profile-avatar-disp" class="profile-avatar" style="background:#1a7a4a">A</div>
+                <div>
+                  <div id="profile-name-disp" class="fw-bold" style="font-size:1.1rem">System Admin</div>
+                  <span id="profile-role-badge-disp" class="badge bg-success mt-1">Administrator</span>
+                </div>
+              </div>
+
+              <div id="profile-admin-info">
+                <div class="info-row">
+                  <div class="info-label">Username</div>
+                  <div class="info-value">@sysadmin <small class="text-muted fw-normal">(tidak dapat diubah)</small></div>
+                </div>
+              </div>
+
+              <div id="profile-customer-info" class="d-none">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <div class="info-row">
+                      <div class="info-label"><i class="bi bi-person me-1"></i>Nama Lengkap</div>
+                      <div class="info-value" id="disp-fullname">Budi Santoso</div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="info-row">
+                      <div class="info-label"><i class="bi bi-telephone me-1"></i>Nomor Telepon</div>
+                      <div class="info-value" id="disp-phone">+62812345678</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="info-row">
+                  <div class="info-label"><i class="bi bi-at me-1"></i>Username</div>
+                  <div class="info-value">@customer1 <small class="text-muted fw-normal">(tidak dapat diubah)</small></div>
+                </div>
+              </div>
+
+              <div id="profile-organizer-info" class="d-none">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <div class="info-row">
+                      <div class="info-label"><i class="bi bi-building me-1"></i>Nama Organizer</div>
+                      <div class="info-value" id="disp-orgname">Andi Wijaya</div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="info-row">
+                      <div class="info-label"><i class="bi bi-envelope me-1"></i>Contact Email</div>
+                      <div class="info-value" id="disp-email">organizer1@example.com</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="info-row">
+                  <div class="info-label"><i class="bi bi-at me-1"></i>Username</div>
+                  <div class="info-value">@organizer1 <small class="text-muted fw-normal">(tidak dapat diubah)</small></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="card section-card shadow-sm border">
+            <div class="card-header">
+              <span><i class="bi bi-shield-lock me-2"></i>Update Password</span>
+              <div class="text-muted" style="font-size:.8rem">Perbarui password Anda untuk menjaga keamanan akun</div>
+            </div>
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label class="form-label small fw-semibold">Password Lama <span class="text-danger">*</span></label>
+                  <input type="password" class="form-control form-control-sm" id="pw-old" placeholder="Password Lama" />
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small fw-semibold">Password Baru <span class="text-danger">*</span></label>
+                  <input type="password" class="form-control form-control-sm" id="pw-new" placeholder="Password Baru" />
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small fw-semibold">Konfirmasi Password Baru <span class="text-danger">*</span></label>
+                  <input type="password" class="form-control form-control-sm" id="pw-confirm" placeholder="Konfirmasi Password Baru" />
+                </div>
+              </div>
+              <div class="d-flex justify-content-end gap-2 mt-3">
+                <button class="btn btn-outline-secondary btn-sm" onclick="clearPassword()">Cancel</button>
+                <button class="btn btn-success btn-sm" onclick="savePassword()">
+                  <i class="bi bi-check2 me-1"></i>Update Password
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalEditCustomer" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold"><i class="bi bi-pencil me-2"></i>Edit Profil Pelanggan</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Nama Lengkap <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="edit-fullname" placeholder="Nama Lengkap" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Nomor Telepon</label>
+          <input type="text" class="form-control" id="edit-phone" placeholder="+62..." />
+        </div>
+        <div class="mb-3">
+          <label class="form-label small fw-semibold text-muted">Username <span class="fw-normal">(tidak dapat diubah)</span></label>
+          <div class="readonly-field">@customer1</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+        <button class="btn btn-success" onclick="saveProfileCustomer()">
+          <i class="bi bi-check2 me-1"></i>Simpan Perubahan
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalEditOrganizer" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold"><i class="bi bi-pencil me-2"></i>Edit Profil Penyelenggara</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Nama Organizer <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="edit-orgname" placeholder="Nama Organizer" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Contact Email</label>
+          <input type="email" class="form-control" id="edit-email" placeholder="email@example.com" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label small fw-semibold text-muted">Username <span class="fw-normal">(tidak dapat diubah)</span></label>
+          <div class="readonly-field">@organizer1</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+        <button class="btn btn-success" onclick="saveProfileOrganizer()">
+          <i class="bi bi-check2 me-1"></i>Simpan Perubahan
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:9999">
+  <div id="liveToast" class="toast align-items-center border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body fw-semibold text-white" id="toastMsg">Berhasil!</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="navbar.js"></script>
+
+<script>
+  let currentRoleLocal = localStorage.getItem('role') || 'admin';
+
+  // Tambahan ROLE_DATA hanya untuk keperluan password checking
+  const ROLE_DATA = {
+    admin:     { password: 'admin123' },
+    organizer: { password: 'organizer123' },
+    customer:  { password: 'customer123' }
+  };
+
+  function updateRoleLocal(role) {
+    currentRoleLocal = role;
+    if (typeof updateRole === 'function') {
+      updateRole(role); 
+    }
+    renderProfileView();
+  }
+
+  function renderProfileView() {
+    const adminInfo     = document.getElementById('profile-admin-info');
+    const customerInfo  = document.getElementById('profile-customer-info');
+    const organizerInfo = document.getElementById('profile-organizer-info');
+    
+    const nameDisp      = document.getElementById('profile-name-disp');
+    const badgeDisp     = document.getElementById('profile-role-badge-disp');
+    const avatarDisp    = document.getElementById('profile-avatar-disp');
+    const editBtn       = document.getElementById('editProfileBtn');
+
+    adminInfo.classList.add('d-none');
+    customerInfo.classList.add('d-none');
+    organizerInfo.classList.add('d-none');
+
+    if (currentRoleLocal === 'admin') {
+      adminInfo.classList.remove('d-none');
+      nameDisp.textContent = 'System Admin';
+      badgeDisp.textContent = 'Administrator';
+      badgeDisp.className = 'badge bg-warning text-dark mt-1';
+      avatarDisp.textContent = 'A';
+      avatarDisp.style.background = '#d97706';
+      editBtn.classList.add('d-none'); // Admin tidak punya modal edit profile
+    } else if (currentRoleLocal === 'organizer') {
+      organizerInfo.classList.remove('d-none');
+      nameDisp.textContent = document.getElementById('disp-orgname').textContent;
+      badgeDisp.textContent = 'Event Organizer';
+      badgeDisp.className = 'badge bg-primary mt-1';
+      avatarDisp.textContent = 'O';
+      avatarDisp.style.background = '#2563eb';
+      editBtn.classList.remove('d-none');
+    } else {
+      customerInfo.classList.remove('d-none');
+      nameDisp.textContent = document.getElementById('disp-fullname').textContent;
+      badgeDisp.textContent = 'Customer';
+      badgeDisp.className = 'badge bg-success mt-1';
+      avatarDisp.textContent = 'C';
+      avatarDisp.style.background = '#1a7a4a';
+      editBtn.classList.remove('d-none');
+    }
+  }
+
+  function openEditProfile() {
+    if (currentRoleLocal === 'customer') {
+      document.getElementById('edit-fullname').value = document.getElementById('disp-fullname').textContent;
+      document.getElementById('edit-phone').value = document.getElementById('disp-phone').textContent;
+      new bootstrap.Modal(document.getElementById('modalEditCustomer')).show();
+    } else if (currentRoleLocal === 'organizer') {
+      document.getElementById('edit-orgname').value = document.getElementById('disp-orgname').textContent;
+      document.getElementById('edit-email').value = document.getElementById('disp-email').textContent;
+      new bootstrap.Modal(document.getElementById('modalEditOrganizer')).show();
+    }
+  }
+
+  function saveProfileCustomer() {
+    const fn = document.getElementById('edit-fullname').value;
+    const ph = document.getElementById('edit-phone').value;
+    document.getElementById('disp-fullname').textContent = fn;
+    document.getElementById('disp-phone').textContent = ph;
+    document.getElementById('profile-name-disp').textContent = fn;
+    bootstrap.Modal.getInstance(document.getElementById('modalEditCustomer')).hide();
+    showToast('Profil berhasil diperbarui!', 'success');
+  }
+
+  function saveProfileOrganizer() {
+    const on = document.getElementById('edit-orgname').value;
+    const em = document.getElementById('edit-email').value;
+    document.getElementById('disp-orgname').textContent = on;
+    document.getElementById('disp-email').textContent = em;
+    document.getElementById('profile-name-disp').textContent = on;
+    bootstrap.Modal.getInstance(document.getElementById('modalEditOrganizer')).hide();
+    showToast('Profil Organizer berhasil diperbarui!', 'success');
+  }
+
+  function clearPassword() {
+    ['pw-old','pw-new','pw-confirm'].forEach(id => document.getElementById(id).value = '');
+  }
+
+  function savePassword() {
+    const o = document.getElementById('pw-old').value;
+    const n = document.getElementById('pw-new').value;
+    const c = document.getElementById('pw-confirm').value;
+    const d = ROLE_DATA[currentRoleLocal];
+
+    if (!o || !n || !c) { 
+      showToast('Harap isi semua field password!', 'danger'); 
+      return; 
+    }
+    if (o !== d.password) { 
+      showToast('Password lama tidak sesuai!', 'danger'); 
+      return; 
+    }
+    if (n.length < 6) { 
+      showToast('Password baru minimal 6 karakter!', 'danger'); 
+      return; 
+    }
+    if (n !== c) { 
+      showToast('Password baru dan konfirmasi tidak cocok!', 'danger'); 
+      return; 
+    }
+
+    d.password = n; // Update data sementara
+    showToast('Password berhasil diperbarui!', 'success');
+    clearPassword();
+  }
+
+  function showToast(msg, type = 'success') {
+    const el = document.getElementById('liveToast');
+    el.className = `toast align-items-center border-0 text-bg-${type}`;
+    document.getElementById('toastMsg').textContent = msg;
+    new bootstrap.Toast(el, { delay: 3000 }).show();
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(() => {
+      renderProfileView();
+      document.querySelectorAll('.nav-link-custom').forEach(link => {
+        const text = link.textContent.trim().toLowerCase();
+        if (text.includes('profile') || text.includes('profil')) {
+          link.classList.add('active');
+        }
+      });
+    }, 150);
+  });
+</script>
+</body>
+</html>
