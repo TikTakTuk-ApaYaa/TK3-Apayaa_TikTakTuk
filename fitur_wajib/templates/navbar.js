@@ -19,7 +19,7 @@ const ROLE_MENUS = {
 
   organizer: [
     { label: 'Dashboard',       icon: 'bi-grid-1x2',          href: '/fitur_wajib/templates/dashboard.html' },
-    { label: 'Event Saya',      icon: 'bi-calendar-event',    href: '/fitur_kuning/templates/event.html' },
+    { label: 'Event Saya',      icon: 'bi-calendar-event',    href: '/fitur_kuning/templates/create_update_event.html' },
     { label: 'Manajemen Venue', icon: 'bi-building',           href: '/fitur_kuning/templates/venue.html' },
     { label: 'Manajemen Kursi', icon: 'bi-grid-3x3',           href: '/organizer/seats/' },
     { label: 'Kategori Tiket',  icon: 'bi-tags',               href: '/fitur_hijau/templates/ticket_category_list.html' },
@@ -34,7 +34,7 @@ const ROLE_MENUS = {
     { label: 'Dashboard',  icon: 'bi-grid-1x2',         href: '/fitur_wajib/templates/dashboard.html' },
     { label: 'Tiket Saya', icon: 'bi-ticket',           href: '/customer/tickets/' },
     { label: 'Pesanan',    icon: 'bi-bag-check',        href: '/fitur_biru/templates/read_order_cust.html' },
-    { label: 'Cari Event', icon: 'bi-search',           href: '/fitur_kuning/templates/event.html' },
+    { label: 'Cari Event', icon: 'bi-search',           href: '/fitur_kuning/templates/read_event.html' },
     { label: 'Promosi',    icon: 'bi-megaphone',        href: '/fitur_biru/templates/read_promo_cust.html' },
     { label: 'Venue',      icon: 'bi-geo-alt',          href: '/fitur_kuning/templates/venue.html' },
     { label: 'Artis',      icon: 'bi-people',           href: '/fitur_hijau/templates/artist_list.html' },

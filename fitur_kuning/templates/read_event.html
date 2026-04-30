@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="id" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TikTakTuk - Jelajahi Acara</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+
+  <style>
+    :root { --sidebar-width: 260px; --primary-green: #1a7a4a; --transition-speed: 0.3s; }
+
+    body { font-family: 'Inter', sans-serif; background-color: var(--bs-body-bg); transition: background-color var(--transition-speed), color var(--transition-speed); }
+
+    .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; left: 0; top: 0; background: #111827; color: white; transition: all var(--transition-speed); z-index: 1000; border-right: 1px solid rgba(255,255,255,0.1); overflow-y: auto; }
+    [data-bs-theme="dark"] .sidebar { background: #000; }
+    .sidebar-header { padding: 1.5rem; font-weight: 800; font-size: 1.25rem; color: var(--primary-green); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .nav-list { list-style: none; padding: 1rem; margin: 0; }
+    .nav-item-custom { margin-bottom: 4px; }
+    .nav-link-custom { display: flex; align-items: center; gap: 12px; padding: 0.75rem 1rem; color: #9ca3af; text-decoration: none; border-radius: 8px; font-size: 0.875rem; font-weight: 500; transition: all 0.2s; }
+    .nav-link-custom:hover { background: rgba(255,255,255,0.05); color: white; }
+    .nav-link-custom.active { background: var(--primary-green); color: white; }
+
+    .main-content { margin-left: var(--sidebar-width); padding: 0; min-height: 100vh; }
+    .top-bar { height: 70px; background: var(--bs-body-bg); border-bottom: 1px solid var(--bs-border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; position: sticky; top: 0; z-index: 999; }
+    .dev-tool-dropdown .dropdown-toggle::after { display: none; }
+    .theme-toggle-btn { cursor: pointer; font-size: 1.2rem; color: var(--bs-secondary-color); }
+
+    .event-card { border: 1px solid var(--bs-border-color); border-radius: 14px; overflow: hidden; background: var(--bs-body-bg); transition: transform .2s, box-shadow .2s; }
+    .event-card:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(0,0,0,.12); }
+    .event-card-img { height: 140px; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; background: linear-gradient(135deg, #0f2d1c, #1a7a4a); flex-shrink: 0; position: relative; }
+    .event-card-body { padding: 1rem 1.1rem; }
+    .event-title-txt { font-weight: 700; font-size: 1rem; margin-bottom: 6px; line-height: 1.3; }
+    .event-meta-item { font-size: 0.8rem; color: var(--bs-secondary-color); margin-bottom: 3px; display: flex; align-items: flex-start; gap: 6px; }
+    .event-meta-item i { margin-top: 2px; flex-shrink: 0; }
+    .event-price { font-weight: 700; font-size: 0.95rem; color: var(--primary-green); margin-top: 8px; }
+    .event-card-footer { padding: 0.75rem 1.1rem; border-top: 1px solid var(--bs-border-color); display: flex; gap: 8px; align-items: center; }
+    .artist-chip { background: rgba(26,122,74,.12); color: var(--primary-green); border-radius: 99px; padding: 2px 10px; font-size: 0.75rem; font-weight: 600; }
+    [data-bs-theme="dark"] .artist-chip { background: rgba(26,122,74,.25); }
+    .cat-chip { background: var(--bs-secondary-bg); color: var(--bs-secondary-color); border-radius: 99px; padding: 2px 10px; font-size: 0.72rem; }
+
+    @media (max-width: 992px) { .sidebar { left: -100%; } .main-content { margin-left: 0; } }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="bg-white text-success rounded-2 px-2 py-1" style="font-size:14px;">TT</div>
+    <span>TikTakTuk</span>
+  </div>
+  
+  <ul class="nav-list mt-2" id="sidebarMenu"></ul>
+</aside>
+
+<div class="main-content">
+  <header class="top-bar">
+    <div>
+      <h6 class="mb-0 fw-bold" id="topBarTitle">Jelajahi Acara</h6>
+    </div>
+    <div class="d-flex align-items-center gap-4">
+      <div class="theme-toggle-btn" onclick="toggleDarkMode()">
+        <i class="bi bi-moon-stars" id="themeIcon"></i>
+      </div>
+      <div class="dropdown dev-tool-dropdown">
+        <button class="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+          <i class="bi bi-person-gear"></i><span id="roleLabel">Customer</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+          <li><h6 class="dropdown-header">Simulasi Role (Publik)</h6></li>
+          <li><a class="dropdown-item" href="#" onclick="updateRole('customer')"><i class="bi bi-person me-2"></i>Customer</a></li>
+          <li><a class="dropdown-item" href="#" onclick="updateRole('guest')"><i class="bi bi-person-dash me-2"></i>Guest (Belum Login)</a></li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <div class="p-4">
+    <div class="container-fluid">
+
+      <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+          <h3 class="fw-bold mb-0">Jelajahi Acara</h3>
+          <p class="text-muted small mb-0">Temukan acara terbaik dan beli tiket favorit Anda</p>
+        </div>
+      </div>
+
+      <div class="card border shadow-sm mb-4" style="border-radius:12px">
+        <div class="card-body">
+          <div class="row g-2 align-items-center">
+            <div class="col-md-5">
+              <div class="input-group">
+                <span class="input-group-text bg-transparent border-end-0">
+                  <i class="bi bi-search text-muted"></i>
+                </span>
+                <input type="text" class="form-control border-start-0" id="searchEvent"
+                       placeholder="Cari acara atau artis..." oninput="filterEvents()" />
+              </div>
+            </div>
+            <div class="col-md-3">
+              <select class="form-select" id="filterVenue" onchange="filterEvents()">
+                <option value="">Semua Venue</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <select class="form-select" id="filterArtist" onchange="filterEvents()">
+                <option value="">Semua Artis</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="eventList"></div>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:9999">
+  <div id="liveToast" class="toast align-items-center border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body fw-semibold" id="toastMsg"></div>
+      <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../../fitur_wajib/templates/navbar.js"></script>
+<script>
+
+//  DUMMY DATA 
+const venues = [
+  { id:'50000000-0000-0000-0000-000000000001', name:'Gelora Bung Karno', city:'Jakarta', capacity:77000 },
+  { id:'50000000-0000-0000-0000-000000000002', name:'Istora Senayan', city:'Jakarta', capacity:7000 },
+  { id:'50000000-0000-0000-0000-000000000003', name:'JIExpo Kemayoran', city:'Jakarta', capacity:15000 },
+  { id:'50000000-0000-0000-0000-000000000004', name:'Sentul International Convention Center', city:'Bogor', capacity:10000 },
+  { id:'50000000-0000-0000-0000-000000000005', name:'BCC Bandung', city:'Bandung', capacity:5000 }
+];
+
+let events = [
+  {
+    id:'80000000-0000-0000-0000-000000000001', organizer:'organizer',
+    title:'Coldplay: Music of the Spheres',
+    date:'2026-11-15', time:'19:30',
+    venueId:'50000000-0000-0000-0000-000000000001',
+    artists:['Coldplay', 'Isyana Sarasvati'],
+    cats:[
+      {name:'Ultimate Experience', price:11000000, quota:100},
+      {name:'CAT 1', price:5000000, quota:2000},
+      {name:'Festival', price:3500000, quota:10000}
+    ],
+    desc:'Konser tur dunia Coldplay di Jakarta',
+    emoji:'🌍'
+  },
+  {
+    id:'80000000-0000-0000-0000-000000000002', organizer:'organizer',
+    title:'Konser Monokrom Tulus',
+    date:'2026-08-20', time:'20:00',
+    venueId:'50000000-0000-0000-0000-000000000002',
+    artists:['Tulus'],
+    cats:[
+      {name:'VIP A', price:1500000, quota:500},
+      {name:'VIP B', price:1200000, quota:500},
+      {name:'Regular', price:750000, quota:3000}
+    ],
+    desc:'Konser tunggal Tulus merayakan album Monokrom',
+    emoji:'🎤'
+  },
+  {
+    id:'80000000-0000-0000-0000-000000000003', organizer:'organizer',
+    title:'Pesta Semalam Minggu Vol 3',
+    date:'2026-09-10', time:'15:00',
+    venueId:'50000000-0000-0000-0000-000000000003',
+    artists:['Hindia', 'Nadin Amizah', 'Maliq & D Essentials'],
+    cats:[
+      {name:'Early Bird', price:250000, quota:1000},
+      {name:'Presale 1', price:350000, quota:2000},
+      {name:'Normal', price:500000, quota:5000}
+    ],
+    desc:'Festival musik indie terbesar tahun ini',
+    emoji:'🎸'
+  },
+  {
+    id:'80000000-0000-0000-0000-000000000004', organizer:'organizer2',
+    title:'Java Jazz Special Edition',
+    date:'2026-07-05', time:'18:30',
+    venueId:'50000000-0000-0000-0000-000000000004',
+    artists:['Maliq & D Essentials', 'Tulus'],
+    cats:[
+      {name:'Daily Pass', price:800000, quota:3000}
+    ],
+    desc:'Edisi spesial Java Jazz Festival 2026',
+    emoji:'🎷'
+  },
+  {
+    id:'80000000-0000-0000-0000-000000000005', organizer:'organizer',
+    title:'Dewa 19: 30 Tahun Berkarya',
+    date:'2026-12-12', time:'19:00',
+    venueId:'50000000-0000-0000-0000-000000000001',
+    artists:['Dewa 19', 'Tulus'],
+    cats:[
+      {name:'Platinum', price:2000000, quota:1000},
+      {name:'Gold', price:1500000, quota:2000}
+    ],
+    desc:'Perayaan 30 tahun Dewa 19 di industri musik',
+    emoji:'🔥'
+  },
+  {
+    id:'80000000-0000-0000-0000-000000000006', organizer:'organizer2',
+    title:'Tunggu Aku di Bandung SO7',
+    date:'2026-10-25', time:'19:00',
+    venueId:'50000000-0000-0000-0000-000000000005',
+    artists:['Sheila On 7', 'Isyana Sarasvati'],
+    cats:[
+      {name:'CAT 1', price:1000000, quota:1000},
+      {name:'CAT 2', price:750000, quota:2000}
+    ],
+    desc:'Tur Tunggu Aku Di konser Sheila On 7',
+    emoji:'✨'
+  }
+];
+
+let currentRole = localStorage.getItem('role') || 'customer';
+
+window.updateRole = function(role) {
+  currentRole = role;
+  localStorage.setItem('role', role);
+  
+  if (typeof renderSidebar === 'function') {
+      renderSidebar(role);
+  }
+  
+  document.getElementById('roleLabel').textContent = role === 'guest' ? 'Guest' : 'Customer';
+  populateFilters();
+  filterEvents();
+};
+
+//  POPULATE FILTERS
+function populateFilters() {
+  const vf   = document.getElementById('filterVenue');
+  const vprev = vf.value;
+  vf.innerHTML = '<option value="">Semua Venue</option>' +
+    venues.map(v => `<option value="${v.id}" ${vprev===v.id?'selected':''}>${v.name}</option>`).join('');
+
+  const af   = document.getElementById('filterArtist');
+  const aprev = af.value;
+  const allArtists = [...new Set(events.flatMap(e => e.artists))].sort();
+  af.innerHTML = '<option value="">Semua Artis</option>' +
+    allArtists.map(a => `<option value="${a}" ${aprev===a?'selected':''}>${a}</option>`).join('');
+}
+
+//  FILTER & RENDER EVENTS
+function filterEvents() {
+  const q      = document.getElementById('searchEvent').value.toLowerCase();
+  const venId  = document.getElementById('filterVenue').value;
+  const artist = document.getElementById('filterArtist').value;
+
+  let list = events.filter(e => {
+    // Di halaman publik, semua event aktif ditampilkan
+    const matchQ = !q || e.title.toLowerCase().includes(q) || e.artists.some(a => a.toLowerCase().includes(q));
+    const matchV = !venId || e.venueId === venId;
+    const matchA = !artist || e.artists.includes(artist);
+    return matchQ && matchV && matchA;
+  });
+
+  const container = document.getElementById('eventList');
+  if (!list.length) {
+    container.innerHTML = `<div class="text-center py-5 text-muted">
+      <i class="bi bi-calendar-x" style="font-size:3rem"></i>
+      <p class="mt-2">Tidak ada acara ditemukan</p></div>`;
+    return;
+  }
+
+  container.innerHTML = `<div class="row g-4">${list.map(e => {
+    const v        = venues.find(x => x.id === e.venueId);
+    const minPrice = Math.min(...e.cats.map(c => c.price));
+    const catBadges = e.cats.slice(0,4).map(c =>
+      `<span class="cat-chip">${c.name}</span>`).join('');
+
+    const favIcon = currentRole === 'customer' 
+      ? `<i class="bi bi-heart text-danger" 
+            style="position:absolute; top:12px; right:14px; font-size: 1.2rem; cursor:pointer; z-index:10; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));"
+            onclick="this.classList.toggle('bi-heart'); this.classList.toggle('bi-heart-fill'); event.stopPropagation();"></i>`
+      : '';
+
+    return `<div class="col-md-6 col-lg-4">
+      <div class="event-card h-100 d-flex flex-column">
+        <div class="event-card-img">
+          ${favIcon}
+          ${e.emoji}
+        </div>
+        <div class="event-card-body flex-grow-1">
+          <div class="d-flex flex-wrap gap-1 mb-2">
+            ${e.artists.map(a => `<span class="artist-chip">${a}</span>`).join('')}
+          </div>
+          <div class="event-title-txt">${e.title}</div>
+          <div class="event-meta-item"><i class="bi bi-calendar3"></i>${e.date} · ${e.time}</div>
+          <div class="event-meta-item"><i class="bi bi-geo-alt"></i>${v ? v.name + ', ' + v.city : '-'}</div>
+          <div class="event-price">Mulai Rp ${minPrice.toLocaleString('id')}</div>
+          <div class="d-flex flex-wrap gap-1 mt-2">${catBadges}</div>
+        </div>
+        <div class="event-card-footer">
+          ${currentRole === 'customer'
+            ? `<button class="btn btn-primary btn-sm w-100" onclick="beliTiket('${e.id}')">
+                <i class="bi bi-ticket-perforated me-1"></i>Beli Tiket
+               </button>`
+            : `<button class="btn btn-secondary btn-sm w-100" onclick="showToast('Silakan login terlebih dahulu untuk membeli tiket', 'warning')">
+                <i class="bi bi-box-arrow-in-right me-1"></i>Login untuk Beli
+               </button>`
+          }
+        </div>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+//  BELI TIKET (Customer)
+function beliTiket(eventId) {
+  const e = events.find(x => x.id === eventId);
+  showToast(`Memilih tiket untuk: ${e.title}`, 'success');
+}
+
+//  TOAST
+function showToast(msg, type = 'success') {
+  const el = document.getElementById('liveToast');
+  el.className = `toast align-items-center border-0 text-bg-${type}`;
+  document.getElementById('toastMsg').textContent = msg;
+  new bootstrap.Toast(el, { delay: 3500 }).show();
+}
+
+// INIT LOKAL
+document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(() => {
+     document.getElementById('roleLabel').textContent = currentRole === 'guest' ? 'Guest' : 'Customer';
+     populateFilters();
+     filterEvents();
+     
+     document.querySelectorAll('.nav-link-custom').forEach(link => {
+       const text = link.textContent.trim().toLowerCase();
+       if (text.includes('event') || text.includes('acara')) {
+         link.classList.add('active');
+       }
+     });
+  }, 100); 
+});
+</script>
+</body>
+</html>
