@@ -31,6 +31,7 @@ const ROLE_MENUS = {
     { label: 'Semua Order',     icon: 'bi-cart-check',         href: '/fitur_biru/templates/read_order_organizer.html' },
     { label: 'Tiket (Aset)',    icon: 'bi-collection',         href: '/organizer/asset-tickets/' },
     { label: 'Order (Aset)',    icon: 'bi-receipt',            href: '/organizer/asset-orders/' },
+    { label: 'Artis',           icon: 'bi-people',             href: '/fitur_hijau/templates/artist_list.html' },
     { label: 'Profile',         icon: 'bi-person-circle',      href: '../../fitur_wajib/templates/profile.html' },
     { label: 'Logout',          icon: 'bi-box-arrow-right',    href: '/fitur_wajib/templates/login.html', isLogout: true },
   ],
