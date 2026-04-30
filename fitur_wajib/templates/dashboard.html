@@ -64,14 +64,6 @@
     .ticket-card .tc-meta  { font-size: 0.78rem; opacity: .75; }
     .ticket-card .tc-code  { font-size: 0.72rem; opacity: .6; margin-top: 8px; }
 
-    /* ── Profile ── */
-    .profile-avatar { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 800; flex-shrink: 0; color: white; }
-    .info-row { padding: 10px 0; border-bottom: 1px solid var(--bs-border-color); display: flex; flex-direction: column; gap: 2px; }
-    .info-row:last-child { border-bottom: none; }
-    .info-label { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--bs-secondary-color); }
-    .info-value { font-size: 0.95rem; font-weight: 600; }
-    .readonly-field { background: var(--bs-tertiary-bg); border: 1px solid var(--bs-border-color); border-radius: 8px; padding: 8px 12px; color: var(--bs-secondary-color); font-size: 0.9rem; width: 100%; cursor: not-allowed; }
-
     /* ── Inline stat row (admin section) ── */
     .inline-stat { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: var(--bs-tertiary-bg); border-radius: 8px; font-size: 0.88rem; margin-bottom: 6px; }
     .inline-stat:last-child { margin-bottom: 0; }
@@ -96,7 +88,6 @@
   
   <ul class="nav-list mt-2" id="sidebarMenu"></ul>
 </aside>
-
 
 <div class="main-content">
 
@@ -419,7 +410,7 @@
           <div class="card section-card shadow-sm">
             <div class="card-header d-flex justify-content-between align-items-center">
               <span><i class="bi bi-ticket-perforated me-2 text-success"></i>Tiket Mendatang</span>
-              <a href="#" class="text-success text-decoration-none" style="font-size:.85rem">Lihat Semua</a>
+              <a href="../../fitur_merah/templates/ticket-main.html" class="text-success text-decoration-none" style="font-size:.85rem">Lihat Semua</a>
             </div>
             <div class="card-body">
               <div class="ticket-card green" style="cursor: pointer; transition: 0.2s;" onclick="window.location.href='../../fitur_kuning/templates/event.html'" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
@@ -436,185 +427,8 @@
           </div>
         </div>
 
-      </div><div class="tt-page" id="page-profile">
-        <div class="d-flex justify-content-between align-items-start mb-4">
-          <div>
-            <h3 class="fw-bold mb-0">Profil Saya</h3>
-            <p class="text-muted small mb-0">Kelola informasi pribadi dan preferensi akun Anda</p>
-          </div>
-        </div>
-
-        <div class="row g-4" style="max-width:780px">
-
-          <div class="col-12">
-            <div class="card section-card shadow-sm">
-              <div class="card-header d-flex justify-content-between align-items-center">
-                <span><i class="bi bi-person-circle me-2"></i>Informasi Profil</span>
-                <button class="btn btn-outline-secondary btn-sm" id="editProfileBtn" onclick="openEditProfile()">
-                  <i class="bi bi-pencil me-1"></i>Edit
-                </button>
-              </div>
-              <div class="card-body">
-                <div class="d-flex align-items-center gap-3 p-3 rounded-3 mb-3" style="background:var(--bs-tertiary-bg)">
-                  <div id="profile-avatar-disp" class="profile-avatar" style="background:#1a7a4a">A</div>
-                  <div>
-                    <div id="profile-name-disp" class="fw-bold" style="font-size:1.1rem">System Admin</div>
-                    <span id="profile-role-badge-disp" class="badge bg-success mt-1">Administrator</span>
-                  </div>
-                </div>
-
-                <div id="profile-admin-info">
-                  <div class="info-row">
-                    <div class="info-label">Username</div>
-                    <div class="info-value">@sysadmin <small class="text-muted fw-normal">(tidak dapat diubah)</small></div>
-                  </div>
-                </div>
-
-                <div id="profile-customer-info" class="d-none">
-                  <div class="row g-3">
-                    <div class="col-md-6">
-                      <div class="info-row">
-                        <div class="info-label"><i class="bi bi-person me-1"></i>Nama Lengkap</div>
-                        <div class="info-value" id="disp-fullname">Budi Santoso</div>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="info-row">
-                        <div class="info-label"><i class="bi bi-telephone me-1"></i>Nomor Telepon</div>
-                        <div class="info-value" id="disp-phone">+62812345678</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="info-row">
-                    <div class="info-label"><i class="bi bi-at me-1"></i>Username</div>
-                    <div class="info-value">@customer1 <small class="text-muted fw-normal">(tidak dapat diubah)</small></div>
-                  </div>
-                </div>
-
-                <div id="profile-organizer-info" class="d-none">
-                  <div class="row g-3">
-                    <div class="col-md-6">
-                      <div class="info-row">
-                        <div class="info-label"><i class="bi bi-building me-1"></i>Nama Organizer</div>
-                        <div class="info-value" id="disp-orgname">Andi Wijaya</div>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="info-row">
-                        <div class="info-label"><i class="bi bi-envelope me-1"></i>Contact Email</div>
-                        <div class="info-value" id="disp-email">organizer1@example.com</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="info-row">
-                    <div class="info-label"><i class="bi bi-at me-1"></i>Username</div>
-                    <div class="info-value">@organizer1 <small class="text-muted fw-normal">(tidak dapat diubah)</small></div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          </div>
-
-          <div class="col-12">
-            <div class="card section-card shadow-sm">
-              <div class="card-header">
-                <span><i class="bi bi-shield-lock me-2"></i>Update Password</span>
-                <div class="text-muted" style="font-size:.8rem">Perbarui password Anda untuk menjaga keamanan akun</div>
-              </div>
-              <div class="card-body">
-                <div class="row g-3">
-                  <div class="col-md-4">
-                    <label class="form-label small fw-semibold">Password Lama <span class="text-danger">*</span></label>
-                    <input type="password" class="form-control form-control-sm" id="pw-old" placeholder="Password Lama" />
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label small fw-semibold">Password Baru <span class="text-danger">*</span></label>
-                    <input type="password" class="form-control form-control-sm" id="pw-new" placeholder="Password Baru" />
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label small fw-semibold">Konfirmasi Password Baru <span class="text-danger">*</span></label>
-                    <input type="password" class="form-control form-control-sm" id="pw-confirm" placeholder="Konfirmasi Password Baru" />
-                  </div>
-                </div>
-                <div class="d-flex justify-content-end gap-2 mt-3">
-                  <button class="btn btn-outline-secondary btn-sm" onclick="clearPassword()">Cancel</button>
-                  <button class="btn btn-success btn-sm" onclick="savePassword()">
-                    <i class="bi bi-check2 me-1"></i>Update Password
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div></div></div></div><div class="modal fade" id="modalEditCustomer" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title fw-bold"><i class="bi bi-pencil me-2"></i>Edit Profil Pelanggan</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body">
-        <div class="mb-3">
-          <label class="form-label small fw-semibold">Nama Lengkap <span class="text-danger">*</span></label>
-          <input type="text" class="form-control" id="edit-fullname" placeholder="Nama Lengkap" />
-        </div>
-        <div class="mb-3">
-          <label class="form-label small fw-semibold">Nomor Telepon</label>
-          <input type="text" class="form-control" id="edit-phone" placeholder="+62..." />
-        </div>
-        <div class="mb-3">
-          <label class="form-label small fw-semibold text-muted">Username <span class="fw-normal">(tidak dapat diubah)</span></label>
-          <div class="readonly-field">@customer1</div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
-        <button class="btn btn-success" onclick="saveProfileCustomer()">
-          <i class="bi bi-check2 me-1"></i>Simpan Perubahan
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
 
-<div class="modal fade" id="modalEditOrganizer" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title fw-bold"><i class="bi bi-pencil me-2"></i>Edit Profil Penyelenggara</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <div class="mb-3">
-          <label class="form-label small fw-semibold">Nama Organizer <span class="text-danger">*</span></label>
-          <input type="text" class="form-control" id="edit-orgname" placeholder="Nama Organizer" />
-        </div>
-        <div class="mb-3">
-          <label class="form-label small fw-semibold">Contact Email</label>
-          <input type="email" class="form-control" id="edit-email" placeholder="email@example.com" />
-        </div>
-        <div class="mb-3">
-          <label class="form-label small fw-semibold text-muted">Username <span class="fw-normal">(tidak dapat diubah)</span></label>
-          <div class="readonly-field">@organizer1</div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
-        <button class="btn btn-success" onclick="saveProfileOrganizer()">
-          <i class="bi bi-check2 me-1"></i>Simpan Perubahan
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:9999">
-  <div id="liveToast" class="toast align-items-center border-0" role="alert">
-    <div class="d-flex">
-      <div class="toast-body fw-semibold" id="toastMsg">Berhasil!</div>
-      <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
     </div>
   </div>
 </div>

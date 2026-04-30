@@ -6,7 +6,7 @@ const ROLE_MENUS = {
   ],
 
   admin: [
-    { label: 'Dashboard',       icon: 'bi-grid-1x2',          href: '/fitur_wajib/templates/dashboard.html' },
+    { label: 'Dashboard',       icon: 'bi-grid-1x2',           href: '/fitur_wajib/templates/dashboard.html' },
     { label: 'Manajemen Venue', icon: 'bi-building',           href: '/fitur_kuning/templates/venue.html' },
     { label: 'Manajemen Kursi', icon: 'bi-grid-3x3',           href: '/admin/seats/' },
     { label: 'Kategori Tiket',  icon: 'bi-tags',               href: '/fitur_hijau/templates/ticket_category_list.html' },
@@ -14,7 +14,7 @@ const ROLE_MENUS = {
     { label: 'Semua Order',     icon: 'bi-cart-check',         href: '/fitur_biru/templates/read_order_admin.html' },
     { label: 'Tiket (Aset)',    icon: 'bi-collection',         href: '/admin/asset-tickets/' },
     { label: 'Order (Aset)',    icon: 'bi-receipt',            href: '/admin/asset-orders/' },
-    { label: 'Profile',         icon: 'bi-person-circle',      href: '#', action: "showPage('profile')" },
+    { label: 'Profile',         icon: 'bi-person-circle',      href: '../../fitur_wajib/templates/profile.html' },
   ],
 
   organizer: [
@@ -27,7 +27,7 @@ const ROLE_MENUS = {
     { label: 'Semua Order',     icon: 'bi-cart-check',         href: '/fitur_biru/templates/read_order_organizer.html' },
     { label: 'Tiket (Aset)',    icon: 'bi-collection',         href: '/organizer/asset-tickets/' },
     { label: 'Order (Aset)',    icon: 'bi-receipt',            href: '/organizer/asset-orders/' },
-    { label: 'Profile',         icon: 'bi-person-circle',      href: '#', action: "showPage('profile')" },
+    { label: 'Profile',         icon: 'bi-person-circle',      href: '../../fitur_wajib/templates/profile.html' },
   ],
 
   customer: [
