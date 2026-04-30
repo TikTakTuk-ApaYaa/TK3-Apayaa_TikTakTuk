@@ -10,10 +10,10 @@ const ROLE_MENUS = {
     { label: 'Manajemen Venue', icon: 'bi-building',           href: '/fitur_kuning/templates/venue.html' },
     { label: 'Manajemen Kursi', icon: 'bi-grid-3x3',           href: '/fitur_merah/templates/seat-main.html' },
     { label: 'Kategori Tiket',  icon: 'bi-tags',               href: '/fitur_hijau/templates/ticket_category_list.html' },
-    { label: 'Manajemen Tiket', icon: 'bi-ticket-perforated',  href: '/fitur_merah/templates/ticket-main.html' },
-    { label: 'Semua Order',     icon: 'bi-cart-check',         href: '/fitur_biru/templates/read_order_admin.html' },
-    { label: 'Tiket (Aset)',    icon: 'bi-collection',         href: '/admin/asset-tickets/' },
-    { label: 'Order (Aset)',    icon: 'bi-receipt',            href: '/admin/asset-orders/' },
+    { label: 'Manajemen Tiket', icon: 'bi-ticket-perforated',  href: '/fitur_merah/templates/ticket-main.html?mode=all' },
+    { label: 'Semua Order',     icon: 'bi-cart-check',         href: '/fitur_biru/templates/read_order_admin.html?mode=all' },
+    { label: 'Tiket (Aset)',    icon: 'bi-collection',         href: '/fitur_merah/templates/ticket-main.html?mode=asset'},
+    { label: 'Order (Aset)',    icon: 'bi-receipt',            href: '/fitur_biru/templates/read_order_admin.html?mode=asset' },
     { label: 'Semua Acara',     icon: 'bi-calendar-event',     href: '/fitur_kuning/templates/create_update_event.html' },
     { label: 'Artis',           icon: 'bi-people',             href: '/fitur_hijau/templates/artist_list.html' },
     { label: 'Promosi',         icon: 'bi-megaphone',          href: '/fitur_biru/templates/CRUD_promo_admin.html' },
@@ -27,10 +27,10 @@ const ROLE_MENUS = {
     { label: 'Manajemen Venue', icon: 'bi-building',           href: '/fitur_kuning/templates/venue.html' },
     { label: 'Manajemen Kursi', icon: 'bi-grid-3x3',           href: '/fitur_merah/templates/seat-main.html' },
     { label: 'Kategori Tiket',  icon: 'bi-tags',               href: '/fitur_hijau/templates/ticket_category_list.html' },
-    { label: 'Manajemen Tiket', icon: 'bi-ticket-perforated',  href: '/fitur_merah/templates/ticket-main.html' },
-    { label: 'Semua Order',     icon: 'bi-cart-check',         href: '/fitur_biru/templates/read_order_organizer.html' },
-    { label: 'Tiket (Aset)',    icon: 'bi-collection',         href: '/organizer/asset-tickets/' },
-    { label: 'Order (Aset)',    icon: 'bi-receipt',            href: '/organizer/asset-orders/' },
+    { label: 'Manajemen Tiket', icon: 'bi-ticket-perforated',  href: '/fitur_merah/templates/ticket-main.html?mode=all' },
+    { label: 'Semua Order',     icon: 'bi-cart-check',         href: '/fitur_biru/templates/read_order_organizer.html?mode=all' },
+    { label: 'Tiket (Aset)',    icon: 'bi-collection',         href: '/fitur_merah/templates/ticket-main.html?mode=asset'},
+    { label: 'Order (Aset)',    icon: 'bi-receipt',            href: '/fitur_biru/templates/read_order_admin.html?mode=asset' },
     { label: 'Artis',           icon: 'bi-people',             href: '/fitur_hijau/templates/artist_list.html' },
     { label: 'Profile',         icon: 'bi-person-circle',      href: '../../fitur_wajib/templates/profile.html' },
     { label: 'Logout',          icon: 'bi-box-arrow-right',    href: '/fitur_wajib/templates/login.html', isLogout: true },
@@ -56,7 +56,7 @@ const ROLE_DISPLAY_NAMES = {
   guest:     'Guest'
 };
 
-// RENDER SIDEBAR
+// RENDER SIDEBAR 
 function renderSidebar(role) {
   const menuContainer = document.getElementById('sidebarMenu');
   const roleLabel     = document.getElementById('roleLabel');
@@ -70,13 +70,19 @@ function renderSidebar(role) {
 
   menuContainer.innerHTML = '';
 
-  const currentFileName = window.location.pathname.split('/').pop();
+
+  const currentFullPath = window.location.pathname + window.location.search;
   
   items.forEach(item => {
     const li = document.createElement('li');
 
-    const itemPath = item.href === '#' ? '#' : new URL(item.href, window.location.origin).pathname;
-    const isActive = item.href !== '#' && window.location.pathname.includes(itemPath);
+    let isActive = false;
+    if (item.href !== '#' && !item.isLogout) {
+      const itemUrl = new URL(item.href, window.location.origin);
+      const itemFullPath = itemUrl.pathname + itemUrl.search;
+
+      isActive = currentFullPath === itemFullPath;
+    }
 
     li.className = 'nav-item-custom';
 
@@ -86,8 +92,6 @@ function renderSidebar(role) {
     } else if (item.action) {
       onClickHandler = `onclick="${item.action}; return false;"`; 
     }
-
-    //const onClickHandler = item.isLogout ? 'onclick="simulateLogout(event)"' : '';
 
     li.innerHTML = `
       <a href="${item.href}" class="nav-link-custom ${isActive ? 'active' : ''} ${item.isLogout ? 'logout-link' : ''}" ${onClickHandler}>
