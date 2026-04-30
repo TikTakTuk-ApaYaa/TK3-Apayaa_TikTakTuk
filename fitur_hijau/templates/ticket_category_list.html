@@ -275,6 +275,11 @@
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<!-- EXTEND NAVBAR    -->
+<script src="../../fitur_wajib/templates/navbar.js"></script>
+
 <script>
 
   // DATA DUMMY - 14 data sesuai ketentuan
@@ -301,90 +306,16 @@
     return 'Rp ' + angka.toLocaleString('id-ID');
   }
 
-  // MENU NAVBAR
-const ROLE_MENUS = {
+  const _renderSidebar = renderSidebar;
+  renderSidebar = function(role) {
+    _renderSidebar(role); 
 
-      guest: [
-        { label: 'Login',      icon: 'bi-box-arrow-in-right', href: '/login/' },
-        { label: 'Registrasi', icon: 'bi-person-plus',        href: '/register/' }
-      ],
-
-      admin: [
-        { label: 'Dashboard',       icon: 'bi-grid-1x2',          href: '/fitur_wajib/templates/dashboard.html' },
-        { label: 'Manajemen Venue', icon: 'bi-building',          href: '/admin/venue/' },
-        { label: 'Manajemen Kursi', icon: 'bi-grid-3x3',          href: '/admin/seats/' },
-        { label: 'Kategori Tiket',  icon: 'bi-tags',              href: '/fitur_hijau/templates/ticket_category_list.html' },
-        { label: 'Manajemen Tiket', icon: 'bi-ticket-perforated', href: '/admin/tickets/' },
-        { label: 'Semua Order',     icon: 'bi-cart-check',        href: '/admin/orders/' },
-        { label: 'Tiket (Aset)',    icon: 'bi-collection',        href: '/admin/asset-tickets/' },
-        { label: 'Order (Aset)',    icon: 'bi-receipt',           href: '/admin/asset-orders/' },
-        { label: 'Artis',           icon: 'bi-people',            href: '/fitur_hijau/templates/artist_list.html' }, // <-- SUDAH DITAMBAHKAN
-        { label: 'Profile',         icon: 'bi-person-circle',     href: '/admin/profile/' },
-      ],
-
-      organizer: [
-        { label: 'Dashboard',       icon: 'bi-grid-1x2',          href: '/fitur_wajib/templates/dashboard.html' },
-        { label: 'Event Saya',      icon: 'bi-calendar-event',    href: '/organizer/events/' },
-        { label: 'Manajemen Venue', icon: 'bi-building',          href: '/organizer/venue/' },
-        { label: 'Manajemen Kursi', icon: 'bi-grid-3x3',          href: '/organizer/seats/' },
-        { label: 'Kategori Tiket',  icon: 'bi-tags',              href: '/fitur_hijau/templates/ticket_category_list.html'},
-        { label: 'Manajemen Tiket', icon: 'bi-ticket-perforated', href: '/organizer/tickets/' },
-        { label: 'Semua Order',     icon: 'bi-cart-check',        href: '/organizer/orders/' },
-        { label: 'Tiket (Aset)',    icon: 'bi-collection',        href: '/organizer/asset-tickets/' },
-        { label: 'Order (Aset)',    icon: 'bi-receipt',           href: '/organizer/asset-orders/' },
-        { label: 'Artis',           icon: 'bi-people',            href: '/fitur_hijau/templates/artist_list.html' }, // <-- SUDAH DITAMBAHKAN
-        { label: 'Profile',         icon: 'bi-person-circle',     href: '/organizer/profile/' },
-      ],
-
-      customer: [
-        { label: 'Dashboard',  icon: 'bi-grid-1x2',          href: '/fitur_wajib/templates/dashboard.html' },
-        { label: 'Tiket Saya', icon: 'bi-ticket',            href: '/customer/tickets/' },
-        { label: 'Pesanan',    icon: 'bi-bag-check',         href: '/customer/orders/' },
-        { label: 'Cari Event', icon: 'bi-search',            href: '/customer/search/' },
-        { label: 'Promosi',    icon: 'bi-megaphone',         href: '/customer/promotions/' },
-        { label: 'Venue',      icon: 'bi-geo-alt',           href: '/customer/venues/' },
-        { label: 'Artis',      icon: 'bi-people',            href: '/fitur_hijau/templates/artist_list.html' },
-        { label: 'Logout',     icon: 'bi-box-arrow-right',   href: '#', isLogout: true },
-      ]
-
-    };
-
-  const ROLE_DISPLAY_NAMES = {
-    admin: 'Administrator', organizer: 'Event Organizer',
-    customer: 'Customer',  guest: 'Guest'
-  };
-
-  // RENDER SIDEBAR & TOPBAR
-  function renderSidebar(role) {
-    const menuContainer = document.getElementById('sidebarMenu');
-    const roleLabel     = document.getElementById('roleLabel');
-    const topbarRight   = document.getElementById('topbarRight');
-    const items         = ROLE_MENUS[role] || ROLE_MENUS.guest;
-
-    if (roleLabel) roleLabel.innerText = ROLE_DISPLAY_NAMES[role] || role;
-
-    topbarRight.innerHTML = '';
-
-    menuContainer.innerHTML = '';
-    items.forEach(item => {
-      const li = document.createElement('li');
-      li.className = 'nav-item-custom';
-      li.innerHTML = `
-        <a href="${item.href}" class="nav-link-custom ${item.isLogout ? 'logout-link' : ''}"
-           ${item.isLogout ? 'onclick="simulateLogout(event)"' : ''}>
-          <i class="bi ${item.icon}"></i>
-          <span>${item.label}</span>
-        </a>`;
-      menuContainer.appendChild(li);
-    });
-
-    // Tampilkan/sembunyikan elemen Admin & Organizer
     const canEdit = role === 'admin' || role === 'organizer';
     document.getElementById('btnTambah').classList.toggle('d-none', !canEdit);
     document.getElementById('thAction').classList.toggle('d-none', !canEdit);
-
     renderTabel(daftarKategori);
-  }
+  };
+
 
   // ISI FILTER ACARA
   function isiFilterAcara() {
@@ -396,6 +327,9 @@ const ROLE_MENUS = {
       sel.appendChild(opt);
     });
   }
+
+  isiFilterAcara();
+  renderSidebar(localStorage.getItem('role') || 'guest');
 
   function getFiltered() {
     const q     = document.getElementById('searchInput').value.toLowerCase();
@@ -411,11 +345,10 @@ const ROLE_MENUS = {
 
   // RENDER TABEL
   function renderTabel(data) {
-    const role     = localStorage.getItem('role') || 'guest';
-    const canEdit  = role === 'admin' || role === 'organizer';
-    const tbody    = document.getElementById('tabelKategori');
+    const role    = localStorage.getItem('role') || 'guest';
+    const canEdit = role === 'admin' || role === 'organizer';
+    const tbody   = document.getElementById('tabelKategori');
 
-    // Sort: nama event ascending, lalu category_name ascending
     const sorted = [...data].sort((a,b) => {
       const ev = a.acara.localeCompare(b.acara);
       return ev !== 0 ? ev : a.nama.localeCompare(b.nama);
@@ -439,18 +372,15 @@ const ROLE_MENUS = {
         </td>` : ''}
       </tr>`).join('');
 
-    // Update stats
     const totalKuota = daftarKategori.reduce((s,k) => s+k.kuota, 0);
     const maxHarga   = Math.max(...daftarKategori.map(k => k.harga));
-    document.getElementById('statTotal').textContent   = daftarKategori.length;
-    document.getElementById('statKuota').textContent   = totalKuota.toLocaleString('id-ID');
-    document.getElementById('statHarga').textContent   = formatRp(maxHarga);
+    document.getElementById('statTotal').textContent      = daftarKategori.length;
+    document.getElementById('statKuota').textContent      = totalKuota.toLocaleString('id-ID');
+    document.getElementById('statHarga').textContent      = formatRp(maxHarga);
     document.getElementById('jumlahDitemukan').textContent = `${data.length} kategori ditemukan`;
   }
 
-  // =============================================
   // TAMBAH KATEGORI
-  // =============================================
   function tambahKategori() {
     const acara  = document.getElementById('inputAcara').value;
     const nama   = document.getElementById('inputNama').value.trim();
@@ -458,14 +388,14 @@ const ROLE_MENUS = {
     const kuota  = parseInt(document.getElementById('inputKuota').value);
 
     let valid = true;
-    if (!acara)               { document.getElementById('errAcara').classList.remove('d-none'); valid=false; }
-    else                      { document.getElementById('errAcara').classList.add('d-none'); }
-    if (!nama)                { document.getElementById('errNama').classList.remove('d-none');  valid=false; }
-    else                      { document.getElementById('errNama').classList.add('d-none'); }
-    if (isNaN(harga)||harga<0){ document.getElementById('errHarga').classList.remove('d-none'); valid=false; }
-    else                      { document.getElementById('errHarga').classList.add('d-none'); }
-    if (isNaN(kuota)||kuota<1){ document.getElementById('errKuota').classList.remove('d-none'); valid=false; }
-    else                      { document.getElementById('errKuota').classList.add('d-none'); }
+    if (!acara)                { document.getElementById('errAcara').classList.remove('d-none'); valid=false; }
+    else                       { document.getElementById('errAcara').classList.add('d-none'); }
+    if (!nama)                 { document.getElementById('errNama').classList.remove('d-none');  valid=false; }
+    else                       { document.getElementById('errNama').classList.add('d-none'); }
+    if (isNaN(harga)||harga<0) { document.getElementById('errHarga').classList.remove('d-none'); valid=false; }
+    else                       { document.getElementById('errHarga').classList.add('d-none'); }
+    if (isNaN(kuota)||kuota<1) { document.getElementById('errKuota').classList.remove('d-none'); valid=false; }
+    else                       { document.getElementById('errKuota').classList.add('d-none'); }
 
     if (!valid) return;
 
@@ -538,35 +468,6 @@ const ROLE_MENUS = {
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 3000);
   }
-
-  // ROLE & DARK MODE
-  function updateRole(newRole) {
-    localStorage.setItem('role', newRole);
-    renderSidebar(newRole);
-  }
-
-  function simulateLogout(event) {
-    event.preventDefault();
-    localStorage.removeItem('role');
-    renderSidebar('guest');
-  }
-
-  function toggleDarkMode() {
-    const html = document.documentElement;
-    const icon = document.getElementById('themeIcon');
-    const isDark = html.getAttribute('data-bs-theme') === 'dark';
-    html.setAttribute('data-bs-theme', isDark ? 'light' : 'dark');
-    icon.className = isDark ? 'bi bi-moon-stars' : 'bi bi-sun';
-    localStorage.setItem('theme', isDark ? 'light' : 'dark');
-  }
-
-  // INIT
-  const savedRole  = localStorage.getItem('role')  || 'guest';
-  const savedTheme = localStorage.getItem('theme') || 'light';
-  document.documentElement.setAttribute('data-bs-theme', savedTheme);
-  document.getElementById('themeIcon').className = savedTheme === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
-  isiFilterAcara();
-  renderSidebar(savedRole);
 
 </script>
 </body>

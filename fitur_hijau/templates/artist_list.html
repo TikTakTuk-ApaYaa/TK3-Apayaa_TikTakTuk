@@ -73,13 +73,11 @@
   <!-- KONTEN -->
   <div class="p-4">
 
-    <!-- Header halaman -->
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
         <h4 class="fw-bold mb-1">Daftar Artis</h4>
         <p class="text-muted mb-0">Kelola artis yang ada di platform TikTakTuk</p>
       </div>
-      <!-- Tombol Tambah - hanya Admin -->
       <button class="btn btn-success d-none" id="btnTambah"
               data-bs-toggle="modal" data-bs-target="#modalTambah">
         <i class="bi bi-plus-lg me-1"></i>Tambah Artis
@@ -236,6 +234,10 @@
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- EXTEND NAVBAR: import navbar.js dari fitur_wajib             -->
+<script src="../../fitur_wajib/templates/navbar.js"></script>
+
 <script>
 
   // DATA DUMMY - 8 data sesuai ketentuan
@@ -253,92 +255,17 @@
   let idHapus = null;
   const WARNA = ['#1a7a4a','#0a3880','#856404','#7c3aed','#b91c1c','#0e7490','#92400e','#065f46'];
 
-  // MENU NAVBAR
-const ROLE_MENUS = {
+  const _renderSidebar = renderSidebar;
+  renderSidebar = function(role) {
+    _renderSidebar(role); 
 
-      guest: [
-        { label: 'Login',      icon: 'bi-box-arrow-in-right', href: '/login/' },
-        { label: 'Registrasi', icon: 'bi-person-plus',        href: '/register/' }
-      ],
-
-      admin: [
-        { label: 'Dashboard',       icon: 'bi-grid-1x2',          href: '/fitur_wajib/templates/dashboard.html' },
-        { label: 'Manajemen Venue', icon: 'bi-building',          href: '/admin/venue/' },
-        { label: 'Manajemen Kursi', icon: 'bi-grid-3x3',          href: '/admin/seats/' },
-        { label: 'Kategori Tiket',  icon: 'bi-tags',              href: '/fitur_hijau/templates/ticket_category_list.html' },
-        { label: 'Manajemen Tiket', icon: 'bi-ticket-perforated', href: '/admin/tickets/' },
-        { label: 'Semua Order',     icon: 'bi-cart-check',        href: '/admin/orders/' },
-        { label: 'Tiket (Aset)',    icon: 'bi-collection',        href: '/admin/asset-tickets/' },
-        { label: 'Order (Aset)',    icon: 'bi-receipt',           href: '/admin/asset-orders/' },
-        { label: 'Artis',           icon: 'bi-people',            href: '/fitur_hijau/templates/artist_list.html' }, // <-- SUDAH DITAMBAHKAN
-        { label: 'Profile',         icon: 'bi-person-circle',     href: '/admin/profile/' },
-      ],
-
-      organizer: [
-        { label: 'Dashboard',       icon: 'bi-grid-1x2',          href: '/fitur_wajib/templates/dashboard.html' },
-        { label: 'Event Saya',      icon: 'bi-calendar-event',    href: '/organizer/events/' },
-        { label: 'Manajemen Venue', icon: 'bi-building',          href: '/organizer/venue/' },
-        { label: 'Manajemen Kursi', icon: 'bi-grid-3x3',          href: '/organizer/seats/' },
-        { label: 'Kategori Tiket',  icon: 'bi-tags',              href: '/fitur_hijau/templates/ticket_category_list.html'},
-        { label: 'Manajemen Tiket', icon: 'bi-ticket-perforated', href: '/organizer/tickets/' },
-        { label: 'Semua Order',     icon: 'bi-cart-check',        href: '/organizer/orders/' },
-        { label: 'Tiket (Aset)',    icon: 'bi-collection',        href: '/organizer/asset-tickets/' },
-        { label: 'Order (Aset)',    icon: 'bi-receipt',           href: '/organizer/asset-orders/' },
-        { label: 'Artis',           icon: 'bi-people',            href: '/fitur_hijau/templates/artist_list.html' }, // <-- SUDAH DITAMBAHKAN
-        { label: 'Profile',         icon: 'bi-person-circle',     href: '/organizer/profile/' },
-      ],
-
-      customer: [
-        { label: 'Dashboard',  icon: 'bi-grid-1x2',          href: '/fitur_wajib/templates/dashboard.html' },
-        { label: 'Tiket Saya', icon: 'bi-ticket',            href: '/customer/tickets/' },
-        { label: 'Pesanan',    icon: 'bi-bag-check',         href: '/customer/orders/' },
-        { label: 'Cari Event', icon: 'bi-search',            href: '/customer/search/' },
-        { label: 'Promosi',    icon: 'bi-megaphone',         href: '/customer/promotions/' },
-        { label: 'Venue',      icon: 'bi-geo-alt',           href: '/customer/venues/' },
-        { label: 'Artis',      icon: 'bi-people',            href: '/fitur_hijau/templates/artist_list.html' },
-        { label: 'Logout',     icon: 'bi-box-arrow-right',   href: '#', isLogout: true },
-      ]
-
-    };
-
-  const ROLE_DISPLAY_NAMES = {
-    admin: 'Administrator', organizer: 'Event Organizer',
-    customer: 'Customer',  guest: 'Guest'
-  };
-
-  // RENDER SIDEBAR & TOPBAR
-  function renderSidebar(role) {
-    const menuContainer = document.getElementById('sidebarMenu');
-    const roleLabel     = document.getElementById('roleLabel');
-    const topbarRight   = document.getElementById('topbarRight');
-    const items         = ROLE_MENUS[role] || ROLE_MENUS.guest;
-
-    if (roleLabel) roleLabel.innerText = ROLE_DISPLAY_NAMES[role] || role;
-
-    topbarRight.innerHTML = '';
-
-    // Sidebar menu
-    menuContainer.innerHTML = '';
-    items.forEach(item => {
-      const li = document.createElement('li');
-      li.className = 'nav-item-custom';
-      const isActive = window.location.pathname.includes('artist') && item.label === 'Artis';
-      li.innerHTML = `
-        <a href="${item.href}" class="nav-link-custom ${item.isLogout ? 'logout-link' : ''} ${isActive ? 'active' : ''}"
-           ${item.isLogout ? 'onclick="simulateLogout(event)"' : ''}>
-          <i class="bi ${item.icon}"></i>
-          <span>${item.label}</span>
-        </a>`;
-      menuContainer.appendChild(li);
-    });
-
-    // Tampilkan/sembunyikan elemen Admin only
     const isAdmin = role === 'admin';
     document.getElementById('btnTambah').classList.toggle('d-none', !isAdmin);
     document.getElementById('thAction').classList.toggle('d-none', !isAdmin);
-
     renderTabel(daftarArtis);
-  }
+  };
+
+  renderSidebar(localStorage.getItem('role') || 'guest');
 
   // RENDER TABEL
   function renderTabel(data) {
@@ -346,7 +273,6 @@ const ROLE_MENUS = {
     const isAdmin = role === 'admin';
     const tbody   = document.getElementById('tabelArtis');
 
-    // Sort ascending by name
     const sorted = [...data].sort((a,b) => a.nama.localeCompare(b.nama));
 
     tbody.innerHTML = sorted.map((a, i) => `
@@ -376,11 +302,10 @@ const ROLE_MENUS = {
         </td>` : ''}
       </tr>`).join('');
 
-    // Update stats
     const genres = [...new Set(daftarArtis.map(a => a.genre).filter(Boolean))];
-    document.getElementById('statTotal').textContent   = daftarArtis.length;
-    document.getElementById('statGenre').textContent   = genres.length;
-    document.getElementById('statEvent').textContent   = daftarArtis.length;
+    document.getElementById('statTotal').textContent      = daftarArtis.length;
+    document.getElementById('statGenre').textContent      = genres.length;
+    document.getElementById('statEvent').textContent      = daftarArtis.length;
     document.getElementById('jumlahDitemukan').textContent = `${data.length} artis ditemukan`;
   }
 
@@ -465,34 +390,6 @@ const ROLE_MENUS = {
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 3000);
   }
-
-  // ROLE & DARK MODE
-  function updateRole(newRole) {
-    localStorage.setItem('role', newRole);
-    renderSidebar(newRole);
-  }
-
-  function simulateLogout(event) {
-    event.preventDefault();
-    localStorage.removeItem('role');
-    renderSidebar('guest');
-  }
-
-  function toggleDarkMode() {
-    const html = document.documentElement;
-    const icon = document.getElementById('themeIcon');
-    const isDark = html.getAttribute('data-bs-theme') === 'dark';
-    html.setAttribute('data-bs-theme', isDark ? 'light' : 'dark');
-    icon.className = isDark ? 'bi bi-moon-stars' : 'bi bi-sun';
-    localStorage.setItem('theme', isDark ? 'light' : 'dark');
-  }
-
-  // INIT
-  const savedRole  = localStorage.getItem('role')  || 'guest';
-  const savedTheme = localStorage.getItem('theme') || 'light';
-  document.documentElement.setAttribute('data-bs-theme', savedTheme);
-  document.getElementById('themeIcon').className = savedTheme === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
-  renderSidebar(savedRole);
 
 </script>
 </body>

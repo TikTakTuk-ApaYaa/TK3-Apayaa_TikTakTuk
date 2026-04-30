@@ -6,7 +6,7 @@ const ROLE_MENUS = {
   ],
 
   admin: [
-    { label: 'Dashboard',       icon: 'bi-grid-1x2',          href: '/fitur_wajib/templates/dashboard.html' },
+    { label: 'Dashboard',       icon: 'bi-grid-1x2',           href: '/fitur_wajib/templates/dashboard.html' },
     { label: 'Manajemen Venue', icon: 'bi-building',           href: '/fitur_kuning/templates/venue.html' },
     { label: 'Manajemen Kursi', icon: 'bi-grid-3x3',           href: '/admin/seats/' },
     { label: 'Kategori Tiket',  icon: 'bi-tags',               href: '/fitur_hijau/templates/ticket_category_list.html' },
@@ -14,7 +14,7 @@ const ROLE_MENUS = {
     { label: 'Semua Order',     icon: 'bi-cart-check',         href: '/fitur_biru/templates/read_order_admin.html' },
     { label: 'Tiket (Aset)',    icon: 'bi-collection',         href: '/admin/asset-tickets/' },
     { label: 'Order (Aset)',    icon: 'bi-receipt',            href: '/admin/asset-orders/' },
-    { label: 'Profile',         icon: 'bi-person-circle',      href: '/admin/profile/' },
+    { label: 'Profile',         icon: 'bi-person-circle',      href: '../../fitur_wajib/templates/profile.html' },
   ],
 
   organizer: [
@@ -27,7 +27,7 @@ const ROLE_MENUS = {
     { label: 'Semua Order',     icon: 'bi-cart-check',         href: '/fitur_biru/templates/read_order_organizer.html' },
     { label: 'Tiket (Aset)',    icon: 'bi-collection',         href: '/organizer/asset-tickets/' },
     { label: 'Order (Aset)',    icon: 'bi-receipt',            href: '/organizer/asset-orders/' },
-    { label: 'Profile',         icon: 'bi-person-circle',      href: '/organizer/profile/' },
+    { label: 'Profile',         icon: 'bi-person-circle',      href: '../../fitur_wajib/templates/profile.html' },
   ],
 
   customer: [
@@ -63,14 +63,27 @@ function renderSidebar(role) {
   }
 
   menuContainer.innerHTML = '';
+
+  const currentFileName = window.location.pathname.split('/').pop();
+  
   items.forEach(item => {
     const li = document.createElement('li');
+
+    const isActive = item.href !== '#' && window.location.pathname.includes(item.href);
+
     li.className = 'nav-item-custom';
 
-    const onClickHandler = item.isLogout ? 'onclick="simulateLogout(event)"' : '';
+    let onClickHandler = '';
+    if (item.isLogout) {
+      onClickHandler = 'onclick="simulateLogout(event)"';
+    } else if (item.action) {
+      onClickHandler = `onclick="${item.action}; return false;"`; 
+    }
+
+    //const onClickHandler = item.isLogout ? 'onclick="simulateLogout(event)"' : '';
 
     li.innerHTML = `
-      <a href="${item.href}" class="nav-link-custom ${item.isLogout ? 'logout-link' : ''}" ${onClickHandler}>
+      <a href="${item.href}" class="nav-link-custom ${isActive ? 'active' : ''} ${item.isLogout ? 'logout-link' : ''}" ${onClickHandler}>
         <i class="bi ${item.icon}"></i>
         <span>${item.label}</span>
       </a>`;
