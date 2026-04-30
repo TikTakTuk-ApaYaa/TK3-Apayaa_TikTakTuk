@@ -1,7 +1,9 @@
 from django.shortcuts import render
 
-# Create your views here.
-from django.shortcuts import render
+
+def login_view(request):
+    """Halaman login demo untuk checkpoint frontend."""
+    return render(request, 'login.html')
 
 def pilih_role(request):
     """Halaman awal untuk memilih apakah ingin daftar sebagai Customer atau Organizer"""
