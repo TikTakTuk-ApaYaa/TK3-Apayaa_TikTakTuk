@@ -14,13 +14,16 @@ const ROLE_MENUS = {
     { label: 'Semua Order',     icon: 'bi-cart-check',         href: '/fitur_biru/templates/read_order_admin.html' },
     { label: 'Tiket (Aset)',    icon: 'bi-collection',         href: '/admin/asset-tickets/' },
     { label: 'Order (Aset)',    icon: 'bi-receipt',            href: '/admin/asset-orders/' },
+    { label: 'Semua Acara',     icon: 'bi-calendar-event',     href: '/fitur_kuning/templates/create_update_event.html' },
+    { label: 'Artis',           icon: 'bi-people',             href: '/fitur_hijau/templates/artist_list.html' },
+    { label: 'Promosi',         icon: 'bi-megaphone',          href: '/fitur_biru/templates/CRUD_promo_admin.html' },
     { label: 'Profile',         icon: 'bi-person-circle',      href: '../../fitur_wajib/templates/profile.html' },
     { label: 'Logout',          icon: 'bi-box-arrow-right',    href: '/fitur_wajib/templates/login.html', isLogout: true },
   ],
 
   organizer: [
-    { label: 'Dashboard',       icon: 'bi-grid-1x2',          href: '/fitur_wajib/templates/dashboard.html' },
-    { label: 'Event Saya',      icon: 'bi-calendar-event',    href: '/fitur_kuning/templates/create_update_event.html' },
+    { label: 'Dashboard',       icon: 'bi-grid-1x2',           href: '/fitur_wajib/templates/dashboard.html' },
+    { label: 'Event Saya',      icon: 'bi-calendar-event',     href: '/fitur_kuning/templates/create_update_event.html' },
     { label: 'Manajemen Venue', icon: 'bi-building',           href: '/fitur_kuning/templates/venue.html' },
     { label: 'Manajemen Kursi', icon: 'bi-grid-3x3',           href: '/fitur_merah/templates/seat-main.html' },
     { label: 'Kategori Tiket',  icon: 'bi-tags',               href: '/fitur_hijau/templates/ticket_category_list.html' },
