@@ -1,44 +1,46 @@
 const ROLE_MENUS = {
 
   guest: [
-    { label: 'Login',      icon: 'bi-box-arrow-in-right', href: 'login.html' },
+    { label: 'Login',      icon: 'bi-box-arrow-in-right', href: '/fitur_wajib/templates/login.html' },
     { label: 'Registrasi', icon: 'bi-person-plus',        href: 'Cpengguna_pilihRole.html' },
   ],
 
   admin: [
     { label: 'Dashboard',       icon: 'bi-grid-1x2',           href: '/fitur_wajib/templates/dashboard.html' },
     { label: 'Manajemen Venue', icon: 'bi-building',           href: '/fitur_kuning/templates/venue.html' },
-    { label: 'Manajemen Kursi', icon: 'bi-grid-3x3',           href: '/admin/seats/' },
+    { label: 'Manajemen Kursi', icon: 'bi-grid-3x3',           href: '/fitur_merah/templates/seat-main.html' },
     { label: 'Kategori Tiket',  icon: 'bi-tags',               href: '/fitur_hijau/templates/ticket_category_list.html' },
-    { label: 'Manajemen Tiket', icon: 'bi-ticket-perforated',  href: '/admin/tickets/' },
+    { label: 'Manajemen Tiket', icon: 'bi-ticket-perforated',  href: '/fitur_merah/templates/ticket-main.html' },
     { label: 'Semua Order',     icon: 'bi-cart-check',         href: '/fitur_biru/templates/read_order_admin.html' },
     { label: 'Tiket (Aset)',    icon: 'bi-collection',         href: '/admin/asset-tickets/' },
     { label: 'Order (Aset)',    icon: 'bi-receipt',            href: '/admin/asset-orders/' },
     { label: 'Profile',         icon: 'bi-person-circle',      href: '../../fitur_wajib/templates/profile.html' },
+    { label: 'Logout',          icon: 'bi-box-arrow-right',    href: '/fitur_wajib/templates/login.html', isLogout: true },
   ],
 
   organizer: [
     { label: 'Dashboard',       icon: 'bi-grid-1x2',          href: '/fitur_wajib/templates/dashboard.html' },
     { label: 'Event Saya',      icon: 'bi-calendar-event',    href: '/fitur_kuning/templates/create_update_event.html' },
     { label: 'Manajemen Venue', icon: 'bi-building',           href: '/fitur_kuning/templates/venue.html' },
-    { label: 'Manajemen Kursi', icon: 'bi-grid-3x3',           href: '/organizer/seats/' },
+    { label: 'Manajemen Kursi', icon: 'bi-grid-3x3',           href: '/fitur_merah/templates/seat-main.html' },
     { label: 'Kategori Tiket',  icon: 'bi-tags',               href: '/fitur_hijau/templates/ticket_category_list.html' },
-    { label: 'Manajemen Tiket', icon: 'bi-ticket-perforated',  href: '/organizer/tickets/' },
+    { label: 'Manajemen Tiket', icon: 'bi-ticket-perforated',  href: '/fitur_merah/templates/ticket-main.html' },
     { label: 'Semua Order',     icon: 'bi-cart-check',         href: '/fitur_biru/templates/read_order_organizer.html' },
     { label: 'Tiket (Aset)',    icon: 'bi-collection',         href: '/organizer/asset-tickets/' },
     { label: 'Order (Aset)',    icon: 'bi-receipt',            href: '/organizer/asset-orders/' },
     { label: 'Profile',         icon: 'bi-person-circle',      href: '../../fitur_wajib/templates/profile.html' },
+    { label: 'Logout',          icon: 'bi-box-arrow-right',    href: '/fitur_wajib/templates/login.html', isLogout: true },
   ],
 
   customer: [
     { label: 'Dashboard',  icon: 'bi-grid-1x2',         href: '/fitur_wajib/templates/dashboard.html' },
-    { label: 'Tiket Saya', icon: 'bi-ticket',           href: '/customer/tickets/' },
+    { label: 'Tiket Saya', icon: 'bi-ticket',           href: '/fitur_merah/templates/ticket-main.html?view=customer' },
     { label: 'Pesanan',    icon: 'bi-bag-check',        href: '/fitur_biru/templates/read_order_cust.html' },
     { label: 'Cari Event', icon: 'bi-search',           href: '/fitur_kuning/templates/read_event.html' },
     { label: 'Promosi',    icon: 'bi-megaphone',        href: '/fitur_biru/templates/read_promo_cust.html' },
     { label: 'Venue',      icon: 'bi-geo-alt',          href: '/fitur_kuning/templates/venue.html' },
     { label: 'Artis',      icon: 'bi-people',           href: '/fitur_hijau/templates/artist_list.html' },
-    { label: 'Logout',     icon: 'bi-box-arrow-right',  href: '#', isLogout: true },
+    { label: 'Logout',     icon: 'bi-box-arrow-right',  href: '/fitur_wajib/templates/login.html', isLogout: true },
   ]
 
 };
@@ -69,7 +71,8 @@ function renderSidebar(role) {
   items.forEach(item => {
     const li = document.createElement('li');
 
-    const isActive = item.href !== '#' && window.location.pathname.includes(item.href);
+    const itemPath = item.href === '#' ? '#' : new URL(item.href, window.location.origin).pathname;
+    const isActive = item.href !== '#' && window.location.pathname.includes(itemPath);
 
     li.className = 'nav-item-custom';
 
@@ -101,7 +104,7 @@ function updateRole(newRole) {
 function simulateLogout(event) {
   event.preventDefault();
   localStorage.removeItem('role');
-  renderSidebar('guest');
+  window.location.href = '/fitur_wajib/templates/navbar.html';
 }
 
 // DARK MODE
