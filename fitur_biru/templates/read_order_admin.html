@@ -476,14 +476,6 @@
 
     document.addEventListener("DOMContentLoaded", () => {
       calculateStats();
-      setTimeout(() => {
-        document.querySelectorAll('.nav-link-custom').forEach(link => {
-          const text = link.textContent.trim().toLowerCase();
-          if (text.includes('semua order') || text.includes('pesanan')) {
-            link.classList.add('active');
-          }
-        });
-      }, 100);
     });
   </script>
 </body>
