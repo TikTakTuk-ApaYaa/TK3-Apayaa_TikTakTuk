@@ -39,7 +39,7 @@ const ROLE_MENUS = {
     { label: 'Dashboard',  icon: 'bi-grid-1x2',         href: '/fitur_wajib/templates/dashboard.html' },
     { label: 'Tiket Saya', icon: 'bi-ticket',           href: '/fitur_merah/templates/ticket-main.html?view=customer' },
     { label: 'Pesanan',    icon: 'bi-bag-check',        href: '/fitur_biru/templates/read_order_cust.html' },
-    { label: 'Cari Event', icon: 'bi-search',           href: '/fitur_kuning/templates/event.html' },
+    { label: 'Cari Event', icon: 'bi-search',           href: '/fitur_kuning/templates/read_event.html' },
     { label: 'Promosi',    icon: 'bi-megaphone',        href: '/fitur_biru/templates/read_promo_cust.html' },
     { label: 'Venue',      icon: 'bi-geo-alt',          href: '/fitur_kuning/templates/venue.html' },
     { label: 'Artis',      icon: 'bi-people',           href: '/fitur_hijau/templates/artist_list.html' },

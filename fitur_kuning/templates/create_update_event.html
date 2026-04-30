@@ -75,7 +75,7 @@
 <div class="main-content">
   <header class="top-bar">
     <div>
-      <h6 class="mb-0 fw-bold" id="topBarTitle">Jelajahi Acara</h6>
+      <h6 class="mb-0 fw-bold" id="topBarTitle">Acara Saya</h6>
     </div>
     <div class="d-flex align-items-center gap-4">
       <div class="theme-toggle-btn" onclick="toggleDarkMode()">
@@ -83,13 +83,12 @@
       </div>
       <div class="dropdown dev-tool-dropdown">
         <button class="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
-          <i class="bi bi-person-gear"></i><span id="roleLabel">Admin</span>
+          <i class="bi bi-person-gear"></i><span id="roleLabel">Event Organizer</span>
         </button>
         <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
           <li><h6 class="dropdown-header">Simulasi Role</h6></li>
           <li><a class="dropdown-item" href="#" onclick="updateRole('admin')"><i class="bi bi-shield-check me-2"></i>Administrator</a></li>
-          <li><a class="dropdown-item" href="#" onclick="updateRole('organizer')"><i class="bi bi-calendar-event me-2"></i>Organizer</a></li>
-          <li><a class="dropdown-item" href="#" onclick="updateRole('customer')"><i class="bi bi-person me-2"></i>Customer</a></li>
+          <li><a class="dropdown-item" href="#" onclick="updateRole('organizer')"><i class="bi bi-calendar-event me-2"></i>Event Organizer</a></li>
         </ul>
       </div>
     </div>
@@ -100,10 +99,10 @@
 
       <div class="d-flex justify-content-between align-items-start mb-4">
         <div>
-          <h3 class="fw-bold mb-0" id="pageTitle">Jelajahi Acara</h3>
-          <p class="text-muted small mb-0" id="pageSubtitle">Temukan acara terbaik dan beli tiket favorit Anda</p>
+          <h3 class="fw-bold mb-0" id="pageTitle">Acara Saya</h3>
+          <p class="text-muted small mb-0" id="pageSubtitle">Kelola acara yang Anda selenggarakan</p>
         </div>
-        <button class="btn btn-success d-none" id="btnBuatAcara" onclick="openCreateEvent()">
+        <button class="btn btn-success" id="btnBuatAcara" onclick="openCreateEvent()">
           <i class="bi bi-plus-lg me-1"></i>Buat Acara
         </button>
       </div>
@@ -281,8 +280,7 @@
 //  SHARED CONFIG
 const ROLE_DATA = {
   admin:     { name:'System Admin', initial:'A', color:'#b45309', badgeText:'Administrator', badgeStyle:'background:rgba(245,158,11,.25);color:#fcd34d' },
-  organizer: { name:'Andi Wijaya',  initial:'A', color:'#2563eb', badgeText:'Organizer',     badgeStyle:'background:rgba(37,99,235,.25);color:#93c5fd'  },
-  customer:  { name:'Budi Santoso', initial:'B', color:'#1a7a4a', badgeText:'Customer',      badgeStyle:'background:rgba(26,122,74,.25);color:#6ee7b7'   },
+  organizer: { name:'Andi Wijaya',  initial:'A', color:'#2563eb', badgeText:'Organizer',     badgeStyle:'background:rgba(37,99,235,.25);color:#93c5fd'  }
 };
 
 
@@ -378,7 +376,9 @@ let events = [
   }
 ];
 
-let currentRole  = localStorage.getItem('role') || 'guest';
+let currentRole  = localStorage.getItem('role') || 'organizer';
+if (currentRole !== 'admin' && currentRole !== 'organizer') currentRole = 'organizer';
+
 let createArtists = [];
 let editArtists   = [];
 let catCounter    = 0;
@@ -402,20 +402,18 @@ window.updateRole = function(role) {
 //  PAGE UI (role-based)
 function updatePageUI() {
   const canManage = currentRole === 'admin' || currentRole === 'organizer';
-  document.getElementById('btnBuatAcara').classList.toggle('d-none', !canManage);
+  document.getElementById('btnBuatAcara').classList.remove('d-none'); // selalu tampil untuk admin/org
 
   if (currentRole === 'organizer') {
     document.getElementById('pageTitle').textContent    = 'Acara Saya';
     document.getElementById('pageSubtitle').textContent = 'Kelola acara yang Anda selenggarakan';
     document.getElementById('topBarTitle').textContent  = 'Acara Saya';
+    document.getElementById('roleLabel').textContent    = 'Event Organizer';
   } else if (currentRole === 'admin') {
     document.getElementById('pageTitle').textContent    = 'Semua Acara';
     document.getElementById('pageSubtitle').textContent = 'Kelola seluruh acara di platform TikTakTuk';
     document.getElementById('topBarTitle').textContent  = 'Semua Acara';
-  } else {
-    document.getElementById('pageTitle').textContent    = 'Jelajahi Acara';
-    document.getElementById('pageSubtitle').textContent = 'Temukan acara terbaik dan beli tiket favorit Anda';
-    document.getElementById('topBarTitle').textContent  = 'Jelajahi Acara';
+    document.getElementById('roleLabel').textContent    = 'Administrator';
   }
 }
 
@@ -440,7 +438,6 @@ function filterEvents() {
   const q      = document.getElementById('searchEvent').value.toLowerCase();
   const venId  = document.getElementById('filterVenue').value;
   const artist = document.getElementById('filterArtist').value;
-  const canManage = currentRole === 'admin' || currentRole === 'organizer';
 
   let list = events.filter(e => {
     // Organizer: filtered by organizer id (hanya lihat acaranya sendiri)
@@ -465,17 +462,9 @@ function filterEvents() {
     const catBadges = e.cats.slice(0,4).map(c =>
       `<span class="cat-chip">${c.name}</span>`).join('');
 
-    // ICON LOVE KHUSUS CUSTOMER (Ukuran lebih kecil & warna merah)
-    const favIcon = currentRole === 'customer' 
-      ? `<i class="bi bi-heart text-danger" 
-            style="position:absolute; top:12px; right:14px; font-size: 1.2rem; cursor:pointer; z-index:10; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));"
-            onclick="this.classList.toggle('bi-heart'); this.classList.toggle('bi-heart-fill'); event.stopPropagation();"></i>`
-      : '';
-
     return `<div class="col-md-6 col-lg-4">
       <div class="event-card h-100 d-flex flex-column">
         <div class="event-card-img">
-          ${favIcon}
           ${e.emoji}
         </div>
         <div class="event-card-body flex-grow-1">
@@ -489,25 +478,14 @@ function filterEvents() {
           <div class="d-flex flex-wrap gap-1 mt-2">${catBadges}</div>
         </div>
         <div class="event-card-footer">
-          ${currentRole === 'customer'
-            ? `<button class="btn btn-success btn-sm w-100" onclick="beliTiket('${e.id}')">
-                <i class="bi bi-ticket-perforated me-1"></i>Beli Tiket
-               </button>`
-            : `<button class="btn btn-outline-primary btn-sm flex-fill" onclick="openEditEvent('${e.id}')">
-                <i class="bi bi-pencil me-1"></i>Edit Acara
-               </button>
-               <span class="badge bg-success-subtle text-success ms-auto">Aktif</span>`
-          }
+           <button class="btn btn-outline-primary btn-sm flex-fill" onclick="openEditEvent('${e.id}')">
+            <i class="bi bi-pencil me-1"></i>Edit Acara
+           </button>
+           <span class="badge bg-success-subtle text-success ms-auto">Aktif</span>
         </div>
       </div>
     </div>`;
   }).join('')}</div>`;
-}
-
-//  BELI TIKET (Customer)
-function beliTiket(eventId) {
-  const e = events.find(x => x.id === eventId);
-  showToast(`Memilih tiket untuk: ${e.title}`, 'success');
 }
 
 //  TAG INPUT — ARTIS
