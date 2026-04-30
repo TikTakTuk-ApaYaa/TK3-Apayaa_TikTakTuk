@@ -4,6 +4,7 @@ from . import views
 app_name = 'fitur_wajib'
 
 urlpatterns = [
+    path('login/', views.login_view, name='login'),
     path('pilih-role/', views.pilih_role, name='pilih_role'),
     path('registrasi/customer/', views.registrasi_customer, name='regist_cust'),
     path('registrasi/organizer/', views.registrasi_organizer, name='regist_organizer'),
