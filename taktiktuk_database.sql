@@ -55,7 +55,7 @@ CREATE TABLE VENUE (
     address TEXT NOT NULL,
     city VARCHAR(100) NOT NULL,
     is_reserved BOOLEAN NOT NULL 
-
+);
 
 -- 7. Tabel SEAT
 CREATE TABLE SEAT (
