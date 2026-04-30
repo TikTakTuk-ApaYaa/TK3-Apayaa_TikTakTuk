@@ -16,3 +16,7 @@ def registrasi_customer(request):
 def registrasi_organizer(request):
     """Halaman form pendaftaran khusus untuk Event Organizer"""
     return render(request, 'Cpengguna_registOrganizer.html')
+
+def registrasi_administrator(request):
+    """Halaman form pendaftaran khusus untuk Event Organizer"""
+    return render(request, 'Cpengguna_registAdministrator.html')
