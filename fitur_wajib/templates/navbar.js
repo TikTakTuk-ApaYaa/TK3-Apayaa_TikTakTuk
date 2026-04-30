@@ -23,7 +23,7 @@ const ROLE_MENUS = {
 
   organizer: [
     { label: 'Dashboard',       icon: 'bi-grid-1x2',           href: '/fitur_wajib/templates/dashboard.html' },
-    { label: 'Event Saya',      icon: 'bi-calendar-event',     href: '/fitur_kuning/templates/event.html' },
+    { label: 'Event Saya',      icon: 'bi-calendar-event',     href: '/fitur_kuning/templates/create_update_event.html' },
     { label: 'Manajemen Venue', icon: 'bi-building',           href: '/fitur_kuning/templates/venue.html' },
     { label: 'Manajemen Kursi', icon: 'bi-grid-3x3',           href: '/fitur_merah/templates/seat-main.html' },
     { label: 'Kategori Tiket',  icon: 'bi-tags',               href: '/fitur_hijau/templates/ticket_category_list.html' },
