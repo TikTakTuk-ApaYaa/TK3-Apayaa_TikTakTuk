@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="id" data-bs-theme="light">
 <head>
@@ -513,7 +514,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../../fitur_wajib/templates/navbar.js"></script>
+    <script src="{% static 'js/navbar.js' %}?v=123"></script>
     <script>
         // SHARED CONFIG 
         const ROLE_DATA = {
@@ -734,7 +735,7 @@
 
         // BELI TIKET (Customer) 
         function beliTiket(eventId) {
-            window.location.href = '../../fitur_biru/templates/create_order.html';
+            window.location.href = '/order/create/';
         }
 
         // TAG INPUT — ARTIS 

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="id" data-bs-theme="light">
 <head>
@@ -290,17 +291,20 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<script src="../../fitur_wajib/templates/navbar.js"></script>
+<script src="{% static 'js/navbar.js' %}?v=123"></script>
 
 <script>
-//  DUMMY DATA VENUES
 let venues = [
-  { id:'50000000-0000-0000-0000-000000000001', name:'Gelora Bung Karno', address:'Jl. Pintu Satu Senayan', city:'Jakarta', capacity:77000, reserved:true },
-  { id:'50000000-0000-0000-0000-000000000002', name:'Istora Senayan', address:'Kompleks Olahraga GBK', city:'Jakarta', capacity:7000, reserved:true },
-  { id:'50000000-0000-0000-0000-000000000003', name:'JIExpo Kemayoran', address:'Arena JIExpo Kemayoran', city:'Jakarta', capacity:15000, reserved:false },
-  { id:'50000000-0000-0000-0000-000000000004', name:'Sentul International Convention Center', address:'Jl. Jend. Sudirman, Sentul', city:'Bogor', capacity:10000, reserved:true },
-  { id:'50000000-0000-0000-0000-000000000005', name:'BCC Bandung', address:'Jl. Soekarno Hatta', city:'Bandung', capacity:5000, reserved:false }
+  {% for v in venues %}
+  { 
+    id: '{{ v.venue_id }}', 
+    name: '{{ v.venue_name }}', 
+    address: '{{ v.address }}', 
+    city: '{{ v.city }}', 
+    capacity: {{ v.capacity }}, 
+    reserved: {% if v.is_reserved %}true{% else %}false{% endif %} 
+  },
+  {% endfor %}
 ];
 
 let currentRole = localStorage.getItem('role') || 'admin';

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="id" data-bs-theme="light">
 <head>
@@ -126,7 +127,7 @@
               <h3 class="fw-bold mb-0">System Console</h3>
               <p class="text-muted small mb-0">Pantau dan kelola platform TikTakTuk</p>
             </div>
-            <button class="btn btn-success btn-sm" onclick="window.location.href='../../fitur_biru/templates/CRUD_promo_admin.html'">
+            <button class="btn btn-success btn-sm" onclick="window.location.href='/promo/admin/'">
               <i class="bi bi-tag me-1"></i>Promosi
             </button>
           </div>
@@ -201,7 +202,7 @@
                   <div class="inline-stat"><span>Total Venue Terdaftar</span><strong>5 Lokasi</strong></div>
                   <div class="inline-stat"><span>Reserved Seating</span><strong>3 Venue</strong></div>
                   <div class="inline-stat"><span>Kapasitas Terbesar</span><strong>77,000 Kursi</strong></div>
-                  <button class="btn btn-outline-success btn-sm w-100 mt-3" onclick="window.location.href='../../fitur_kuning/templates/venue.html'">
+                  <button class="btn btn-outline-success btn-sm w-100 mt-3" onclick="window.location.href='/venue/'">
                     Kelola Venue <i class="bi bi-arrow-right ms-1"></i>
                   </button>
                 </div>
@@ -217,7 +218,7 @@
                   <div class="inline-stat"><span>Promo Persentase</span><strong>3 Aktif</strong></div>
                   <div class="inline-stat"><span>Promo Potongan Nominal</span><strong>3 Aktif</strong></div>
                   <div class="inline-stat"><span>Total Penggunaan</span><strong>5 Kali</strong></div>
-                  <button class="btn btn-outline-warning btn-sm w-100 mt-3" onclick="window.location.href='../../fitur_biru/templates/CRUD_promo_admin.html'">
+                  <button class="btn btn-outline-warning btn-sm w-100 mt-3" onclick="window.location.href='/promo/admin/'">
                     Kelola Promosi <i class="bi bi-arrow-right ms-1"></i>
                   </button>
                 </div>
@@ -234,10 +235,10 @@
               <p class="text-muted small mb-0">Kelola 2 acara aktif Anda</p>
             </div>
             <div class="d-flex gap-2">
-              <button class="btn btn-outline-secondary btn-sm" onclick="window.location.href='../../fitur_kuning/templates/venue.html'">
+              <button class="btn btn-outline-secondary btn-sm" onclick="window.location.href='/venue/'">
                 <i class="bi bi-building me-1"></i>Venue
               </button>
-              <button class="btn btn-success btn-sm" onclick="window.location.href='../../fitur_kuning/templates/event.html'">
+              <button class="btn btn-success btn-sm" onclick="window.location.href='/event/'">
                 <i class="bi bi-calendar-plus me-1"></i>Kelola Acara
               </button>
             </div>
@@ -305,10 +306,10 @@
           <div class="card section-card shadow-sm">
             <div class="card-header d-flex justify-content-between align-items-center">
               <span><i class="bi bi-bar-chart me-2 text-success"></i>Performa Acara</span>
-              <a href="../../fitur_kuning/templates/event.html" class="text-success text-decoration-none" style="font-size:.85rem">Lihat Semua</a>
+              <a href="/event/" class="text-success text-decoration-none" style="font-size:.85rem">Lihat Semua</a>
             </div>
             <div class="card-body">
-              <div class="perf-item" style="cursor: pointer; transition: 0.2s;" onclick="window.location.href='../../fitur_kuning/templates/event.html'" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+              <div class="perf-item" style="cursor: pointer; transition: 0.2s;" onclick="window.location.href='/event/'" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
                 <span class="perf-emoji">🎵</span>
                 <div class="perf-info">
                   <strong>Coldplay: Music of the Spheres <span class="badge bg-success ms-1" style="font-size:.65rem">LIVE</span></strong>
@@ -316,7 +317,7 @@
                 </div>
                 <i class="bi bi-chevron-right text-muted"></i>
               </div>
-              <div class="perf-item" style="cursor: pointer; transition: 0.2s;" onclick="window.location.href='../../fitur_kuning/templates/event.html'" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+              <div class="perf-item" style="cursor: pointer; transition: 0.2s;" onclick="window.location.href='/event/'" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
                 <span class="perf-emoji">🎸</span>
                 <div class="perf-info">
                   <strong>Dewa 19: 30 Tahun Berkarya <span class="badge bg-success ms-1" style="font-size:.65rem">LIVE</span></strong>
@@ -335,7 +336,7 @@
               <h3 class="fw-bold mb-0">Peter Parker</h3>
               <p class="text-muted small mb-0">2 acara menarik menunggu Anda</p>
             </div>
-            <button class="btn btn-success btn-sm" onclick="window.location.href='../../fitur_kuning/templates/event.html'">
+            <button class="btn btn-success btn-sm" onclick="window.location.href='/event/'">
               <i class="bi bi-search me-1"></i>Cari Tiket
             </button>
           </div>
@@ -402,15 +403,15 @@
           <div class="card section-card shadow-sm">
             <div class="card-header d-flex justify-content-between align-items-center">
               <span><i class="bi bi-ticket-perforated me-2 text-success"></i>Tiket Mendatang</span>
-              <a href="../../fitur_merah/templates/ticket-main.html" class="text-success text-decoration-none" style="font-size:.85rem">Lihat Semua</a>
+              <a href="/tickets/" class="text-success text-decoration-none" style="font-size:.85rem">Lihat Semua</a>
             </div>
             <div class="card-body">
-              <div class="ticket-card green" style="cursor: pointer; transition: 0.2s;" onclick="window.location.href='../../fitur_kuning/templates/event.html'" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+              <div class="ticket-card green" style="cursor: pointer; transition: 0.2s;" onclick="window.location.href='/event/'" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
                 <div class="tc-title">Coldplay: Music of the Spheres</div>
                 <div class="tc-meta">📅 15 Nov 2026 · 19:30 &nbsp;|&nbsp; 📍 Gelora Bung Karno &nbsp;|&nbsp; 🎫 Ultimate Experience</div>
                 <div class="tc-code">TCK-COLD-001 &nbsp;·&nbsp; <span class="badge" style="background:rgba(255,255,255,.2);font-size:.65rem">VALID</span></div>
               </div>
-              <div class="ticket-card blue" style="cursor: pointer; transition: 0.2s;" onclick="window.location.href='../../fitur_kuning/templates/event.html'" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+              <div class="ticket-card blue" style="cursor: pointer; transition: 0.2s;" onclick="window.location.href='/event/'" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
                 <div class="tc-title">Konser Monokrom Tulus</div>
                 <div class="tc-meta">📅 20 Ags 2026 · 20:00 &nbsp;|&nbsp; 📍 Istora Senayan &nbsp;|&nbsp; 🎫 VIP A</div>
                 <div class="tc-code">TCK-TUL-001 &nbsp;·&nbsp; <span class="badge" style="background:rgba(255,255,255,.2);font-size:.65rem">VALID</span></div>
@@ -426,8 +427,8 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="navbar.js"></script>
-<script src="dashboard.js"></script>
+<script src="{% static 'js/navbar.js' %}?v=1"></script>
+<script src="{% static 'js/dashboard.js' %}?v=1"></script>
 
 </body>
 </html>

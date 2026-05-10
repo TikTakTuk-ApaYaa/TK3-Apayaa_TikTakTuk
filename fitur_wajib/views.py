@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 
-def login_view(request):
+def login(request):
     """Halaman login demo untuk checkpoint frontend."""
     return render(request, 'login.html')
 
@@ -20,3 +20,9 @@ def registrasi_organizer(request):
 def registrasi_administrator(request):
     """Halaman form pendaftaran khusus untuk Event Organizer"""
     return render(request, 'Cpengguna_registAdministrator.html')
+
+def dashboard(request):
+    return render(request, 'dashboard.html')
+
+def profile(request):
+    return render(request, 'profile.html')
