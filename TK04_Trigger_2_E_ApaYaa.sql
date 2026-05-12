@@ -1,14 +1,6 @@
--- ================================================================
--- TRIGGER FITUR KUNING (No. 2 dari daftar trigger)
--- Trigger 1: Cegah duplikasi nama venue di kota yang sama (ignore case)
--- Trigger 2: Cegah penghapusan venue yg masih punya event aktif
--- ================================================================
-
 SET search_path TO tiktaktuk;
 
--- ---------------------------------------------------------------
 -- TRIGGER 1: Cegah duplikasi nama venue di kota yang sama
--- ---------------------------------------------------------------
 CREATE OR REPLACE FUNCTION tiktaktuk.fn_cek_duplikasi_venue()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -37,9 +29,7 @@ CREATE TRIGGER trg_cek_duplikasi_venue
     EXECUTE FUNCTION tiktaktuk.fn_cek_duplikasi_venue();
 
 
--- ---------------------------------------------------------------
 -- TRIGGER 2: Cegah penghapusan venue yang masih punya event aktif
--- ---------------------------------------------------------------
 CREATE OR REPLACE FUNCTION tiktaktuk.fn_cek_venue_event_aktif()
 RETURNS TRIGGER AS $$
 DECLARE
