@@ -1,18 +1,8 @@
--- ============================================================
---  TK04 — TRIGGER 4 (KELOMPOK FITUR HIJAU)
---  Validasi Promotion saat digunakan ke sebuah Order
---  Schema: tiktaktuk
--- ============================================================
-
 SET search_path TO tiktaktuk;
 
--- ── Hapus function lama kalau ada ──────────────────────────
 DROP FUNCTION IF EXISTS sp_sisa_kuota_event(UUID) CASCADE;
 DROP FUNCTION IF EXISTS fn_validate_promotion_on_order() CASCADE;
 
--- ──────────────────────────────────────────────────────────
---  STORED PROCEDURE: Tampilkan sisa kuota tiket per event
--- ──────────────────────────────────────────────────────────
 CREATE OR REPLACE FUNCTION sp_sisa_kuota_event(p_event_id UUID)
 RETURNS TABLE (
     category_id   UUID,
@@ -47,10 +37,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-
--- ──────────────────────────────────────────────────────────
---  TRIGGER FUNCTION: Validasi promotion sebelum masuk order
--- ──────────────────────────────────────────────────────────
 CREATE OR REPLACE FUNCTION fn_validate_promotion_on_order()
 RETURNS TRIGGER AS $$
 DECLARE
