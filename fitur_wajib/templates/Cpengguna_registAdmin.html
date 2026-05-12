@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daftar Penyelenggara - TikTakTuk</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { 
+      background: #e9f1ff; 
+      font-family: 'Inter', sans-serif; 
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 40px 0;
+    }
+    .main-card { 
+      width: 100%;
+      max-width: 480px; 
+      border-radius: 20px; 
+      border: none; 
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      margin: auto;
+    }
+    .logo-box {
+      background-color: #2b59ff;
+      color: white;
+      width: 45px;
+      height: 45px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 15px;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+    .form-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    .form-control {
+      border-radius: 8px;
+      padding: 10px 15px;
+      border: 1px solid #dee2e6;
+    }
+    .form-control::placeholder {
+      color: #adb5bd;
+      font-size: 0.9rem;
+    }
+    .btn-dark {
+      background-color: #1a1a1a;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+    .btn-dark:hover {
+      background-color: #333;
+    }
+    .back-link {
+      color: #2b59ff;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .error-text {
+      color: #dc3545;
+      font-size: 0.75rem;
+      display: none;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container d-flex justify-content-center">
+    <div class="card main-card p-4 p-md-5">
+      <div class="text-center mb-4">
+        <div class="logo-box">TT</div>
+        <h3 class="fw-bold mb-1">TikTakTuk</h3>
+        <p class="text-muted small">Daftar untuk Memulai</p>
+      </div>
+
+      <div class="text-center mb-4">
+        <a href="Cpengguna_pilihRole.html" class="back-link">← Kembali</a>
+      </div>
+
+      <h5 class="fw-bold mb-1">Daftar sebagai Administrator</h5>
+      <p class="text-muted small mb-4">Buat akun baru untuk memulai pengalaman Anda</p>
+
+      <form id="formRegister" action="/fitur_wajib/templates/login.html" onsubmit="return validateForm()">
+        <div class="mb-3">
+          <label class="form-label">Username</label>
+          <input type="text" class="form-control" placeholder="Pilih Username" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <input type="text" class="form-control" placeholder="Minimal 6 karakter" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Konfirmasi Password</label>
+          <input type="text" class="form-control" placeholder="Konfirmasi password" required>
+        </div>
+
+        <div class="form-check mb-4">
+          <input class="form-check-input" type="checkbox" id="terms" required>
+          <label class="form-check-label small text-muted" for="terms">
+            Saya setuju dengan <a href="#" class="text-decoration-none">Syarat & Ketentuan</a>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-dark w-100">Daftar</button>
+      </form>
+
+      <div class="text-center mt-4">
+        <p class="small text-muted">
+          Sudah punya akun? <a href="login.html" class="text-primary text-decoration-none fw-bold">Login di sini</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function validateForm() {
+      const pass = document.getElementById('password').value;
+      const confirmPass = document.getElementById('confirm_password').value;
+      const errorLabel = document.getElementById('pwError');
+
+      if (pass !== confirmPass) {
+        errorLabel.style.display = 'block';
+        document.getElementById('confirm_password').style.borderColor = '#dc3545';
+        return false; // Gagal kirim
+      }
+      
+      errorLabel.style.display = 'none';
+      return true; // Berhasil kirim
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="id" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Daftar Artis - TikTakTuk</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+  <style>
+    :root { --sidebar-width: 260px; --primary-green: #1a7a4a; --transition-speed: 0.3s; }
+    body { font-family: 'Inter', sans-serif; background-color: var(--bs-body-bg); transition: background-color var(--transition-speed), color var(--transition-speed); }
+    .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; left: 0; top: 0; background: #111827; color: white; transition: all var(--transition-speed); z-index: 1000; border-right: 1px solid rgba(255,255,255,0.1); overflow-y: auto; }
+    [data-bs-theme="dark"] .sidebar { background: #000; }
+    .sidebar-header { padding: 1.5rem; font-weight: 800; font-size: 1.25rem; color: var(--primary-green); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .nav-list { list-style: none; padding: 1rem; margin: 0; }
+    .nav-item-custom { margin-bottom: 4px; }
+    .nav-link-custom { display: flex; align-items: center; gap: 12px; padding: 0.75rem 1rem; color: #9ca3af; text-decoration: none; border-radius: 8px; font-size: 0.875rem; font-weight: 500; transition: all 0.2s; }
+    .nav-link-custom:hover { background: rgba(255,255,255,0.05); color: white; }
+    .nav-link-custom.active { background: var(--primary-green); color: white; }
+    .nav-link-custom.logout-link { color: #f87171; }
+    .nav-link-custom.logout-link:hover { background: rgba(248,113,113,0.1); color: #f87171; }
+    .main-content { margin-left: var(--sidebar-width); padding: 0; min-height: 100vh; }
+    .top-bar { height: 70px; background: var(--bs-body-bg); border-bottom: 1px solid var(--bs-border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; position: sticky; top: 0; z-index: 999; }
+    .dev-tool-dropdown .dropdown-toggle::after { display: none; }
+    .theme-toggle-btn { cursor: pointer; font-size: 1.2rem; color: var(--bs-secondary-color); transition: color 0.2s; }
+    .theme-toggle-btn:hover { color: var(--primary-green); }
+    .avatar-circle { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #fff; }
+    .genre-badge { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 600; }
+    @media (max-width: 992px) { .sidebar { left: -100%; } .main-content { margin-left: 0; } }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="bg-white text-success rounded-2 px-2 py-1" style="font-size:14px;">TT</div>
+    <span>TikTakTuk</span>
+  </div>
+  <ul class="nav-list" id="sidebarMenu"></ul>
+</aside>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+
+  <!-- TOP BAR -->
+  <header class="top-bar">
+    <h6 class="mb-0 fw-bold">Daftar Artis</h6>
+    <div class="d-flex align-items-center gap-3">
+      <div class="theme-toggle-btn" onclick="toggleDarkMode()">
+        <i id="themeIcon" class="bi bi-moon-stars"></i>
+      </div>
+      <div class="dropdown dev-tool-dropdown">
+        <button class="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+          <i class="bi bi-eye"></i><span id="roleLabel">Guest</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+          <li><h6 class="dropdown-header">Switch Role</h6></li>
+          <li><a class="dropdown-item" href="#" onclick="updateRole('admin')"><i class="bi bi-shield-check me-2"></i>Administrator</a></li>
+          <li><a class="dropdown-item" href="#" onclick="updateRole('organizer')"><i class="bi bi-calendar-event me-2"></i>Event Organizer</a></li>
+          <li><a class="dropdown-item" href="#" onclick="updateRole('customer')"><i class="bi bi-person me-2"></i>Customer</a></li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <!-- KONTEN -->
+  <div class="p-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h4 class="fw-bold mb-1">Daftar Artis</h4>
+        <p class="text-muted mb-0">Kelola artis yang ada di platform TikTakTuk</p>
+      </div>
+      <button class="btn btn-success d-none" id="btnTambah"
+              data-bs-toggle="modal" data-bs-target="#modalTambah">
+        <i class="bi bi-plus-lg me-1"></i>Tambah Artis
+      </button>
+    </div>
+
+    <!-- Alert error global -->
+    <div class="alert alert-danger d-none mb-3" id="alertError" role="alert">
+      <i class="bi bi-exclamation-triangle me-2"></i>
+      <span id="alertErrorMsg"></span>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body">
+            <p class="text-muted small mb-1">TOTAL ARTIS</p>
+            <h3 class="fw-bold mb-0" id="statTotal">-</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body">
+            <p class="text-muted small mb-1">GENRE</p>
+            <h3 class="fw-bold mb-0" id="statGenre">-</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body">
+            <p class="text-muted small mb-1">TAMPIL DI EVENT</p>
+            <h3 class="fw-bold mb-0" id="statEvent">-</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-body">
+        <div class="row g-2 align-items-center">
+          <div class="col-md-8">
+            <div class="input-group">
+              <span class="input-group-text bg-transparent"><i class="bi bi-search text-muted"></i></span>
+              <input type="text" class="form-control border-start-0" id="searchInput" placeholder="Cari nama atau genre..."/>
+            </div>
+          </div>
+          <div class="col-md-4 text-muted small" id="jumlahDitemukan">Memuat...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabel -->
+    <div class="card border-0 shadow-sm">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th class="ps-4">ARTIST ID</th>
+                <th>NAMA ARTIS</th>
+                <th>GENRE</th>
+                <th class="d-none" id="thAction">AKSI</th>
+              </tr>
+            </thead>
+            <tbody id="tabelArtis">
+              <tr><td colspan="4" class="text-center py-4 text-muted">
+                <div class="spinner-border spinner-border-sm me-2"></div>Memuat data...
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- MODAL TAMBAH -->
+<div class="modal fade" id="modalTambah" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold">Tambah Artis Baru</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger d-none" id="errTambah"></div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">NAMA ARTIS <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="inputNama" placeholder="cth. Fourtwnty"/>
+          <div class="text-danger small d-none mt-1" id="errorNamaTambah">Nama artis wajib diisi</div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">GENRE</label>
+          <input type="text" class="form-control" id="inputGenre" placeholder="cth. Indie Folk"/>
+        </div>
+      </div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+        <button class="btn btn-success" id="btnSimpanTambah" onclick="tambahArtis()">
+          <i class="bi bi-plus-lg me-1"></i>Tambah Artis
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDIT -->
+<div class="modal fade" id="modalEdit" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold">Edit Artis</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger d-none" id="errEdit"></div>
+        <input type="hidden" id="editId"/>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">NAMA ARTIS <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="editNama"/>
+          <div class="text-danger small d-none mt-1" id="errorNamaEdit">Nama artis wajib diisi</div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">GENRE</label>
+          <input type="text" class="form-control" id="editGenre"/>
+        </div>
+      </div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+        <button class="btn btn-success" id="btnSimpanEdit" onclick="simpanEdit()">Simpan Perubahan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL HAPUS -->
+<div class="modal fade" id="modalHapus" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold text-danger">Hapus Artis</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger d-none" id="errHapus"></div>
+        <p class="text-muted small mb-2">Apakah Anda yakin ingin menghapus artis ini? Tindakan ini tidak dapat dibatalkan.</p>
+        <div class="bg-light rounded p-2">
+          <p class="mb-1 small"><span class="text-muted">Artist ID:</span> <code id="hapusId" class="small"></code></p>
+          <p class="mb-0 fw-bold" id="hapusNama"></p>
+        </div>
+      </div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+        <button class="btn btn-danger" id="btnKonfirmasiHapus" onclick="konfirmasiHapus()">
+          <i class="bi bi-trash me-1"></i>Hapus
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- navbar.js: -->
+<script src="/static/js/navbar.js"></script>
+
+<script>
+  //  Konfigurasi URL API (sesuai urls.py Django)
+  const API_ARTISTS = '/api/artists/';
+
+  //  State
+  let daftarArtis = [];
+  let idHapus = null;
+  const WARNA = ['#1a7a4a','#0a3880','#856404','#7c3aed','#b91c1c','#0e7490','#92400e','#065f46'];
+
+  //  Override renderSidebar untuk kontrol tombol
+  const _renderSidebar = renderSidebar;
+  renderSidebar = function(role) {
+    _renderSidebar(role);
+    const isAdmin = role === 'admin';
+    document.getElementById('btnTambah').classList.toggle('d-none', !isAdmin);
+    document.getElementById('thAction').classList.toggle('d-none', !isAdmin);
+    renderTabel(daftarArtis);
+  };
+
+  //  Load data dari API
+  async function loadArtists(q = '') {
+    try {
+      const url = q ? `${API_ARTISTS}?q=${encodeURIComponent(q)}` : API_ARTISTS;
+      const res  = await fetch(url);
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || 'Gagal memuat data artis.');
+
+      daftarArtis = data.artists;
+      updateStats(data.artists, data.total);
+      renderTabel(data.artists);
+    } catch (err) {
+      tampilkanAlertGlobal(err.message);
+    }
+  }
+
+  function updateStats(artists, total) {
+    const genres = [...new Set(artists.map(a => a.genre).filter(Boolean))];
+    const withEvents = artists.filter(a => a.event_count > 0).length;
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statGenre').textContent = genres.length;
+    document.getElementById('statEvent').textContent = withEvents;
+  }
+
+  //  Render tabel
+  function renderTabel(data) {
+    const role    = localStorage.getItem('role') || 'guest';
+    const isAdmin = role === 'admin';
+    const tbody   = document.getElementById('tabelArtis');
+
+    if (data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-muted">Tidak ada artis ditemukan.</td></tr>';
+      document.getElementById('jumlahDitemukan').textContent = '0 artis ditemukan';
+      return;
+    }
+
+    tbody.innerHTML = data.map((a, i) => `
+      <tr>
+        <td class="ps-4"><code class="small text-muted">${a.id}</code></td>
+        <td>
+          <div class="d-flex align-items-center gap-3">
+            <div class="avatar-circle" style="background:${WARNA[i % WARNA.length]}">
+              ${a.name.charAt(0)}
+            </div>
+            <span class="fw-semibold">${escapeHtml(a.name)}</span>
+          </div>
+        </td>
+        <td>
+          <span class="genre-badge bg-success bg-opacity-10 text-success">
+            ${escapeHtml(a.genre || '-')}
+          </span>
+        </td>
+        ${isAdmin ? `
+        <td>
+          <button class="btn btn-sm btn-outline-primary me-1" onclick="bukaEdit('${a.id}', '${escapeAttr(a.name)}', '${escapeAttr(a.genre)}')">
+            <i class="bi bi-pencil me-1"></i>Update
+          </button>
+          <button class="btn btn-sm btn-outline-danger" onclick="bukaHapus('${a.id}', '${escapeAttr(a.name)}')">
+            <i class="bi bi-trash me-1"></i>Delete
+          </button>
+        </td>` : ''}
+      </tr>`).join('');
+
+    document.getElementById('jumlahDitemukan').textContent = `${data.length} artis ditemukan`;
+  }
+
+  //  Search (debounced)
+  let searchTimer;
+  document.getElementById('searchInput').addEventListener('input', function() {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => loadArtists(this.value.trim()), 400);
+  });
+
+  //  TAMBAH ARTIS
+  async function tambahArtis() {
+    const nama  = document.getElementById('inputNama').value.trim();
+    const genre = document.getElementById('inputGenre').value.trim();
+
+    document.getElementById('errTambah').classList.add('d-none');
+    document.getElementById('errorNamaTambah').classList.add('d-none');
+
+    if (!nama) {
+      document.getElementById('errorNamaTambah').classList.remove('d-none');
+      return;
+    }
+
+    setLoading('btnSimpanTambah', true);
+    try {
+      const res  = await fetch(API_ARTISTS, {
+        method:  'POST',
+        headers: {'Content-Type': 'application/json'},
+        body:    JSON.stringify({ name: nama, genre }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        tampilkanErrModal('errTambah', data.error || 'Gagal menambah artis.');
+        return;
+      }
+
+      bootstrap.Modal.getInstance(document.getElementById('modalTambah')).hide();
+      document.getElementById('inputNama').value  = '';
+      document.getElementById('inputGenre').value = '';
+      tampilkanToast('Artis berhasil ditambahkan!', 'success');
+      await loadArtists();
+    } catch (err) {
+      tampilkanErrModal('errTambah', 'Kesalahan jaringan: ' + err.message);
+    } finally {
+      setLoading('btnSimpanTambah', false);
+    }
+  }
+
+  //  EDIT ARTIS
+  function bukaEdit(id, nama, genre) {
+    document.getElementById('editId').value    = id;
+    document.getElementById('editNama').value  = nama;
+    document.getElementById('editGenre').value = genre || '';
+    document.getElementById('errEdit').classList.add('d-none');
+    document.getElementById('errorNamaEdit').classList.add('d-none');
+    new bootstrap.Modal(document.getElementById('modalEdit')).show();
+  }
+
+  async function simpanEdit() {
+    const id    = document.getElementById('editId').value;
+    const nama  = document.getElementById('editNama').value.trim();
+    const genre = document.getElementById('editGenre').value.trim();
+
+    document.getElementById('errEdit').classList.add('d-none');
+    document.getElementById('errorNamaEdit').classList.add('d-none');
+
+    if (!nama) {
+      document.getElementById('errorNamaEdit').classList.remove('d-none');
+      return;
+    }
+
+    setLoading('btnSimpanEdit', true);
+    try {
+      const res  = await fetch(`${API_ARTISTS}${id}/`, {
+        method:  'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body:    JSON.stringify({ name: nama, genre }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        tampilkanErrModal('errEdit', data.error || 'Gagal memperbarui artis.');
+        return;
+      }
+
+      bootstrap.Modal.getInstance(document.getElementById('modalEdit')).hide();
+      tampilkanToast('Artis berhasil diperbarui!', 'success');
+      await loadArtists(document.getElementById('searchInput').value.trim());
+    } catch (err) {
+      tampilkanErrModal('errEdit', 'Kesalahan jaringan: ' + err.message);
+    } finally {
+      setLoading('btnSimpanEdit', false);
+    }
+  }
+
+  //  HAPUS ARTIS
+  function bukaHapus(id, nama) {
+    idHapus = id;
+    document.getElementById('hapusId').textContent   = id;
+    document.getElementById('hapusNama').textContent = nama;
+    document.getElementById('errHapus').classList.add('d-none');
+    new bootstrap.Modal(document.getElementById('modalHapus')).show();
+  }
+
+  async function konfirmasiHapus() {
+    setLoading('btnKonfirmasiHapus', true);
+    try {
+      const res  = await fetch(`${API_ARTISTS}${idHapus}/`, { method: 'DELETE' });
+      const data = await res.json();
+
+      if (!res.ok) {
+        tampilkanErrModal('errHapus', data.error || 'Gagal menghapus artis.');
+        return;
+      }
+
+      bootstrap.Modal.getInstance(document.getElementById('modalHapus')).hide();
+      tampilkanToast('Artis berhasil dihapus!', 'danger');
+      await loadArtists(document.getElementById('searchInput').value.trim());
+    } catch (err) {
+      tampilkanErrModal('errHapus', 'Kesalahan jaringan: ' + err.message);
+    } finally {
+      setLoading('btnKonfirmasiHapus', false);
+    }
+  }
+
+  //  Utility
+  function tampilkanToast(pesan, tipe) {
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${tipe} position-fixed bottom-0 end-0 m-3 shadow`;
+    toast.style.zIndex = '9999';
+    toast.innerHTML = `<i class="bi bi-check-circle me-2"></i>${pesan}`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+
+  function tampilkanAlertGlobal(pesan) {
+    const el = document.getElementById('alertError');
+    document.getElementById('alertErrorMsg').textContent = pesan;
+    el.classList.remove('d-none');
+  }
+
+  function tampilkanErrModal(elId, pesan) {
+    const el = document.getElementById(elId);
+    el.textContent = pesan;
+    el.classList.remove('d-none');
+  }
+
+  function setLoading(btnId, loading) {
+    const btn = document.getElementById(btnId);
+    btn.disabled = loading;
+    if (loading) btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Menyimpan...';
+  }
+
+  function escapeHtml(str) {
+    return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function escapeAttr(str) {
+    return String(str || '').replace(/'/g, "\\'").replace(/"/g, '\\"');
+  }
+
+  //  Init
+  renderSidebar(localStorage.getItem('role') || 'guest');
+  loadArtists();
+</script>
+</body>
+</html>

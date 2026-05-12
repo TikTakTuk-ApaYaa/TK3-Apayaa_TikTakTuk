@@ -1,0 +1,320 @@
+import json
+from functools import wraps
+
+from django.db import connection
+from django.http import JsonResponse
+from django.shortcuts import redirect, render
+
+
+def login(request):
+    """Halaman login demo untuk checkpoint frontend."""
+    return render(request, 'login.html')
+
+def pilih_role(request):
+    """Halaman awal untuk memilih apakah ingin daftar sebagai Customer atau Organizer"""
+    return render(request, 'Cpengguna_pilihRole.html')
+
+def registrasi_customer(request):
+    """Halaman form pendaftaran khusus untuk Customer"""
+    return render(request, 'Cpengguna_registCust.html')
+
+def registrasi_organizer(request):
+    """Halaman form pendaftaran khusus untuk Event Organizer"""
+    return render(request, 'Cpengguna_registOrganizer.html')
+
+def registrasi_administrator(request):
+    """Halaman form pendaftaran khusus untuk Event Organizer"""
+    return render(request, 'Cpengguna_registAdministrator.html')
+
+def dashboard(request):
+    return render(request, 'dashboard.html')
+
+def profile(request):
+    return render(request, 'profile.html')
+
+# ─── helper ─────────────────────────────────────────────────────────────────
+
+def _login_required(fn):
+    @wraps(fn)
+    def wrapper(request, *args, **kwargs):
+        if not request.session.get('user_id'):
+            return redirect('fitur_wajib:login') # Disesuaikan ke URL login milik temanmu
+        return fn(request, *args, **kwargs)
+    return wrapper
+
+
+def _sc(cur):
+    # SUDAH DIUBAH KE tiktaktuk AGAR SESUAI DATABASE BARU
+    cur.execute("SET search_path TO tiktaktuk;")
+
+
+def _fmt_rp(value):
+    """Format angka ke string Rp X.XM."""
+    if not value:
+        return "Rp 0"
+    return f"Rp {float(value)/1_000_000:.1f}M"
+
+
+# ─── DASHBOARD ──────────────────────────────────────────────────────────────
+
+@_login_required
+def dashboard(request):
+    role         = request.session.get('role', 'admin')
+    organizer_id = request.session.get('organizer_id')
+    customer_id  = request.session.get('customer_id')
+    ctx          = {'role': role}
+
+    with connection.cursor() as cur:
+        _sc(cur)
+
+        # ── Admin ──────────────────────────────────────────────
+        if role == 'admin':
+            cur.execute("SELECT COUNT(*) FROM user_account")
+            ctx['total_users'] = cur.fetchone()[0]
+
+            cur.execute("SELECT COUNT(*) FROM event")
+            ctx['total_events'] = cur.fetchone()[0]
+
+            cur.execute("""
+                SELECT COALESCE(SUM(total_amount), 0) FROM "order"
+                WHERE payment_status = 'PAID'
+            """)
+            ctx['total_revenue'] = _fmt_rp(cur.fetchone()[0])
+
+            cur.execute("SELECT COUNT(*) FROM promotion")
+            ctx['total_promos'] = cur.fetchone()[0]
+
+            cur.execute("SELECT COUNT(*) FROM venue")
+            ctx['total_venues'] = cur.fetchone()[0]
+
+            cur.execute("SELECT COUNT(*) FROM venue WHERE is_reserved = TRUE")
+            ctx['reserved_venues'] = cur.fetchone()[0]
+
+            cur.execute("SELECT COALESCE(MAX(capacity), 0) FROM venue")
+            cap = cur.fetchone()[0]
+            ctx['max_capacity'] = f"{cap:,}".replace(',', '.')
+
+            cur.execute("SELECT COUNT(*) FROM promotion WHERE discount_type = 'PERCENTAGE'")
+            ctx['promo_percentage'] = cur.fetchone()[0]
+
+            cur.execute("SELECT COUNT(*) FROM promotion WHERE discount_type = 'NOMINAL'")
+            ctx['promo_nominal'] = cur.fetchone()[0]
+
+            cur.execute("SELECT COUNT(*) FROM order_promotion")
+            ctx['promo_usage'] = cur.fetchone()[0]
+
+        # ── Organizer ──────────────────────────────────────────
+        elif role == 'organizer' and organizer_id:
+            ctx['organizer_name'] = request.session.get('organizer_name', 'Organizer')
+
+            cur.execute("""
+                SELECT COUNT(*) FROM event
+                WHERE organizer_id = %s AND event_datetime >= NOW()
+            """, [str(organizer_id)])
+            ctx['active_events'] = cur.fetchone()[0]
+
+            cur.execute("""
+                SELECT COUNT(t.ticket_id)
+                FROM ticket t
+                JOIN ticket_category tc ON t.tcategory_id = tc.category_id
+                JOIN event e ON tc.tevent_id = e.event_id
+                WHERE e.organizer_id = %s
+            """, [str(organizer_id)])
+            ctx['tickets_sold'] = cur.fetchone()[0]
+
+            cur.execute("""
+                SELECT COALESCE(SUM(o.total_amount), 0)
+                FROM "order" o
+                JOIN ticket t ON t.torder_id = o.order_id
+                JOIN ticket_category tc ON t.tcategory_id = tc.category_id
+                JOIN event e ON tc.tevent_id = e.event_id
+                WHERE e.organizer_id = %s AND o.payment_status = 'PAID'
+            """, [str(organizer_id)])
+            ctx['revenue'] = _fmt_rp(cur.fetchone()[0])
+
+            cur.execute("""
+                SELECT COUNT(DISTINCT e.venue_id) FROM event e
+                WHERE e.organizer_id = %s
+            """, [str(organizer_id)])
+            ctx['venue_count'] = cur.fetchone()[0]
+
+            cur.execute("""
+                SELECT e.event_id, e.event_title, v.venue_name,
+                       COUNT(t.ticket_id) AS sold
+                FROM event e
+                JOIN venue v ON e.venue_id = v.venue_id
+                LEFT JOIN ticket_category tc ON tc.tevent_id = e.event_id
+                LEFT JOIN ticket t ON t.tcategory_id = tc.category_id
+                WHERE e.organizer_id = %s
+                GROUP BY e.event_id, e.event_title, v.venue_name
+                ORDER BY e.event_datetime
+            """, [str(organizer_id)])
+            ecols = [c[0] for c in cur.description]
+            perf  = [dict(zip(ecols, r)) for r in cur.fetchall()]
+            for ep in perf:
+                ep['event_id'] = str(ep['event_id'])
+            ctx['events_performance'] = perf
+
+        # ── Customer ───────────────────────────────────────────
+        elif role == 'customer' and customer_id:
+            ctx['full_name'] = request.session.get('full_name', 'Customer')
+
+            cur.execute("""
+                SELECT COUNT(*) FROM ticket t
+                JOIN "order" o ON t.torder_id = o.order_id
+                WHERE o.customer_id = %s AND o.payment_status = 'PAID'
+            """, [str(customer_id)])
+            ctx['active_tickets'] = cur.fetchone()[0]
+
+            cur.execute("""
+                SELECT COUNT(DISTINCT tc.tevent_id)
+                FROM ticket t
+                JOIN "order" o ON t.torder_id = o.order_id
+                JOIN ticket_category tc ON t.tcategory_id = tc.category_id
+                WHERE o.customer_id = %s AND o.payment_status = 'PAID'
+            """, [str(customer_id)])
+            ctx['events_attended'] = cur.fetchone()[0]
+
+            cur.execute("SELECT COUNT(*) FROM promotion")
+            ctx['available_promos'] = cur.fetchone()[0]
+
+            cur.execute("""
+                SELECT COALESCE(SUM(total_amount), 0) FROM "order"
+                WHERE customer_id = %s AND payment_status = 'PAID'
+            """, [str(customer_id)])
+            ctx['total_spending'] = _fmt_rp(cur.fetchone()[0])
+
+            cur.execute("""
+                SELECT t.ticket_code, e.event_title, e.event_datetime,
+                       v.venue_name, tc.category_name
+                FROM ticket t
+                JOIN "order" o ON t.torder_id = o.order_id
+                JOIN ticket_category tc ON t.tcategory_id = tc.category_id
+                JOIN event e ON tc.tevent_id = e.event_id
+                JOIN venue v ON e.venue_id = v.venue_id
+                WHERE o.customer_id = %s AND e.event_datetime >= NOW()
+                ORDER BY e.event_datetime
+                LIMIT 5
+            """, [str(customer_id)])
+            tcols   = [c[0] for c in cur.description]
+            tickets = [dict(zip(tcols, r)) for r in cur.fetchall()]
+            for t in tickets:
+                dt = t['event_datetime']
+                if dt:
+                    t['date_str'] = dt.strftime('%d %b %Y')
+                    t['time_str'] = dt.strftime('%H:%M')
+                del t['event_datetime']
+            ctx['upcoming_tickets'] = tickets
+
+    return render(request, 'dashboard.html', ctx)
+
+
+# ─── PROFILE ────────────────────────────────────────────────────────────────
+
+@_login_required
+def profile_view(request):
+    role    = request.session.get('role', 'admin')
+    user_id = request.session.get('user_id')
+    ctx     = {'role': role}
+
+    with connection.cursor() as cur:
+        _sc(cur)
+
+        cur.execute("SELECT username FROM user_account WHERE user_id = %s", [user_id])
+        row = cur.fetchone()
+        ctx['username'] = row[0] if row else ''
+
+        if role == 'customer':
+            cur.execute("""
+                SELECT full_name, phone_number FROM customer WHERE user_id = %s
+            """, [user_id])
+            row = cur.fetchone()
+            if row:
+                ctx['full_name']    = row[0] or ''
+                ctx['phone_number'] = row[1] or ''
+
+        elif role == 'organizer':
+            cur.execute("""
+                SELECT organizer_name, contact_email FROM organizer WHERE user_id = %s
+            """, [user_id])
+            row = cur.fetchone()
+            if row:
+                ctx['organizer_name'] = row[0] or ''
+                ctx['contact_email']  = row[1] or ''
+
+    return render(request, 'profile.html', ctx)
+
+
+@_login_required
+def profile_update(request):
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Method tidak diizinkan.'}, status=405)
+
+    try:
+        data    = json.loads(request.body)
+        role    = request.session.get('role')
+        user_id = request.session.get('user_id')
+
+        with connection.cursor() as cur:
+            _sc(cur)
+
+            if role == 'customer':
+                full_name    = data.get('full_name', '').strip()
+                phone_number = data.get('phone_number', '').strip()
+                if not full_name:
+                    return JsonResponse({'success': False, 'error': 'Nama lengkap wajib diisi!'})
+                cur.execute("""
+                    UPDATE customer SET full_name=%s, phone_number=%s WHERE user_id=%s
+                """, [full_name, phone_number, user_id])
+                request.session['full_name'] = full_name
+
+            elif role == 'organizer':
+                organizer_name = data.get('organizer_name', '').strip()
+                contact_email  = data.get('contact_email', '').strip()
+                if not organizer_name:
+                    return JsonResponse({'success': False, 'error': 'Nama organizer wajib diisi!'})
+                cur.execute("""
+                    UPDATE organizer SET organizer_name=%s, contact_email=%s WHERE user_id=%s
+                """, [organizer_name, contact_email, user_id])
+                request.session['organizer_name'] = organizer_name
+
+            else:
+                return JsonResponse({'success': False, 'error': 'Admin tidak dapat mengubah profil.'})
+
+        return JsonResponse({'success': True, 'message': 'Profil berhasil diperbarui!'})
+
+    except Exception as exc:
+        return JsonResponse({'success': False, 'error': str(exc)})
+
+
+@_login_required
+def profile_update_password(request):
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Method tidak diizinkan.'}, status=405)
+
+    try:
+        data    = json.loads(request.body)
+        user_id = request.session.get('user_id')
+        old_pw  = data.get('old_password', '')
+        new_pw  = data.get('new_password', '')
+        confirm = data.get('confirm_password', '')
+
+        if not all([old_pw, new_pw, confirm]):
+            return JsonResponse({'success': False, 'error': 'Semua field password wajib diisi!'})
+        if len(new_pw) < 6:
+            return JsonResponse({'success': False, 'error': 'Password baru minimal 6 karakter!'})
+        if new_pw != confirm:
+            return JsonResponse({'success': False, 'error': 'Password baru dan konfirmasi tidak cocok!'})
+
+        with connection.cursor() as cur:
+            _sc(cur)
+            cur.execute("SELECT password FROM user_account WHERE user_id = %s", [user_id])
+            row = cur.fetchone()
+            if not row or row[0] != old_pw:
+                return JsonResponse({'success': False, 'error': 'Password lama tidak sesuai!'})
+            cur.execute("UPDATE user_account SET password=%s WHERE user_id=%s", [new_pw, user_id])
+
+        return JsonResponse({'success': True, 'message': 'Password berhasil diperbarui!'})
+
+    except Exception as exc:
+        return JsonResponse({'success': False, 'error': str(exc)})
