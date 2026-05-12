@@ -125,23 +125,91 @@ def logout_view(request):
     return redirect('fitur_wajib:login')
 
 
-# ─── REGISTER (tetap pakai halaman teman) ────────────────────────────────────
+# ─── REGISTER ────────────────────────────────────────────────────────────────
 
 def pilih_role(request):
     return render(request, 'Cpengguna_pilihRole.html')
 
-
+@csrf_protect
 def registrasi_customer(request):
-    return render(request, 'Cpengguna_registCust.html')
+    error = None
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '').strip()
+        full_name = request.POST.get('full_name', '').strip()
+        phone = request.POST.get('phone_number', '').strip()
 
+        if not all([username, password, full_name]):
+            error = "Username, Password, dan Nama Lengkap wajib diisi!"
+        else:
+            try:
+                with connection.cursor() as cur:
+                    _sc(cur)
+                    u_id = str(uuid.uuid4())
+                    # 1. Insert ke USER_ACCOUNT
+                    cur.execute("INSERT INTO USER_ACCOUNT (user_id, username, password) VALUES (%s, %s, %s)", [u_id, username, password])
+                    # 2. Ambil role_id untuk customer
+                    cur.execute("SELECT role_id FROM ROLE WHERE LOWER(role_name) = 'customer'")
+                    r_id = cur.fetchone()[0]
+                    # 3. Insert ke ACCOUNT_ROLE
+                    cur.execute("INSERT INTO ACCOUNT_ROLE (role_id, user_id) VALUES (%s, %s)", [r_id, u_id])
+                    # 4. Insert ke CUSTOMER
+                    cur.execute("INSERT INTO CUSTOMER (customer_id, full_name, phone_number, user_id) VALUES (%s, %s, %s, %s)", 
+                                [str(uuid.uuid4()), full_name, phone, u_id])
+                return redirect('fitur_wajib:login')
+            except Exception as e:
+                error = _clean_db_error(e)
+    return render(request, 'Cpengguna_registCust.html', {'error': error})
 
+@csrf_protect
 def registrasi_organizer(request):
-    return render(request, 'Cpengguna_registOrganizer.html')
+    error = None
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '').strip()
+        org_name = request.POST.get('organizer_name', '').strip()
+        email = request.POST.get('contact_email', '').strip()
 
+        if not all([username, password, org_name]):
+            error = "Username, Password, dan Nama Organizer wajib diisi!"
+        else:
+            try:
+                with connection.cursor() as cur:
+                    _sc(cur)
+                    u_id = str(uuid.uuid4())
+                    cur.execute("INSERT INTO USER_ACCOUNT (user_id, username, password) VALUES (%s, %s, %s)", [u_id, username, password])
+                    cur.execute("SELECT role_id FROM ROLE WHERE LOWER(role_name) = 'organizer'")
+                    r_id = cur.fetchone()[0]
+                    cur.execute("INSERT INTO ACCOUNT_ROLE (role_id, user_id) VALUES (%s, %s)", [r_id, u_id])
+                    cur.execute("INSERT INTO ORGANIZER (organizer_id, organizer_name, contact_email, user_id) VALUES (%s, %s, %s, %s)", 
+                                [str(uuid.uuid4()), org_name, email, u_id])
+                return redirect('fitur_wajib:login')
+            except Exception as e:
+                error = _clean_db_error(e)
+    return render(request, 'Cpengguna_registOrganizer.html', {'error': error})
 
+@csrf_protect
 def registrasi_administrator(request):
-    return render(request, 'Cpengguna_registAdministrator.html')
+    error = None
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '').strip()
 
+        if not all([username, password]):
+            error = "Username dan Password wajib diisi!"
+        else:
+            try:
+                with connection.cursor() as cur:
+                    _sc(cur)
+                    u_id = str(uuid.uuid4())
+                    cur.execute("INSERT INTO USER_ACCOUNT (user_id, username, password) VALUES (%s, %s, %s)", [u_id, username, password])
+                    cur.execute("SELECT role_id FROM ROLE WHERE LOWER(role_name) = 'administrator'")
+                    r_id = cur.fetchone()[0]
+                    cur.execute("INSERT INTO ACCOUNT_ROLE (role_id, user_id) VALUES (%s, %s)", [r_id, u_id])
+                return redirect('fitur_wajib:login')
+            except Exception as e:
+                error = _clean_db_error(e)
+    return render(request, 'Cpengguna_registAdministrator.html', {'error': error})
 
 # ─── DASHBOARD ───────────────────────────────────────────────────────────────
 
