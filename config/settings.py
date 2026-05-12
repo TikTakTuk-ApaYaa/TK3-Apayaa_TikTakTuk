@@ -79,10 +79,14 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+import dj_database_url
+
 _db = dj_database_url.parse('postgresql://postgres.kmyshghsxqwwngvzyijs:tiktaktuk-apayaa@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres')
 
+# Masukkan options ke dalam _db DULU
 _db['OPTIONS'] = {'options': '-c search_path=tiktaktuk'}
 
+# Baru setelah itu, jadikan _db sebagai isi dari DATABASES
 DATABASES = {'default': _db}
 
 

@@ -19,7 +19,7 @@ def _login_required(fn):
 
 
 def _schema(cursor):
-    cursor.execute("SET search_path TO taktiktuk;")
+    cursor.execute("SET search_path TO tiktaktuk;")
 
 
 def _clean_db_error(exc):

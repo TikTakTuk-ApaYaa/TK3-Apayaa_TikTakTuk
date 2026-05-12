@@ -18,7 +18,7 @@ const ROLE_MENUS = {
     { label: 'Artis',           icon: 'bi-people',             href: '/fitur_hijau/templates/artist_list.html' },
     { label: 'Promosi',         icon: 'bi-megaphone',          href: '/fitur_biru/templates/CRUD_promo_admin.html' },
     { label: 'Profile',         icon: 'bi-person-circle',      href: '/profile/' },
-    { label: 'Logout',          icon: 'bi-box-arrow-right',    href: '/fitur_wajib/templates/login.html', isLogout: true },
+    { label: 'Logout',          icon: 'bi-box-arrow-right',    href: '/logout/', isLogout: true },
   ],
 
   organizer: [
@@ -33,7 +33,7 @@ const ROLE_MENUS = {
     { label: 'Order (Aset)',    icon: 'bi-receipt',            href: '/fitur_biru/templates/read_order_organizer.html?mode=asset' },
     { label: 'Artis',           icon: 'bi-people',             href: '/fitur_hijau/templates/artist_list.html' },
     { label: 'Profile',         icon: 'bi-person-circle',      href: '/profile/' },
-    { label: 'Logout',          icon: 'bi-box-arrow-right',    href: '/fitur_wajib/templates/login.html', isLogout: true },
+    { label: 'Logout',          icon: 'bi-box-arrow-right',    href: '/logout/', isLogout: true },
   ],
 
   customer: [
@@ -44,7 +44,7 @@ const ROLE_MENUS = {
     { label: 'Promosi',    icon: 'bi-megaphone',        href: '/fitur_biru/templates/read_promo_cust.html' },
     { label: 'Venue',      icon: 'bi-geo-alt',          href: '/venue/' },
     { label: 'Artis',      icon: 'bi-people',           href: '/fitur_hijau/templates/artist_list.html' },
-    { label: 'Logout',     icon: 'bi-box-arrow-right',  href: '/fitur_wajib/templates/login.html', isLogout: true },
+    { label: 'Logout',          icon: 'bi-box-arrow-right',    href: '/logout/', isLogout: true },
   ]
 
 };
@@ -104,7 +104,7 @@ function updateRole(newRole) {
 function simulateLogout(event) {
   event.preventDefault();
   localStorage.removeItem('role');
-  window.location.href = '/login/'; // Ubah ke /login/ atau /
+  window.location.href = '/logout/'; 
 }
 
 // DARK MODE
