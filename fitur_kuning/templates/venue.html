@@ -5,16 +5,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TikTakTuk - Manajemen Venue</title>
-
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
-
   <style>
+    /* ── Semua CSS identik dengan TK03 venue.html ── */
     :root { --sidebar-width: 260px; --primary-green: #1a7a4a; --transition-speed: 0.3s; }
-
     body { font-family: 'Inter', sans-serif; background-color: var(--bs-body-bg); transition: background-color var(--transition-speed), color var(--transition-speed); }
-
     .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; left: 0; top: 0; background: #111827; color: white; transition: all var(--transition-speed); z-index: 1000; border-right: 1px solid rgba(255,255,255,0.1); overflow-y: auto; }
     [data-bs-theme="dark"] .sidebar { background: #000; }
     .sidebar-header { padding: 1.5rem; font-weight: 800; font-size: 1.25rem; color: var(--primary-green); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
@@ -25,20 +22,16 @@
     .nav-link-custom.active { background: var(--primary-green); color: white; }
     .nav-link-custom.logout-link { color: #f87171; }
     .nav-link-custom.logout-link:hover { background: rgba(248,113,113,0.1); color: #f87171; }
-
     .main-content { margin-left: var(--sidebar-width); padding: 0; min-height: 100vh; }
     .top-bar { height: 70px; background: var(--bs-body-bg); border-bottom: 1px solid var(--bs-border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; position: sticky; top: 0; z-index: 999; }
     .dev-tool-dropdown .dropdown-toggle::after { display: none; }
     .theme-toggle-btn { cursor: pointer; font-size: 1.2rem; color: var(--bs-secondary-color); transition: color 0.2s; }
     .theme-toggle-btn:hover { color: var(--primary-green); }
-
     .stat-card { border: none; border-radius: 12px; }
     .stat-label { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--bs-secondary-color); margin-bottom: 6px; }
     .stat-value { font-size: 1.9rem; font-weight: 800; line-height: 1.1; }
-    .stat-sub   { font-size: 0.78rem; color: var(--bs-secondary-color); margin-top: 4px; }
     .stat-icon-wrap { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
-
-    .venue-card { border: 1px solid var(--bs-border-color); border-radius: 12px; padding: 1.25rem; background: var(--bs-body-bg); transition: box-shadow .2s, transform .15s; cursor: default; }
+    .venue-card { border: 1px solid var(--bs-border-color); border-radius: 12px; padding: 1.25rem; background: var(--bs-body-bg); transition: box-shadow .2s, transform .15s; }
     .venue-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.1); }
     .venue-icon-wrap { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; background: rgba(26,122,74,.1); flex-shrink: 0; }
     .venue-name { font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
@@ -47,9 +40,7 @@
     .venue-meta-item span { color: var(--bs-secondary-color); }
     .venue-meta-item strong { margin-left: 4px; }
     .venue-actions { display: flex; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--bs-border-color); }
-
     .readonly-field { background: var(--bs-tertiary-bg); border: 1px solid var(--bs-border-color); border-radius: 8px; padding: 8px 12px; color: var(--bs-secondary-color); font-size: 0.9rem; }
-
     @media (max-width: 992px) { .sidebar { left: -100%; } .main-content { margin-left: 0; } }
   </style>
 </head>
@@ -60,15 +51,12 @@
     <div class="bg-white text-success rounded-2 px-2 py-1" style="font-size:14px;">TT</div>
     <span>TikTakTuk</span>
   </div>
-  
   <ul class="nav-list mt-2" id="sidebarMenu"></ul>
 </aside>
 
 <div class="main-content">
   <header class="top-bar">
-    <div>
-      <h6 class="mb-0 fw-bold">Manajemen Venue</h6>
-    </div>
+    <div><h6 class="mb-0 fw-bold">Manajemen Venue</h6></div>
     <div class="d-flex align-items-center gap-4">
       <div class="theme-toggle-btn" onclick="toggleDarkMode()">
         <i class="bi bi-moon-stars" id="themeIcon"></i>
@@ -89,7 +77,6 @@
 
   <div class="p-4">
     <div class="container-fluid">
-
       <div class="d-flex justify-content-between align-items-start mb-4">
         <div>
           <h3 class="fw-bold mb-0">Manajemen Venue</h3>
@@ -109,7 +96,7 @@
               </div>
               <div>
                 <div class="stat-label">Total Venue</div>
-                <div class="stat-value" id="stat-total">5</div>
+                <div class="stat-value" id="stat-total">0</div>
               </div>
             </div>
           </div>
@@ -122,7 +109,7 @@
               </div>
               <div>
                 <div class="stat-label">Reserved Seating</div>
-                <div class="stat-value" id="stat-reserved">3</div>
+                <div class="stat-value" id="stat-reserved">0</div>
               </div>
             </div>
           </div>
@@ -135,7 +122,7 @@
               </div>
               <div>
                 <div class="stat-label">Total Kapasitas</div>
-                <div class="stat-value" id="stat-capacity">4,100</div>
+                <div class="stat-value" id="stat-capacity">0</div>
               </div>
             </div>
           </div>
@@ -171,11 +158,11 @@
       </div>
 
       <div id="venueList"></div>
-
     </div>
   </div>
 </div>
 
+<!-- Modal Create -->
 <div class="modal fade" id="modalCreateVenue" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -217,6 +204,7 @@
   </div>
 </div>
 
+<!-- Modal Edit -->
 <div class="modal fade" id="modalEditVenue" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -259,6 +247,7 @@
   </div>
 </div>
 
+<!-- Modal Delete -->
 <div class="modal fade" id="modalDeleteVenue" tabindex="-1">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
@@ -268,7 +257,7 @@
       </div>
       <div class="modal-body">
         <p class="mb-1">Apakah Anda yakin ingin menghapus venue</p>
-        <p class="fw-bold" id="delVenueName">"Jakarta Convention Center"</p>
+        <p class="fw-bold" id="delVenueName"></p>
         <p class="text-muted small mb-0">Tindakan ini tidak dapat dibatalkan.</p>
       </div>
       <div class="modal-footer">
@@ -281,6 +270,7 @@
   </div>
 </div>
 
+<!-- Toast -->
 <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:9999">
   <div id="liveToast" class="toast align-items-center border-0" role="alert">
     <div class="d-flex">
@@ -294,212 +284,236 @@
 <script src="{% static 'js/navbar.js' %}?v=123"></script>
 
 <script>
-let venues = [
-  {% for v in venues %}
-  { 
-    id: '{{ v.venue_id }}', 
-    name: '{{ v.venue_name }}', 
-    address: '{{ v.address }}', 
-    city: '{{ v.city }}', 
-    capacity: {{ v.capacity }}, 
-    reserved: {% if v.is_reserved %}true{% else %}false{% endif %} 
-  },
-  {% endfor %}
-];
-
-let currentRole = localStorage.getItem('role') || 'admin';
-let pendingDeleteId = null;
-
-window.updateRole = function(role) {
-  currentRole = role;
-  localStorage.setItem('role', role);
-  
-  if (typeof renderSidebar === 'function') {
-      renderSidebar(role);
-  }
-  
-  updateVenueUI();
-  populateCityFilter();
-  updateStats();
-  filterVenues();
-};
-
-//  VENUE UI (show/hide CUD buttons)
-function updateVenueUI() {
-  const canManage = currentRole === 'admin' || currentRole === 'organizer';
-  document.getElementById('btnTambahVenue').classList.toggle('d-none', !canManage);
-}
-
-//  STAT UPDATE
-function updateStats() {
-  const reserved = venues.filter(v => v.reserved).length;
-  const totalCap = venues.reduce((a, v) => a + v.capacity, 0);
-  document.getElementById('stat-total').textContent    = venues.length;
-  document.getElementById('stat-reserved').textContent = reserved;
-  document.getElementById('stat-capacity').textContent = totalCap.toLocaleString('id');
-}
-
-//  FILTER & RENDER
-function populateCityFilter() {
-  const sel  = document.getElementById('filterKota');
-  const prev = sel.value;
-  const cities = [...new Set(venues.map(v => v.city))].sort();
-  sel.innerHTML = '<option value="">Semua Kota</option>' +
-    cities.map(c => `<option value="${c}" ${prev===c?'selected':''}>${c}</option>`).join('');
-}
-
-function filterVenues() {
-  const q    = document.getElementById('searchVenue').value.toLowerCase();
-  const kota = document.getElementById('filterKota').value;
-  const type = document.getElementById('filterSeating').value;
-  const canManage = currentRole === 'admin' || currentRole === 'organizer';
-
-  const list = venues.filter(v => {
-    const matchQ = !q || v.name.toLowerCase().includes(q) || v.address.toLowerCase().includes(q);
-    const matchK = !kota || v.city === kota;
-    const matchT = !type || (type === 'reserved' ? v.reserved : !v.reserved);
-    return matchQ && matchK && matchT;
-  });
-
-  const container = document.getElementById('venueList');
-  if (!list.length) {
-    container.innerHTML = `<div class="text-center py-5 text-muted">
-      <i class="bi bi-building-x" style="font-size:3rem"></i>
-      <p class="mt-2">Tidak ada venue ditemukan</p></div>`;
-    return;
+  // ── CSRF helper ──────────────────────────────────────────────────────────
+  function getCsrf() {
+    const v = document.cookie.split(';')
+      .find(c => c.trim().startsWith('csrftoken='));
+    return v ? v.split('=')[1].trim() : '';
   }
 
-  container.innerHTML = `<div class="row g-3">${list.map(v => `
-    <div class="col-md-6 col-lg-4">
-      <div class="venue-card h-100">
-        <div class="d-flex align-items-start gap-3 mb-2">
-          <div class="venue-icon-wrap"><i class="bi bi-building text-success" style="font-size:1.3rem"></i></div>
-          <div class="flex-grow-1 min-w-0">
-            <div class="d-flex justify-content-between align-items-start gap-2">
-              <div class="venue-name">${v.name}</div>
-              <span class="badge ${v.reserved ? 'bg-primary-subtle text-primary' : 'bg-success-subtle text-success'} text-nowrap" style="font-size:.65rem">
-                ${v.reserved ? 'Reserved Seating' : 'Free Seating'}
-              </span>
+  // ── Data dari server ─────────────────────────────────────────────────────
+  // {{ venues_json }} sudah di-serialize oleh view sebagai JSON yang aman
+  let venues = {{ venues_json|safe }};
+
+  let currentRole = '{{ role }}';
+  let pendingDeleteId = null;
+
+  // override updateRole agar sinkron dengan session (tidak pakai localStorage role utama)
+  window.updateRole = function(role) {
+    currentRole = role;
+    localStorage.setItem('role', role);
+    if (typeof renderSidebar === 'function') renderSidebar(role);
+    updateVenueUI();
+    populateCityFilter();
+    updateStats();
+    filterVenues();
+  };
+
+  // ── UI helpers ───────────────────────────────────────────────────────────
+  function updateVenueUI() {
+    const canManage = currentRole === 'admin' || currentRole === 'organizer';
+    document.getElementById('btnTambahVenue').classList.toggle('d-none', !canManage);
+  }
+
+  function updateStats() {
+    const reserved = venues.filter(v => v.reserved).length;
+    const totalCap = venues.reduce((a, v) => a + v.capacity, 0);
+    document.getElementById('stat-total').textContent    = venues.length;
+    document.getElementById('stat-reserved').textContent = reserved;
+    document.getElementById('stat-capacity').textContent = totalCap.toLocaleString('id');
+  }
+
+  function populateCityFilter() {
+    const sel  = document.getElementById('filterKota');
+    const prev = sel.value;
+    const cities = [...new Set(venues.map(v => v.city))].sort();
+    sel.innerHTML = '<option value="">Semua Kota</option>' +
+      cities.map(c => `<option value="${c}" ${prev===c?'selected':''}>${c}</option>`).join('');
+  }
+
+  function filterVenues() {
+    const q    = document.getElementById('searchVenue').value.toLowerCase();
+    const kota = document.getElementById('filterKota').value;
+    const type = document.getElementById('filterSeating').value;
+    const canManage = currentRole === 'admin' || currentRole === 'organizer';
+
+    const list = venues.filter(v => {
+      const matchQ = !q || v.name.toLowerCase().includes(q) || v.address.toLowerCase().includes(q);
+      const matchK = !kota || v.city === kota;
+      const matchT = !type || (type === 'reserved' ? v.reserved : !v.reserved);
+      return matchQ && matchK && matchT;
+    });
+
+    const container = document.getElementById('venueList');
+    if (!list.length) {
+      container.innerHTML = `<div class="text-center py-5 text-muted">
+        <i class="bi bi-building-x" style="font-size:3rem"></i>
+        <p class="mt-2">Tidak ada venue ditemukan</p></div>`;
+      return;
+    }
+
+    container.innerHTML = `<div class="row g-3">${list.map(v => `
+      <div class="col-md-6 col-lg-4">
+        <div class="venue-card h-100">
+          <div class="d-flex align-items-start gap-3 mb-2">
+            <div class="venue-icon-wrap"><i class="bi bi-building text-success" style="font-size:1.3rem"></i></div>
+            <div class="flex-grow-1 min-w-0">
+              <div class="d-flex justify-content-between align-items-start gap-2">
+                <div class="venue-name">${v.name}</div>
+                <span class="badge ${v.reserved ? 'bg-primary-subtle text-primary' : 'bg-success-subtle text-success'} text-nowrap" style="font-size:.65rem">
+                  ${v.reserved ? 'Reserved Seating' : 'Free Seating'}
+                </span>
+              </div>
+              <div class="venue-addr"><i class="bi bi-geo-alt me-1"></i>${v.address}, ${v.city}</div>
             </div>
-            <div class="venue-addr"><i class="bi bi-geo-alt me-1"></i>${v.address}, ${v.city}</div>
           </div>
+          <div class="venue-meta-row">
+            <div class="venue-meta-item"><i class="bi bi-people text-muted me-1"></i><span>Kapasitas</span><strong>${v.capacity.toLocaleString('id')} Kursi</strong></div>
+            <div class="venue-meta-item"><i class="bi bi-map text-muted me-1"></i><span>Kota</span><strong>${v.city}</strong></div>
+          </div>
+          ${canManage ? `
+          <div class="venue-actions">
+            <button class="btn btn-outline-primary btn-sm flex-fill" onclick="openEditVenue('${v.id}')">
+              <i class="bi bi-pencil me-1"></i>Edit
+            </button>
+            <button class="btn btn-outline-danger btn-sm flex-fill" onclick="openDeleteVenue('${v.id}')">
+              <i class="bi bi-trash me-1"></i>Hapus
+            </button>
+          </div>` : ''}
         </div>
-        <div class="venue-meta-row">
-          <div class="venue-meta-item"><i class="bi bi-people text-muted me-1"></i><span>Kapasitas</span><strong>${v.capacity.toLocaleString('id')} Kursi</strong></div>
-          <div class="venue-meta-item"><i class="bi bi-map text-muted me-1"></i><span>Kota</span><strong>${v.city}</strong></div>
-        </div>
-        ${canManage ? `
-        <div class="venue-actions">
-          <button class="btn btn-outline-primary btn-sm flex-fill" onclick="openEditVenue('${v.id}')">
-            <i class="bi bi-pencil me-1"></i>Edit
-          </button>
-          <button class="btn btn-outline-danger btn-sm flex-fill" onclick="openDeleteVenue('${v.id}')">
-            <i class="bi bi-trash me-1"></i>Hapus
-          </button>
-        </div>` : ''}
-      </div>
-    </div>`).join('')}</div>`;
-}
+      </div>`).join('')}</div>`;
+  }
 
-//  CREATE VENUE
-function openCreateVenue() {
-  ['c-name','c-capacity','c-city','c-address'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('c-reserved').checked = false;
-  new bootstrap.Modal(document.getElementById('modalCreateVenue')).show();
-}
+  // ── CREATE ───────────────────────────────────────────────────────────────
+  function openCreateVenue() {
+    ['c-name','c-capacity','c-city','c-address'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('c-reserved').checked = false;
+    new bootstrap.Modal(document.getElementById('modalCreateVenue')).show();
+  }
 
-function saveCreateVenue() {
-  const name     = document.getElementById('c-name').value.trim();
-  const capacity = parseInt(document.getElementById('c-capacity').value);
-  const city     = document.getElementById('c-city').value.trim();
-  const address  = document.getElementById('c-address').value.trim();
-  const reserved = document.getElementById('c-reserved').checked;
+  async function saveCreateVenue() {
+    const name     = document.getElementById('c-name').value.trim();
+    const capacity = parseInt(document.getElementById('c-capacity').value);
+    const city     = document.getElementById('c-city').value.trim();
+    const address  = document.getElementById('c-address').value.trim();
+    const reserved = document.getElementById('c-reserved').checked;
 
-  if (!name || !city || !address) { showToast('Semua field wajib diisi!', 'danger'); return; }
-  if (!capacity || capacity <= 0) { showToast('Kapasitas harus berupa angka positif!', 'danger'); return; }
+    if (!name || !city || !address) { showToast('Semua field wajib diisi!', 'danger'); return; }
+    if (!capacity || capacity <= 0) { showToast('Kapasitas harus berupa angka positif!', 'danger'); return; }
 
-  venues.push({ id: 'v' + Date.now(), name, address, city, capacity, reserved });
-  bootstrap.Modal.getInstance(document.getElementById('modalCreateVenue')).hide();
-  populateCityFilter();
-  updateStats();
-  filterVenues();
-  showToast('Venue berhasil ditambahkan!', 'success');
-}
+    try {
+      const res  = await fetch('/venue/create/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrf() },
+        body: JSON.stringify({ name, capacity, city, address, reserved }),
+      });
+      const data = await res.json();
 
-//  EDIT VENUE
-function openEditVenue(id) {
-  const v = venues.find(x => x.id === id);
-  if (!v) return;
-  document.getElementById('e-id').value       = v.id;
-  document.getElementById('e-name').value     = v.name;
-  document.getElementById('e-capacity').value = v.capacity;
-  document.getElementById('e-city').value     = v.city;
-  document.getElementById('e-address').value  = v.address;
-  document.getElementById('e-reserved').checked = v.reserved;
-  new bootstrap.Modal(document.getElementById('modalEditVenue')).show();
-}
+      if (data.success) {
+        venues.push({ id: data.id, name, address, city, capacity, reserved });
+        bootstrap.Modal.getInstance(document.getElementById('modalCreateVenue')).hide();
+        populateCityFilter(); updateStats(); filterVenues();
+        showToast(data.message, 'success');
+      } else {
+        showToast(data.error, 'danger');
+      }
+    } catch { showToast('Terjadi kesalahan jaringan.', 'danger'); }
+  }
 
-function saveEditVenue() {
-  const id       = document.getElementById('e-id').value;
-  const name     = document.getElementById('e-name').value.trim();
-  const capacity = parseInt(document.getElementById('e-capacity').value);
-  const city     = document.getElementById('e-city').value.trim();
-  const address  = document.getElementById('e-address').value.trim();
-  const reserved = document.getElementById('e-reserved').checked;
+  // ── EDIT ─────────────────────────────────────────────────────────────────
+  function openEditVenue(id) {
+    const v = venues.find(x => x.id === id);
+    if (!v) return;
+    document.getElementById('e-id').value       = v.id;
+    document.getElementById('e-name').value     = v.name;
+    document.getElementById('e-capacity').value = v.capacity;
+    document.getElementById('e-city').value     = v.city;
+    document.getElementById('e-address').value  = v.address;
+    document.getElementById('e-reserved').checked = v.reserved;
+    new bootstrap.Modal(document.getElementById('modalEditVenue')).show();
+  }
 
-  if (!name || !city || !address) { showToast('Semua field wajib diisi!', 'danger'); return; }
-  if (!capacity || capacity <= 0) { showToast('Kapasitas harus berupa angka positif!', 'danger'); return; }
+  async function saveEditVenue() {
+    const id       = document.getElementById('e-id').value;
+    const name     = document.getElementById('e-name').value.trim();
+    const capacity = parseInt(document.getElementById('e-capacity').value);
+    const city     = document.getElementById('e-city').value.trim();
+    const address  = document.getElementById('e-address').value.trim();
+    const reserved = document.getElementById('e-reserved').checked;
 
-  const idx = venues.findIndex(v => v.id === id);
-  venues[idx] = { id, name, address, city, capacity, reserved };
-  bootstrap.Modal.getInstance(document.getElementById('modalEditVenue')).hide();
-  populateCityFilter();
-  updateStats();
-  filterVenues();
-  showToast('Venue berhasil diperbarui!', 'success');
-}
+    if (!name || !city || !address) { showToast('Semua field wajib diisi!', 'danger'); return; }
+    if (!capacity || capacity <= 0) { showToast('Kapasitas harus berupa angka positif!', 'danger'); return; }
 
-//  DELETE VENUE
-function openDeleteVenue(id) {
-  pendingDeleteId = id;
-  const v = venues.find(x => x.id === id);
-  document.getElementById('delVenueName').textContent = `"${v.name}"`;
-  new bootstrap.Modal(document.getElementById('modalDeleteVenue')).show();
-}
+    try {
+      const res  = await fetch(`/venue/update/${id}/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrf() },
+        body: JSON.stringify({ name, capacity, city, address, reserved }),
+      });
+      const data = await res.json();
 
-function confirmDeleteVenue() {
-  venues = venues.filter(v => v.id !== pendingDeleteId);
-  bootstrap.Modal.getInstance(document.getElementById('modalDeleteVenue')).hide();
-  populateCityFilter();
-  updateStats();
-  filterVenues();
-  showToast('Venue berhasil dihapus.', 'danger');
-}
+      if (data.success) {
+        const idx = venues.findIndex(v => v.id === id);
+        venues[idx] = { id, name, address, city, capacity, reserved };
+        bootstrap.Modal.getInstance(document.getElementById('modalEditVenue')).hide();
+        populateCityFilter(); updateStats(); filterVenues();
+        showToast(data.message, 'success');
+      } else {
+        showToast(data.error, 'danger');
+      }
+    } catch { showToast('Terjadi kesalahan jaringan.', 'danger'); }
+  }
 
-//  TOAST
-function showToast(msg, type = 'success') {
-  const el = document.getElementById('liveToast');
-  el.className = `toast align-items-center border-0 text-bg-${type}`;
-  document.getElementById('toastMsg').textContent = msg;
-  new bootstrap.Toast(el, { delay: 3000 }).show();
-}
+  // ── DELETE ───────────────────────────────────────────────────────────────
+  function openDeleteVenue(id) {
+    pendingDeleteId = id;
+    const v = venues.find(x => x.id === id);
+    document.getElementById('delVenueName').textContent = `"${v.name}"`;
+    new bootstrap.Modal(document.getElementById('modalDeleteVenue')).show();
+  }
 
-// INIT LOKAL
-document.addEventListener("DOMContentLoaded", () => {
-  setTimeout(() => {
-     updateVenueUI();
-     populateCityFilter();
-     updateStats();
-     filterVenues();
-     
-     document.querySelectorAll('.nav-link-custom').forEach(link => {
-       const text = link.textContent.trim().toLowerCase();
-       if (text.includes('venue')) {
-         link.classList.add('active');
-       }
-     });
-  }, 100); 
-});
+  async function confirmDeleteVenue() {
+    try {
+      const res  = await fetch(`/venue/delete/${pendingDeleteId}/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrf() },
+        body: JSON.stringify({}),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        venues = venues.filter(v => v.id !== pendingDeleteId);
+        bootstrap.Modal.getInstance(document.getElementById('modalDeleteVenue')).hide();
+        populateCityFilter(); updateStats(); filterVenues();
+        showToast(data.message, 'danger');
+      } else {
+        // ← pesan error dari trigger PostgreSQL tampil di sini
+        bootstrap.Modal.getInstance(document.getElementById('modalDeleteVenue')).hide();
+        showToast(data.error, 'danger');
+      }
+    } catch { showToast('Terjadi kesalahan jaringan.', 'danger'); }
+  }
+
+  // ── TOAST ────────────────────────────────────────────────────────────────
+  function showToast(msg, type = 'success') {
+    const el = document.getElementById('liveToast');
+    el.className = `toast align-items-center border-0 text-bg-${type}`;
+    document.getElementById('toastMsg').textContent = msg;
+    new bootstrap.Toast(el, { delay: 3500 }).show();
+  }
+
+  // ── INIT ─────────────────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      updateVenueUI();
+      populateCityFilter();
+      updateStats();
+      filterVenues();
+      document.querySelectorAll('.nav-link-custom').forEach(link => {
+        if (link.textContent.trim().toLowerCase().includes('venue')) link.classList.add('active');
+      });
+    }, 100);
+  });
 </script>
 </body>
 </html>

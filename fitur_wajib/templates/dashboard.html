@@ -50,7 +50,8 @@
     .section-card .card-header { background: transparent; border-bottom: 1px solid var(--bs-border-color); font-weight: 700; font-size: 0.95rem; padding: 1rem 1.25rem; }
 
     /* ── Perf list (Organizer) ── */
-    .perf-item { display: flex; align-items: center; gap: 14px; padding: 12px; border-radius: 10px; background: var(--bs-tertiary-bg); margin-bottom: 8px; }
+    .perf-item { display: flex; align-items: center; gap: 14px; padding: 12px; border-radius: 10px; background: var(--bs-tertiary-bg); margin-bottom: 8px; cursor: pointer; transition: transform 0.2s; }
+    .perf-item:hover { transform: scale(1.02); }
     .perf-item:last-child { margin-bottom: 0; }
     .perf-emoji { font-size: 1.8rem; }
     .perf-info { flex: 1; }
@@ -58,7 +59,8 @@
     .perf-info span   { font-size: 0.78rem; color: var(--bs-secondary-color); }
 
     /* ── Ticket card (Customer) ── */
-    .ticket-card { border-radius: 12px; padding: 1rem 1.25rem; color: white; margin-bottom: 12px; }
+    .ticket-card { border-radius: 12px; padding: 1rem 1.25rem; color: white; margin-bottom: 12px; cursor: pointer; transition: transform 0.2s; }
+    .ticket-card:hover { transform: scale(1.02); }
     .ticket-card.green { background: linear-gradient(135deg, #1a4731, #1a7a4a); }
     .ticket-card.blue  { background: linear-gradient(135deg, #1e3a5f, #2563eb); }
     .ticket-card .tc-title { font-weight: 700; font-size: 1rem; margin-bottom: 6px; }
@@ -141,7 +143,7 @@
                   </div>
                   <div>
                     <div class="stat-label">Total Pengguna</div>
-                    <div class="stat-value">12</div>
+                    <div class="stat-value">{{ total_users }}</div>
                     <div class="stat-sub">Akun terdaftar</div>
                   </div>
                 </div>
@@ -155,7 +157,7 @@
                   </div>
                   <div>
                     <div class="stat-label">Total Acara</div>
-                    <div class="stat-value">6</div>
+                    <div class="stat-value">{{ total_events }}</div>
                     <div class="stat-sub">Semua periode</div>
                   </div>
                 </div>
@@ -169,7 +171,7 @@
                   </div>
                   <div>
                     <div class="stat-label">Omzet Platform</div>
-                    <div class="stat-value" style="font-size:1.4rem">Rp 32.0M</div>
+                    <div class="stat-value" style="font-size:1.4rem">{{ total_revenue }}</div>
                     <div class="stat-sub">Gross volume</div>
                   </div>
                 </div>
@@ -183,7 +185,7 @@
                   </div>
                   <div>
                     <div class="stat-label">Promosi Aktif</div>
-                    <div class="stat-value">6</div>
+                    <div class="stat-value">{{ total_promos }}</div>
                     <div class="stat-sub">Running campaigns</div>
                   </div>
                 </div>
@@ -199,9 +201,9 @@
                   <i class="bi bi-arrow-up-right text-muted" style="font-size:.8rem"></i>
                 </div>
                 <div class="card-body">
-                  <div class="inline-stat"><span>Total Venue Terdaftar</span><strong>5 Lokasi</strong></div>
-                  <div class="inline-stat"><span>Reserved Seating</span><strong>3 Venue</strong></div>
-                  <div class="inline-stat"><span>Kapasitas Terbesar</span><strong>77,000 Kursi</strong></div>
+                  <div class="inline-stat"><span>Total Venue Terdaftar</span><strong>{{ total_venues }} Lokasi</strong></div>
+                  <div class="inline-stat"><span>Reserved Seating</span><strong>{{ reserved_venues }} Venue</strong></div>
+                  <div class="inline-stat"><span>Kapasitas Terbesar</span><strong>{{ max_capacity }} Kursi</strong></div>
                   <button class="btn btn-outline-success btn-sm w-100 mt-3" onclick="window.location.href='/venue/'">
                     Kelola Venue <i class="bi bi-arrow-right ms-1"></i>
                   </button>
@@ -215,9 +217,9 @@
                   <i class="bi bi-arrow-up-right text-muted" style="font-size:.8rem"></i>
                 </div>
                 <div class="card-body">
-                  <div class="inline-stat"><span>Promo Persentase</span><strong>3 Aktif</strong></div>
-                  <div class="inline-stat"><span>Promo Potongan Nominal</span><strong>3 Aktif</strong></div>
-                  <div class="inline-stat"><span>Total Penggunaan</span><strong>5 Kali</strong></div>
+                  <div class="inline-stat"><span>Promo Persentase</span><strong>{{ promo_percentage }} Aktif</strong></div>
+                  <div class="inline-stat"><span>Promo Potongan Nominal</span><strong>{{ promo_nominal }} Aktif</strong></div>
+                  <div class="inline-stat"><span>Total Penggunaan</span><strong>{{ promo_usage }} Kali</strong></div>
                   <button class="btn btn-outline-warning btn-sm w-100 mt-3" onclick="window.location.href='/promo/admin/'">
                     Kelola Promosi <i class="bi bi-arrow-right ms-1"></i>
                   </button>
@@ -231,8 +233,8 @@
           <div class="d-flex justify-content-between align-items-start mb-4">
             <div>
               <p class="text-muted mb-1" style="font-size:.85rem">Dashboard Penyelenggara</p>
-              <h3 class="fw-bold mb-0">Live Nation ID</h3>
-              <p class="text-muted small mb-0">Kelola 2 acara aktif Anda</p>
+              <h3 class="fw-bold mb-0">{{ organizer_name }}</h3>
+              <p class="text-muted small mb-0">Kelola {{ active_events }} acara aktif Anda</p>
             </div>
             <div class="d-flex gap-2">
               <button class="btn btn-outline-secondary btn-sm" onclick="window.location.href='/venue/'">
@@ -253,7 +255,7 @@
                   </div>
                   <div>
                     <div class="stat-label">Acara Aktif</div>
-                    <div class="stat-value">2</div>
+                    <div class="stat-value">{{ active_events }}</div>
                     <div class="stat-sub">Dalam koordinasi</div>
                   </div>
                 </div>
@@ -267,7 +269,7 @@
                   </div>
                   <div>
                     <div class="stat-label">Tiket Terjual</div>
-                    <div class="stat-value">6</div>
+                    <div class="stat-value">{{ tickets_sold }}</div>
                     <div class="stat-sub">Total terjual</div>
                   </div>
                 </div>
@@ -281,7 +283,7 @@
                   </div>
                   <div>
                     <div class="stat-label">Revenue</div>
-                    <div class="stat-value" style="font-size:1.4rem">Rp 21.0M</div>
+                    <div class="stat-value" style="font-size:1.4rem">{{ revenue }}</div>
                     <div class="stat-sub">Bulan ini</div>
                   </div>
                 </div>
@@ -295,7 +297,7 @@
                   </div>
                   <div>
                     <div class="stat-label">Venue Mitra</div>
-                    <div class="stat-value">1</div>
+                    <div class="stat-value">{{ venue_count }}</div>
                     <div class="stat-sub">Lokasi aktif</div>
                   </div>
                 </div>
@@ -309,22 +311,18 @@
               <a href="/event/" class="text-success text-decoration-none" style="font-size:.85rem">Lihat Semua</a>
             </div>
             <div class="card-body">
-              <div class="perf-item" style="cursor: pointer; transition: 0.2s;" onclick="window.location.href='/event/'" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+              {% for ep in events_performance %}
+              <div class="perf-item" onclick="window.location.href='/event/'">
                 <span class="perf-emoji">🎵</span>
                 <div class="perf-info">
-                  <strong>Coldplay: Music of the Spheres <span class="badge bg-success ms-1" style="font-size:.65rem">LIVE</span></strong>
-                  <span>→ 3 Terjual &nbsp;📍 Gelora Bung Karno</span>
+                  <strong>{{ ep.event_title }} <span class="badge bg-success ms-1" style="font-size:.65rem">LIVE</span></strong>
+                  <span>→ {{ ep.sold }} Terjual &nbsp;📍 {{ ep.venue_name }}</span>
                 </div>
                 <i class="bi bi-chevron-right text-muted"></i>
               </div>
-              <div class="perf-item" style="cursor: pointer; transition: 0.2s;" onclick="window.location.href='/event/'" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                <span class="perf-emoji">🎸</span>
-                <div class="perf-info">
-                  <strong>Dewa 19: 30 Tahun Berkarya <span class="badge bg-success ms-1" style="font-size:.65rem">LIVE</span></strong>
-                  <span>→ 3 Terjual &nbsp;📍 Gelora Bung Karno</span>
-                </div>
-                <i class="bi bi-chevron-right text-muted"></i>
-              </div>
+              {% empty %}
+              <p class="text-muted small text-center py-3 mb-0">Belum ada acara aktif.</p>
+              {% endfor %}
             </div>
           </div>
         </div>
@@ -333,8 +331,8 @@
           <div class="d-flex justify-content-between align-items-start mb-4">
             <div>
               <p class="text-muted mb-1" style="font-size:.85rem">Selamat datang kembali</p>
-              <h3 class="fw-bold mb-0">Peter Parker</h3>
-              <p class="text-muted small mb-0">2 acara menarik menunggu Anda</p>
+              <h3 class="fw-bold mb-0">{{ full_name }}</h3>
+              <p class="text-muted small mb-0">Temukan acara menarik selanjutnya</p>
             </div>
             <button class="btn btn-success btn-sm" onclick="window.location.href='/event/'">
               <i class="bi bi-search me-1"></i>Cari Tiket
@@ -350,7 +348,7 @@
                   </div>
                   <div>
                     <div class="stat-label">Tiket Aktif</div>
-                    <div class="stat-value">4</div>
+                    <div class="stat-value">{{ active_tickets }}</div>
                     <div class="stat-sub">Siap digunakan</div>
                   </div>
                 </div>
@@ -364,7 +362,7 @@
                   </div>
                   <div>
                     <div class="stat-label">Acara Diikuti</div>
-                    <div class="stat-value">2</div>
+                    <div class="stat-value">{{ events_attended }}</div>
                     <div class="stat-sub">Total pengalaman</div>
                   </div>
                 </div>
@@ -378,7 +376,7 @@
                   </div>
                   <div>
                     <div class="stat-label">Kode Promo</div>
-                    <div class="stat-value">6</div>
+                    <div class="stat-value">{{ available_promos }}</div>
                     <div class="stat-sub">Tersedia untuk Anda</div>
                   </div>
                 </div>
@@ -392,8 +390,8 @@
                   </div>
                   <div>
                     <div class="stat-label">Total Belanja</div>
-                    <div class="stat-value" style="font-size:1.4rem">Rp 14.0M</div>
-                    <div class="stat-sub">Bulan ini</div>
+                    <div class="stat-value" style="font-size:1.4rem">{{ total_spending }}</div>
+                    <div class="stat-sub">Riwayat transaksi</div>
                   </div>
                 </div>
               </div>
@@ -406,16 +404,15 @@
               <a href="/tickets/" class="text-success text-decoration-none" style="font-size:.85rem">Lihat Semua</a>
             </div>
             <div class="card-body">
-              <div class="ticket-card green" style="cursor: pointer; transition: 0.2s;" onclick="window.location.href='/event/'" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                <div class="tc-title">Coldplay: Music of the Spheres</div>
-                <div class="tc-meta">📅 15 Nov 2026 · 19:30 &nbsp;|&nbsp; 📍 Gelora Bung Karno &nbsp;|&nbsp; 🎫 Ultimate Experience</div>
-                <div class="tc-code">TCK-COLD-001 &nbsp;·&nbsp; <span class="badge" style="background:rgba(255,255,255,.2);font-size:.65rem">VALID</span></div>
+              {% for t in upcoming_tickets %}
+              <div class="ticket-card green" onclick="window.location.href='/event/'">
+                <div class="tc-title">{{ t.event_title }}</div>
+                <div class="tc-meta">📅 {{ t.date_str }} · {{ t.time_str }} &nbsp;|&nbsp; 📍 {{ t.venue_name }} &nbsp;|&nbsp; 🎫 {{ t.category_name }}</div>
+                <div class="tc-code">{{ t.ticket_code }} &nbsp;·&nbsp; <span class="badge" style="background:rgba(255,255,255,.2);font-size:.65rem">VALID</span></div>
               </div>
-              <div class="ticket-card blue" style="cursor: pointer; transition: 0.2s;" onclick="window.location.href='/event/'" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                <div class="tc-title">Konser Monokrom Tulus</div>
-                <div class="tc-meta">📅 20 Ags 2026 · 20:00 &nbsp;|&nbsp; 📍 Istora Senayan &nbsp;|&nbsp; 🎫 VIP A</div>
-                <div class="tc-code">TCK-TUL-001 &nbsp;·&nbsp; <span class="badge" style="background:rgba(255,255,255,.2);font-size:.65rem">VALID</span></div>
-              </div>
+              {% empty %}
+              <p class="text-muted small text-center py-3 mb-0">Tidak ada tiket mendatang.</p>
+              {% endfor %}
             </div>
           </div>
         </div>
@@ -427,6 +424,12 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  // Mengambil role asli dari session Django, bukan tebakan dari localStorage
+  let currentRole = '{{ role }}'; 
+</script>
+
 <script src="{% static 'js/navbar.js' %}?v=1"></script>
 <script src="{% static 'js/dashboard.js' %}?v=1"></script>
 

@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-gmxk21kbf5_ic@maq#jg)n75#@di7+nep3l993fa#hl&b9fbg0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -79,10 +79,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-        'default': dj_database_url.parse('postgresql://postgres.kmyshghsxqwwngvzyijs:tiktaktuk-apayaa@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres')
-}
+_db = dj_database_url.parse('postgresql://postgres.kmyshghsxqwwngvzyijs:tiktaktuk-apayaa@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres')
 
+_db['OPTIONS'] = {'options': '-c search_path=tiktaktuk'}
+
+DATABASES = {'default': _db}
 
 
 # Password validation
