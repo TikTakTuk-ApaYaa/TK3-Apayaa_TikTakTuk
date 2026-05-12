@@ -103,7 +103,7 @@
               <div id="profile-admin-info">
                 <div class="info-row">
                   <div class="info-label">Username</div>
-                  <div class="info-value">@sysadmin <small class="text-muted fw-normal">(tidak dapat diubah)</small></div>
+                  <div class="info-value">@{{ username }} <small class="text-muted fw-normal">(tidak dapat diubah)</small></div>
                 </div>
               </div>
 
@@ -112,19 +112,19 @@
                   <div class="col-md-6">
                     <div class="info-row">
                       <div class="info-label"><i class="bi bi-person me-1"></i>Nama Lengkap</div>
-                      <div class="info-value" id="disp-fullname">Budi Santoso</div>
+                      <div class="info-value" id="disp-fullname">{{ full_name }}</div>
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="info-row">
                       <div class="info-label"><i class="bi bi-telephone me-1"></i>Nomor Telepon</div>
-                      <div class="info-value" id="disp-phone">+62812345678</div>
+                      <div class="info-value" id="disp-phone">{{ phone_number }}</div>
                     </div>
                   </div>
                 </div>
                 <div class="info-row">
                   <div class="info-label"><i class="bi bi-at me-1"></i>Username</div>
-                  <div class="info-value">@customer1 <small class="text-muted fw-normal">(tidak dapat diubah)</small></div>
+                  <div class="info-value">@{{ username }} <small class="text-muted fw-normal">(tidak dapat diubah)</small></div>
                 </div>
               </div>
 
@@ -133,19 +133,19 @@
                   <div class="col-md-6">
                     <div class="info-row">
                       <div class="info-label"><i class="bi bi-building me-1"></i>Nama Organizer</div>
-                      <div class="info-value" id="disp-orgname">Andi Wijaya</div>
+                      <div class="info-value" id="disp-orgname">{{ organizer_name }}</div>
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="info-row">
                       <div class="info-label"><i class="bi bi-envelope me-1"></i>Contact Email</div>
-                      <div class="info-value" id="disp-email">organizer1@example.com</div>
+                      <div class="info-value" id="disp-email">{{ contact_email }}</div>
                     </div>
                   </div>
                 </div>
                 <div class="info-row">
                   <div class="info-label"><i class="bi bi-at me-1"></i>Username</div>
-                  <div class="info-value">@organizer1 <small class="text-muted fw-normal">(tidak dapat diubah)</small></div>
+                  <div class="info-value">@{{ username }} <small class="text-muted fw-normal">(tidak dapat diubah)</small></div>
                 </div>
               </div>
 
@@ -207,7 +207,7 @@
         </div>
         <div class="mb-3">
           <label class="form-label small fw-semibold text-muted">Username <span class="fw-normal">(tidak dapat diubah)</span></label>
-          <div class="readonly-field">@customer1</div>
+          <div class="readonly-field">@{{ username }}</div>
         </div>
       </div>
       <div class="modal-footer">
@@ -238,7 +238,7 @@
         </div>
         <div class="mb-3">
           <label class="form-label small fw-semibold text-muted">Username <span class="fw-normal">(tidak dapat diubah)</span></label>
-          <div class="readonly-field">@organizer1</div>
+          <div class="readonly-field">@{{ username }}</div>
         </div>
       </div>
       <div class="modal-footer">
@@ -264,14 +264,7 @@
 <script src="{% static 'js/navbar.js' %}?v=1"></script>
 
 <script>
-  let currentRoleLocal = localStorage.getItem('role') || 'admin';
-
-  // Tambahan ROLE_DATA hanya untuk keperluan password checking
-  const ROLE_DATA = {
-    admin:     { password: 'admin123' },
-    organizer: { password: 'organizer123' },
-    customer:  { password: 'customer123' }
-  };
+  let currentRoleLocal = '{{ role }}';
 
   function updateRoleLocal(role) {
     currentRoleLocal = role;
@@ -302,7 +295,7 @@
       badgeDisp.className = 'badge bg-warning text-dark mt-1';
       avatarDisp.textContent = 'A';
       avatarDisp.style.background = '#d97706';
-      editBtn.classList.add('d-none'); // Admin tidak punya modal edit profile
+      editBtn.classList.add('d-none'); 
     } else if (currentRoleLocal === 'organizer') {
       organizerInfo.classList.remove('d-none');
       nameDisp.textContent = document.getElementById('disp-orgname').textContent;
@@ -334,56 +327,68 @@
     }
   }
 
-  function saveProfileCustomer() {
+  async function saveProfileCustomer() {
     const fn = document.getElementById('edit-fullname').value;
     const ph = document.getElementById('edit-phone').value;
-    document.getElementById('disp-fullname').textContent = fn;
-    document.getElementById('disp-phone').textContent = ph;
-    document.getElementById('profile-name-disp').textContent = fn;
-    bootstrap.Modal.getInstance(document.getElementById('modalEditCustomer')).hide();
-    showToast('Profil berhasil diperbarui!', 'success');
+    const res  = await fetch('/profile/update/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrf() },
+      body: JSON.stringify({ full_name: fn, phone_number: ph }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('disp-fullname').textContent = fn;
+      document.getElementById('disp-phone').textContent    = ph;
+      document.getElementById('profile-name-disp').textContent = fn;
+      bootstrap.Modal.getInstance(document.getElementById('modalEditCustomer')).hide();
+      showToast(data.message, 'success');
+    } else { showToast(data.error, 'danger'); }
   }
 
-  function saveProfileOrganizer() {
+  async function saveProfileOrganizer() {
     const on = document.getElementById('edit-orgname').value;
     const em = document.getElementById('edit-email').value;
-    document.getElementById('disp-orgname').textContent = on;
-    document.getElementById('disp-email').textContent = em;
-    document.getElementById('profile-name-disp').textContent = on;
-    bootstrap.Modal.getInstance(document.getElementById('modalEditOrganizer')).hide();
-    showToast('Profil Organizer berhasil diperbarui!', 'success');
+    const res  = await fetch('/profile/update/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrf() },
+      body: JSON.stringify({ organizer_name: on, contact_email: em }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('disp-orgname').textContent = on;
+      document.getElementById('disp-email').textContent   = em;
+      document.getElementById('profile-name-disp').textContent = on;
+      bootstrap.Modal.getInstance(document.getElementById('modalEditOrganizer')).hide();
+      showToast(data.message, 'success');
+    } else { showToast(data.error, 'danger'); }
   }
 
   function clearPassword() {
     ['pw-old','pw-new','pw-confirm'].forEach(id => document.getElementById(id).value = '');
   }
 
-  function savePassword() {
+  async function savePassword() {
     const o = document.getElementById('pw-old').value;
     const n = document.getElementById('pw-new').value;
     const c = document.getElementById('pw-confirm').value;
-    const d = ROLE_DATA[currentRoleLocal];
+    const res  = await fetch('/profile/update-password/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrf() },
+      body: JSON.stringify({ old_password: o, new_password: n, confirm_password: c }),
+    });
+    const data = await res.json();
+    if (data.success) { 
+      showToast(data.message, 'success'); 
+      clearPassword(); 
+    } else { 
+      showToast(data.error, 'danger'); 
+    }
+  }
 
-    if (!o || !n || !c) { 
-      showToast('Harap isi semua field password!', 'danger'); 
-      return; 
-    }
-    if (o !== d.password) { 
-      showToast('Password lama tidak sesuai!', 'danger'); 
-      return; 
-    }
-    if (n.length < 6) { 
-      showToast('Password baru minimal 6 karakter!', 'danger'); 
-      return; 
-    }
-    if (n !== c) { 
-      showToast('Password baru dan konfirmasi tidak cocok!', 'danger'); 
-      return; 
-    }
-
-    d.password = n; // Update data sementara
-    showToast('Password berhasil diperbarui!', 'success');
-    clearPassword();
+  // helper
+  function getCsrf() {
+    const v = document.cookie.split(';').find(c => c.trim().startsWith('csrftoken='));
+    return v ? v.split('=')[1].trim() : '';
   }
 
   function showToast(msg, type = 'success') {

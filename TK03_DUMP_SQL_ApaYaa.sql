@@ -1,7 +1,8 @@
-DROP SCHEMA IF EXISTS Taktiktuk CASCADE;
-CREATE SCHEMA Taktiktuk;
+DROP SCHEMA IF EXISTS taktiktuk CASCADE;
+DROP SCHEMA IF EXISTS tiktaktuk CASCADE;
+CREATE SCHEMA tiktaktuk;
 
-SET search_path TO Taktiktuk;
+SET search_path TO tiktaktuk;
 
 -- ==========================================
 -- CREATE TABLES
