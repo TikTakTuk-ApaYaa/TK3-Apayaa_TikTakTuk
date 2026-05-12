@@ -9,8 +9,8 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
   <style>
     :root { --sidebar-width: 260px; --primary-green: #1a7a4a; --transition-speed: 0.3s; }
-    body { font-family: 'Inter', sans-serif; background-color: var(--bs-body-bg); transition: background-color var(--transition-speed), color var(--transition-speed); }
-    .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; left: 0; top: 0; background: #111827; color: white; transition: all var(--transition-speed); z-index: 1000; border-right: 1px solid rgba(255,255,255,0.1); overflow-y: auto; }
+    body { font-family: 'Inter', sans-serif; background-color: var(--bs-body-bg); }
+    .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; left: 0; top: 0; background: #111827; color: white; z-index: 1000; border-right: 1px solid rgba(255,255,255,0.1); overflow-y: auto; }
     [data-bs-theme="dark"] .sidebar { background: #000; }
     .sidebar-header { padding: 1.5rem; font-weight: 800; font-size: 1.25rem; color: var(--primary-green); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
     .nav-list { list-style: none; padding: 1rem; margin: 0; }
@@ -30,7 +30,6 @@
 </head>
 <body>
 
-<!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sidebar-header">
     <div class="bg-white text-success rounded-2 px-2 py-1" style="font-size:14px;">TT</div>
@@ -39,17 +38,14 @@
   <ul class="nav-list" id="sidebarMenu"></ul>
 </aside>
 
-<!-- MAIN CONTENT -->
 <div class="main-content">
 
-  <!-- TOP BAR -->
   <header class="top-bar">
     <h6 class="mb-0 fw-bold">Kategori Tiket</h6>
     <div class="d-flex align-items-center gap-3">
       <div class="theme-toggle-btn" onclick="toggleDarkMode()">
         <i id="themeIcon" class="bi bi-moon-stars"></i>
       </div>
-      <!-- Dropdown switch role: ditambah Guest untuk keperluan demo -->
       <div class="dropdown dev-tool-dropdown">
         <button class="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
           <i class="bi bi-eye"></i><span id="roleLabel">Guest</span>
@@ -61,24 +57,25 @@
           <li><a class="dropdown-item" href="#" onclick="updateRole('customer')"><i class="bi bi-person me-2"></i>Customer</a></li>
         </ul>
       </div>
-      <div id="topbarRight"></div>
     </div>
   </header>
 
-  <!-- KONTEN -->
   <div class="p-4">
 
-    <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
         <h4 class="fw-bold mb-1">Kategori Tiket</h4>
-        <p class="text-muted mb-0">Kelola kategori dan harga tiket per acara</p>
+        <p class="text-muted mb-0">Kelola kategori tiket untuk setiap event</p>
       </div>
-      <!-- Tombol Tambah - hanya Admin & Organizer -->
       <button class="btn btn-success d-none" id="btnTambah"
               data-bs-toggle="modal" data-bs-target="#modalTambah">
-        <i class="bi bi-plus-lg me-1"></i>Tambah Kategori Tiket
+        <i class="bi bi-plus-lg me-1"></i>Tambah Kategori
       </button>
+    </div>
+
+    <div class="alert alert-danger d-none mb-3" id="alertError">
+      <i class="bi bi-exclamation-triangle me-2"></i>
+      <span id="alertErrorMsg"></span>
     </div>
 
     <!-- Stat Cards -->
@@ -87,7 +84,7 @@
         <div class="card border-0 shadow-sm">
           <div class="card-body">
             <p class="text-muted small mb-1">TOTAL KATEGORI</p>
-            <h3 class="fw-bold mb-0" id="statTotal">0</h3>
+            <h3 class="fw-bold mb-0" id="statTotal">-</h3>
           </div>
         </div>
       </div>
@@ -95,7 +92,7 @@
         <div class="card border-0 shadow-sm">
           <div class="card-body">
             <p class="text-muted small mb-1">TOTAL KUOTA</p>
-            <h3 class="fw-bold mb-0" id="statKuota">0</h3>
+            <h3 class="fw-bold mb-0" id="statKuota">-</h3>
           </div>
         </div>
       </div>
@@ -103,28 +100,28 @@
         <div class="card border-0 shadow-sm">
           <div class="card-body">
             <p class="text-muted small mb-1">HARGA TERTINGGI</p>
-            <h3 class="fw-bold mb-0" id="statHarga">Rp 0</h3>
+            <h3 class="fw-bold mb-0" id="statHarga">-</h3>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Search & Filter -->
+    <!-- Filter & Search -->
     <div class="card border-0 shadow-sm mb-4">
       <div class="card-body">
         <div class="row g-2 align-items-center">
           <div class="col-md-5">
             <div class="input-group">
               <span class="input-group-text bg-transparent"><i class="bi bi-search text-muted"></i></span>
-              <input type="text" class="form-control border-start-0" id="searchInput" placeholder="Cari kategori..."/>
+              <input type="text" class="form-control border-start-0" id="searchInput" placeholder="Cari nama kategori..."/>
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-5">
             <select class="form-select" id="filterAcara">
-              <option value="">Semua Acara</option>
+              <option value="">-- Semua Event --</option>
             </select>
           </div>
-          <div class="col-md-3 text-muted small" id="jumlahDitemukan">0 kategori ditemukan</div>
+          <div class="col-md-2 text-muted small" id="jumlahDitemukan">Memuat...</div>
         </div>
       </div>
     </div>
@@ -138,13 +135,18 @@
               <tr>
                 <th class="ps-4">CATEGORY ID</th>
                 <th>NAMA KATEGORI</th>
-                <th>ACARA</th>
+                <th>EVENT</th>
                 <th>HARGA</th>
                 <th>KUOTA</th>
+                <th>TERJUAL</th>
                 <th class="d-none" id="thAction">AKSI</th>
               </tr>
             </thead>
-            <tbody id="tabelKategori"></tbody>
+            <tbody id="tabelKategori">
+              <tr><td colspan="7" class="text-center py-4 text-muted">
+                <div class="spinner-border spinner-border-sm me-2"></div>Memuat data...
+              </td></tr>
+            </tbody>
           </table>
         </div>
       </div>
@@ -159,44 +161,37 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header border-0">
-        <h5 class="modal-title fw-bold">Tambah Kategori Baru</h5>
+        <h5 class="modal-title fw-bold">Tambah Kategori Tiket</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
+        <div class="alert alert-danger d-none" id="errTambah"></div>
         <div class="mb-3">
-          <label class="form-label fw-semibold">ACARA <span class="text-danger">*</span></label>
+          <label class="form-label fw-semibold">EVENT <span class="text-danger">*</span></label>
           <select class="form-select" id="inputAcara">
-            <option value="">Pilih acara...</option>
-            <option>Konser Melodi Senja</option>
-            <option>Festival Seni Budaya</option>
-            <option>Malam Akustik Bandung</option>
-            <option>Jazz Under The Stars</option>
-            <option>Indie Fest Jakarta</option>
-            <option>Rock Nation Concert</option>
+            <option value="">-- Pilih Event --</option>
           </select>
-          <div class="text-danger small d-none mt-1" id="errAcara">Acara wajib dipilih</div>
+          <div class="text-danger small d-none mt-1" id="errAcara">Event wajib dipilih.</div>
         </div>
         <div class="mb-3">
           <label class="form-label fw-semibold">NAMA KATEGORI <span class="text-danger">*</span></label>
-          <input type="text" class="form-control" id="inputNama" placeholder="cth. WVIP"/>
-          <div class="text-danger small d-none mt-1" id="errNama">Nama kategori wajib diisi</div>
+          <input type="text" class="form-control" id="inputNama" placeholder="cth. VIP, CAT 1"/>
+          <div class="text-danger small d-none mt-1" id="errNama">Nama kategori wajib diisi.</div>
         </div>
-        <div class="row g-2">
-          <div class="col-6">
-            <label class="form-label fw-semibold">HARGA (RP) <span class="text-danger">*</span></label>
-            <input type="number" class="form-control" id="inputHarga" placeholder="750000" min="0"/>
-            <div class="text-danger small d-none mt-1" id="errHarga">Harga wajib diisi (≥ 0)</div>
-          </div>
-          <div class="col-6">
-            <label class="form-label fw-semibold">KUOTA <span class="text-danger">*</span></label>
-            <input type="number" class="form-control" id="inputKuota" placeholder="100" min="1"/>
-            <div class="text-danger small d-none mt-1" id="errKuota">Kuota wajib diisi (> 0)</div>
-          </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">HARGA (Rp) <span class="text-danger">*</span></label>
+          <input type="number" min="0" class="form-control" id="inputHarga" placeholder="cth. 500000"/>
+          <div class="text-danger small d-none mt-1" id="errHarga">Harga tidak valid.</div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">KUOTA <span class="text-danger">*</span></label>
+          <input type="number" min="1" class="form-control" id="inputKuota" placeholder="cth. 500"/>
+          <div class="text-danger small d-none mt-1" id="errKuota">Kuota harus > 0.</div>
         </div>
       </div>
       <div class="modal-footer border-0">
         <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
-        <button class="btn btn-success" onclick="tambahKategori()">
+        <button class="btn btn-success" id="btnSimpanTambah" onclick="tambahKategori()">
           <i class="bi bi-plus-lg me-1"></i>Tambah
         </button>
       </div>
@@ -209,41 +204,33 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header border-0">
-        <h5 class="modal-title fw-bold">Edit Kategori</h5>
+        <h5 class="modal-title fw-bold">Edit Kategori Tiket</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
+        <div class="alert alert-danger d-none" id="errEdit"></div>
         <input type="hidden" id="editId"/>
         <div class="mb-3">
-          <label class="form-label fw-semibold">ACARA <span class="text-danger">*</span></label>
-          <select class="form-select" id="editAcara">
-            <option>Konser Melodi Senja</option>
-            <option>Festival Seni Budaya</option>
-            <option>Malam Akustik Bandung</option>
-            <option>Jazz Under The Stars</option>
-            <option>Indie Fest Jakarta</option>
-            <option>Rock Nation Concert</option>
-          </select>
+          <label class="form-label fw-semibold">EVENT</label>
+          <select class="form-select" id="editAcara"></select>
         </div>
         <div class="mb-3">
           <label class="form-label fw-semibold">NAMA KATEGORI <span class="text-danger">*</span></label>
           <input type="text" class="form-control" id="editNama"/>
-          <div class="text-danger small d-none mt-1" id="errNamaEdit">Nama kategori wajib diisi</div>
+          <div class="text-danger small d-none mt-1" id="errNamaEdit">Nama kategori wajib diisi.</div>
         </div>
-        <div class="row g-2">
-          <div class="col-6">
-            <label class="form-label fw-semibold">HARGA (RP) <span class="text-danger">*</span></label>
-            <input type="number" class="form-control" id="editHarga" min="0"/>
-          </div>
-          <div class="col-6">
-            <label class="form-label fw-semibold">KUOTA <span class="text-danger">*</span></label>
-            <input type="number" class="form-control" id="editKuota" min="1"/>
-          </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">HARGA (Rp) <span class="text-danger">*</span></label>
+          <input type="number" min="0" class="form-control" id="editHarga"/>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">KUOTA <span class="text-danger">*</span></label>
+          <input type="number" min="1" class="form-control" id="editKuota"/>
         </div>
       </div>
       <div class="modal-footer border-0">
         <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
-        <button class="btn btn-success" onclick="simpanEdit()">Simpan</button>
+        <button class="btn btn-success" id="btnSimpanEdit" onclick="simpanEdit()">Simpan Perubahan</button>
       </div>
     </div>
   </div>
@@ -258,15 +245,16 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <p class="text-muted small mb-2">Apakah Anda yakin ingin menghapus kategori ini? Tindakan ini tidak dapat dibatalkan.</p>
+        <div class="alert alert-danger d-none" id="errHapus"></div>
+        <p class="text-muted small mb-2">Yakin ingin menghapus kategori ini?</p>
         <div class="bg-light rounded p-2">
-          <p class="mb-1 small"><span class="text-muted">Category ID:</span> <code class="small" id="hapusId"></code></p>
+          <p class="mb-1 small"><span class="text-muted">ID:</span> <code id="hapusId" class="small"></code></p>
           <p class="mb-0 fw-bold" id="hapusNama"></p>
         </div>
       </div>
       <div class="modal-footer border-0">
         <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
-        <button class="btn btn-danger" onclick="konfirmasiHapus()">
+        <button class="btn btn-danger" id="btnKonfirmasiHapus" onclick="konfirmasiHapus()">
           <i class="bi bi-trash me-1"></i>Hapus
         </button>
       </div>
@@ -276,36 +264,21 @@
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- EXTEND NAVBAR -->
-<script src="../../fitur_wajib/templates/navbar.js"></script>
+<script src="/static/js/navbar.js"></script>
 
 <script>
+  const API_CATEGORIES = '/api/ticket-categories/';
+  const API_EVENTS     = '/api/events/';
 
-  let daftarKategori = [
-    { id:'cat-001', nama:'WVIP',             acara:'Konser Melodi Senja',   harga:1500000, kuota:50  },
-    { id:'cat-002', nama:'VIP',              acara:'Konser Melodi Senja',   harga:750000,  kuota:150 },
-    { id:'cat-003', nama:'Category 1',       acara:'Konser Melodi Senja',   harga:450000,  kuota:300 },
-    { id:'cat-004', nama:'Category 2',       acara:'Konser Melodi Senja',   harga:250000,  kuota:500 },
-    { id:'cat-005', nama:'General Admission',acara:'Festival Seni Budaya',  harga:150000,  kuota:500 },
-    { id:'cat-006', nama:'VVIP',             acara:'Malam Akustik Bandung', harga:2000000, kuota:30  },
-    { id:'cat-007', nama:'VIP',              acara:'Malam Akustik Bandung', harga:900000,  kuota:100 },
-    { id:'cat-008', nama:'Regular',          acara:'Malam Akustik Bandung', harga:350000,  kuota:400 },
-    { id:'cat-009', nama:'Platinum',         acara:'Jazz Under The Stars',  harga:1200000, kuota:80  },
-    { id:'cat-010', nama:'Gold',             acara:'Jazz Under The Stars',  harga:600000,  kuota:200 },
-    { id:'cat-011', nama:'Silver',           acara:'Jazz Under The Stars',  harga:300000,  kuota:350 },
-    { id:'cat-012', nama:'Early Bird',       acara:'Indie Fest Jakarta',    harga:200000,  kuota:100 },
-    { id:'cat-013', nama:'Regular',          acara:'Indie Fest Jakarta',    harga:350000,  kuota:500 },
-    { id:'cat-014', nama:'VIP',              acara:'Rock Nation Concert',   harga:800000,  kuota:120 },
-  ];
-
-  let idHapus = null;
+  let daftarKategori = [];
+  let daftarEvents   = [];
+  let idHapus        = null;
 
   function formatRp(angka) {
-    return 'Rp ' + angka.toLocaleString('id-ID');
+    return 'Rp ' + Number(angka).toLocaleString('id-ID');
   }
 
-  // Override renderSidebar dari navbar.js
+  // Override renderSidebar
   const _renderSidebar = renderSidebar;
   renderSidebar = function(role) {
     _renderSidebar(role);
@@ -315,158 +288,259 @@
     renderTabel(daftarKategori);
   };
 
-  // ISI FILTER ACARA
-  function isiFilterAcara() {
-    const acara = [...new Set(daftarKategori.map(k => k.acara))].sort();
-    const sel   = document.getElementById('filterAcara');
-    acara.forEach(a => {
-      const opt = document.createElement('option');
-      opt.value = a; opt.textContent = a;
-      sel.appendChild(opt);
-    });
+  // Load events untuk dropdown 
+  async function loadEvents() {
+    try {
+      const res  = await fetch(API_EVENTS);
+      const data = await res.json();
+      daftarEvents = data.events || [];
+
+      // Isi filter event
+      const filterSel = document.getElementById('filterAcara');
+      filterSel.innerHTML = '<option value="">-- Semua Event --</option>';
+      daftarEvents.forEach(e => {
+        filterSel.insertAdjacentHTML('beforeend',
+          `<option value="${e.id}">${escapeHtml(e.title)}</option>`);
+      });
+
+      // Isi dropdown tambah
+      const inputSel = document.getElementById('inputAcara');
+      inputSel.innerHTML = '<option value="">-- Pilih Event --</option>';
+      daftarEvents.forEach(e => {
+        inputSel.insertAdjacentHTML('beforeend',
+          `<option value="${e.id}">${escapeHtml(e.title)}</option>`);
+      });
+    } catch (err) {
+      console.error('Gagal memuat events:', err);
+    }
   }
 
-  isiFilterAcara();
-  renderSidebar(localStorage.getItem('role') || 'guest');
+  // Load kategori dari API
+  async function loadKategori() {
+    const q       = document.getElementById('searchInput').value.trim();
+    const eventId = document.getElementById('filterAcara').value;
 
-  function getFiltered() {
-    const q     = document.getElementById('searchInput').value.toLowerCase();
-    const acara = document.getElementById('filterAcara').value;
-    return daftarKategori.filter(k =>
-      k.nama.toLowerCase().includes(q) &&
-      (acara === '' || k.acara === acara)
-    );
+    let url = API_CATEGORIES;
+    const params = new URLSearchParams();
+    if (q) params.set('q', q);
+    if (eventId) params.set('event_id', eventId);
+    if (params.toString()) url += '?' + params.toString();
+
+    try {
+      const res  = await fetch(url);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Gagal memuat data.');
+
+      daftarKategori = data.categories;
+      updateStats(data.categories);
+      renderTabel(data.categories);
+    } catch (err) {
+      document.getElementById('alertErrorMsg').textContent = err.message;
+      document.getElementById('alertError').classList.remove('d-none');
+    }
   }
 
-  document.getElementById('searchInput').addEventListener('input', () => renderTabel(getFiltered()));
-  document.getElementById('filterAcara').addEventListener('change', () => renderTabel(getFiltered()));
+  function updateStats(data) {
+    const totalKuota = data.reduce((s, k) => s + k.quota, 0);
+    const maxHarga   = data.length ? Math.max(...data.map(k => k.price)) : 0;
+    document.getElementById('statTotal').textContent = data.length;
+    document.getElementById('statKuota').textContent = totalKuota.toLocaleString('id-ID');
+    document.getElementById('statHarga').textContent = formatRp(maxHarga);
+  }
 
-  // RENDER TABEL
   function renderTabel(data) {
     const role    = localStorage.getItem('role') || 'guest';
     const canEdit = role === 'admin' || role === 'organizer';
     const tbody   = document.getElementById('tabelKategori');
 
-    const sorted = [...data].sort((a,b) => {
-      const ev = a.acara.localeCompare(b.acara);
-      return ev !== 0 ? ev : a.nama.localeCompare(b.nama);
-    });
+    if (data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-muted">Tidak ada kategori ditemukan.</td></tr>';
+      document.getElementById('jumlahDitemukan').textContent = '0 kategori ditemukan';
+      return;
+    }
 
-    tbody.innerHTML = sorted.map(k => `
+    tbody.innerHTML = data.map(k => `
       <tr>
         <td class="ps-4"><code class="small text-muted">${k.id}</code></td>
-        <td class="fw-semibold">${k.nama}</td>
-        <td><span class="text-muted small">${k.acara}</span></td>
-        <td><span class="text-success fw-semibold">${formatRp(k.harga)}</span></td>
-        <td>${k.kuota.toLocaleString('id-ID')} tiket</td>
+        <td class="fw-semibold">${escapeHtml(k.name)}</td>
+        <td><span class="text-muted small">${escapeHtml(k.event_title)}</span></td>
+        <td><span class="text-success fw-semibold">${formatRp(k.price)}</span></td>
+        <td>${k.quota.toLocaleString('id-ID')} tiket</td>
+        <td>
+          <span class="${k.remaining <= 0 ? 'text-danger' : 'text-muted'} small">
+            ${k.sold} / ${k.quota}
+            ${k.remaining <= 0 ? '<span class="badge bg-danger ms-1">HABIS</span>' : ''}
+          </span>
+        </td>
         ${canEdit ? `
         <td>
-          <button class="btn btn-sm btn-outline-primary me-1" onclick="bukaEdit('${k.id}')">
+          <button class="btn btn-sm btn-outline-primary me-1"
+            onclick="bukaEdit('${k.id}','${escapeAttr(k.name)}',${k.price},${k.quota},'${k.event_id}')">
             <i class="bi bi-pencil me-1"></i>Update
           </button>
-          <button class="btn btn-sm btn-outline-danger" onclick="bukaHapus('${k.id}', '${k.nama}')">
+          <button class="btn btn-sm btn-outline-danger"
+            onclick="bukaHapus('${k.id}','${escapeAttr(k.name)}')">
             <i class="bi bi-trash me-1"></i>Delete
           </button>
         </td>` : ''}
       </tr>`).join('');
 
-    const totalKuota = daftarKategori.reduce((s,k) => s+k.kuota, 0);
-    const maxHarga   = Math.max(...daftarKategori.map(k => k.harga));
-    document.getElementById('statTotal').textContent      = daftarKategori.length;
-    document.getElementById('statKuota').textContent      = totalKuota.toLocaleString('id-ID');
-    document.getElementById('statHarga').textContent      = formatRp(maxHarga);
     document.getElementById('jumlahDitemukan').textContent = `${data.length} kategori ditemukan`;
   }
 
-  // TAMBAH KATEGORI
-  function tambahKategori() {
-    const acara  = document.getElementById('inputAcara').value;
-    const nama   = document.getElementById('inputNama').value.trim();
-    const harga  = parseInt(document.getElementById('inputHarga').value);
-    const kuota  = parseInt(document.getElementById('inputKuota').value);
+  // Search & filter — debounced
+  let searchTimer;
+  document.getElementById('searchInput').addEventListener('input', () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(loadKategori, 400);
+  });
+  document.getElementById('filterAcara').addEventListener('change', loadKategori);
 
-    let valid = true;
-    if (!acara)                { document.getElementById('errAcara').classList.remove('d-none'); valid=false; }
-    else                       { document.getElementById('errAcara').classList.add('d-none'); }
-    if (!nama)                 { document.getElementById('errNama').classList.remove('d-none');  valid=false; }
-    else                       { document.getElementById('errNama').classList.add('d-none'); }
-    if (isNaN(harga)||harga<0) { document.getElementById('errHarga').classList.remove('d-none'); valid=false; }
-    else                       { document.getElementById('errHarga').classList.add('d-none'); }
-    if (isNaN(kuota)||kuota<1) { document.getElementById('errKuota').classList.remove('d-none'); valid=false; }
-    else                       { document.getElementById('errKuota').classList.add('d-none'); }
+  // TAMBAH 
+  async function tambahKategori() {
+    const eventId = document.getElementById('inputAcara').value;
+    const nama    = document.getElementById('inputNama').value.trim();
+    const harga   = parseFloat(document.getElementById('inputHarga').value);
+    const kuota   = parseInt(document.getElementById('inputKuota').value);
+    document.getElementById('errTambah').classList.add('d-none');
 
-    if (!valid) return;
+    let ok = true;
+    ['errAcara','errNama','errHarga','errKuota'].forEach(id =>
+      document.getElementById(id).classList.add('d-none'));
 
-    const newId = 'cat-' + String(daftarKategori.length + 1).padStart(3, '0');
-    daftarKategori.push({ id: newId, nama, acara, harga, kuota });
-    renderTabel(getFiltered());
+    if (!eventId) { document.getElementById('errAcara').classList.remove('d-none'); ok = false; }
+    if (!nama)    { document.getElementById('errNama').classList.remove('d-none');  ok = false; }
+    if (isNaN(harga) || harga < 0) { document.getElementById('errHarga').classList.remove('d-none'); ok = false; }
+    if (isNaN(kuota) || kuota < 1) { document.getElementById('errKuota').classList.remove('d-none'); ok = false; }
+    if (!ok) return;
 
-    document.getElementById('inputAcara').value = '';
-    document.getElementById('inputNama').value  = '';
-    document.getElementById('inputHarga').value = '';
-    document.getElementById('inputKuota').value = '';
+    setLoading('btnSimpanTambah', true);
+    try {
+      const res  = await fetch(API_CATEGORIES, {
+        method:  'POST',
+        headers: {'Content-Type': 'application/json'},
+        body:    JSON.stringify({ category_name: nama, price: harga, quota: kuota, event_id: eventId }),
+      });
+      const data = await res.json();
+      if (!res.ok) { document.getElementById('errTambah').textContent = data.error; document.getElementById('errTambah').classList.remove('d-none'); return; }
 
-    bootstrap.Modal.getInstance(document.getElementById('modalTambah')).hide();
-    tampilkanToast('Kategori tiket berhasil ditambahkan!', 'success');
+      bootstrap.Modal.getInstance(document.getElementById('modalTambah')).hide();
+      tampilkanToast('Kategori tiket berhasil ditambahkan!', 'success');
+      await loadKategori();
+    } catch (err) {
+      document.getElementById('errTambah').textContent = err.message;
+      document.getElementById('errTambah').classList.remove('d-none');
+    } finally {
+      setLoading('btnSimpanTambah', false);
+    }
   }
 
-  // EDIT KATEGORI
-  function bukaEdit(id) {
-    const k = daftarKategori.find(k => k.id === id);
-    if (!k) return;
+  // EDIT
+  function bukaEdit(id, nama, harga, kuota, eventId) {
     document.getElementById('editId').value    = id;
-    document.getElementById('editAcara').value = k.acara;
-    document.getElementById('editNama').value  = k.nama;
-    document.getElementById('editHarga').value = k.harga;
-    document.getElementById('editKuota').value = k.kuota;
+    document.getElementById('editNama').value  = nama;
+    document.getElementById('editHarga').value = harga;
+    document.getElementById('editKuota').value = kuota;
+    document.getElementById('errEdit').classList.add('d-none');
     document.getElementById('errNamaEdit').classList.add('d-none');
+
+    // Isi dropdown event di modal edit
+    const sel = document.getElementById('editAcara');
+    sel.innerHTML = '';
+    daftarEvents.forEach(e => {
+      sel.insertAdjacentHTML('beforeend',
+        `<option value="${e.id}" ${e.id === eventId ? 'selected' : ''}>${escapeHtml(e.title)}</option>`);
+    });
+
     new bootstrap.Modal(document.getElementById('modalEdit')).show();
   }
 
-  function simpanEdit() {
-    const id    = document.getElementById('editId').value;
-    const acara = document.getElementById('editAcara').value;
-    const nama  = document.getElementById('editNama').value.trim();
-    const harga = parseInt(document.getElementById('editHarga').value);
-    const kuota = parseInt(document.getElementById('editKuota').value);
-    const errEl = document.getElementById('errNamaEdit');
+  async function simpanEdit() {
+    const id      = document.getElementById('editId').value;
+    const nama    = document.getElementById('editNama').value.trim();
+    const harga   = parseFloat(document.getElementById('editHarga').value);
+    const kuota   = parseInt(document.getElementById('editKuota').value);
+    const eventId = document.getElementById('editAcara').value;
+    document.getElementById('errEdit').classList.add('d-none');
+    document.getElementById('errNamaEdit').classList.add('d-none');
 
-    if (!nama) { errEl.classList.remove('d-none'); return; }
-    errEl.classList.add('d-none');
+    if (!nama) { document.getElementById('errNamaEdit').classList.remove('d-none'); return; }
 
-    const idx = daftarKategori.findIndex(k => k.id === id);
-    if (idx !== -1) daftarKategori[idx] = { id, nama, acara, harga, kuota };
-    renderTabel(getFiltered());
+    setLoading('btnSimpanEdit', true);
+    try {
+      const res  = await fetch(`${API_CATEGORIES}${id}/`, {
+        method:  'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body:    JSON.stringify({ category_name: nama, price: harga, quota: kuota, event_id: eventId }),
+      });
+      const data = await res.json();
+      if (!res.ok) { document.getElementById('errEdit').textContent = data.error; document.getElementById('errEdit').classList.remove('d-none'); return; }
 
-    bootstrap.Modal.getInstance(document.getElementById('modalEdit')).hide();
-    tampilkanToast('Kategori tiket berhasil diperbarui!', 'success');
+      bootstrap.Modal.getInstance(document.getElementById('modalEdit')).hide();
+      tampilkanToast('Kategori tiket berhasil diperbarui!', 'success');
+      await loadKategori();
+    } catch (err) {
+      document.getElementById('errEdit').textContent = err.message;
+      document.getElementById('errEdit').classList.remove('d-none');
+    } finally {
+      setLoading('btnSimpanEdit', false);
+    }
   }
 
-  // HAPUS KATEGORI
+  // HAPUS
   function bukaHapus(id, nama) {
     idHapus = id;
     document.getElementById('hapusId').textContent   = id;
     document.getElementById('hapusNama').textContent = nama;
+    document.getElementById('errHapus').classList.add('d-none');
     new bootstrap.Modal(document.getElementById('modalHapus')).show();
   }
 
-  function konfirmasiHapus() {
-    daftarKategori = daftarKategori.filter(k => k.id !== idHapus);
-    renderTabel(getFiltered());
-    bootstrap.Modal.getInstance(document.getElementById('modalHapus')).hide();
-    tampilkanToast('Kategori tiket berhasil dihapus!', 'danger');
+  async function konfirmasiHapus() {
+    setLoading('btnKonfirmasiHapus', true);
+    try {
+      const res  = await fetch(`${API_CATEGORIES}${idHapus}/`, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok) { document.getElementById('errHapus').textContent = data.error; document.getElementById('errHapus').classList.remove('d-none'); return; }
+
+      bootstrap.Modal.getInstance(document.getElementById('modalHapus')).hide();
+      tampilkanToast('Kategori tiket berhasil dihapus!', 'danger');
+      await loadKategori();
+    } catch (err) {
+      document.getElementById('errHapus').textContent = err.message;
+      document.getElementById('errHapus').classList.remove('d-none');
+    } finally {
+      setLoading('btnKonfirmasiHapus', false);
+    }
   }
 
-  // TOAST
+  // Utility
   function tampilkanToast(pesan, tipe) {
-    const toast = document.createElement('div');
-    toast.className = `alert alert-${tipe} position-fixed bottom-0 end-0 m-3 shadow`;
-    toast.style.zIndex = '9999';
-    toast.innerHTML = `<i class="bi bi-check-circle me-2"></i>${pesan}`;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
+    const t = document.createElement('div');
+    t.className = `alert alert-${tipe} position-fixed bottom-0 end-0 m-3 shadow`;
+    t.style.zIndex = '9999';
+    t.innerHTML = `<i class="bi bi-check-circle me-2"></i>${pesan}`;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
   }
 
+  function setLoading(btnId, loading) {
+    const btn = document.getElementById(btnId);
+    btn.disabled = loading;
+    if (loading) btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Menyimpan...';
+  }
+
+  function escapeHtml(str) {
+    return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function escapeAttr(str) {
+    return String(str||'').replace(/'/g,"\\'").replace(/"/g,'\\"');
+  }
+
+  // Init
+  renderSidebar(localStorage.getItem('role') || 'guest');
+  Promise.all([loadEvents(), loadKategori()]);
 </script>
 </body>
 </html>
