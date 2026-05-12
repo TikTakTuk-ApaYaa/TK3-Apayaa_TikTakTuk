@@ -209,7 +209,7 @@ def registrasi_administrator(request):
                 return redirect('fitur_wajib:login')
             except Exception as e:
                 error = _clean_db_error(e)
-    return render(request, 'Cpengguna_registAdministrator.html', {'error': error})
+    return render(request, 'Cpengguna_registAdmin.html', {'error': error})
 
 # ─── DASHBOARD ───────────────────────────────────────────────────────────────
 
