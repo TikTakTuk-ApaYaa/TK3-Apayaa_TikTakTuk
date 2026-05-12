@@ -1,61 +1,149 @@
 import json
+import re
+import uuid
 from functools import wraps
 
 from django.db import connection
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
+from django.views.decorators.csrf import csrf_protect
 
 
-def login(request):
-    """Halaman login demo untuk checkpoint frontend."""
-    return render(request, 'login.html')
+# ─── helpers ─────────────────────────────────────────────────────────────────
 
-def pilih_role(request):
-    """Halaman awal untuk memilih apakah ingin daftar sebagai Customer atau Organizer"""
-    return render(request, 'Cpengguna_pilihRole.html')
+def _sc(cur):
+    cur.execute("SET search_path TO tiktaktuk;")
 
-def registrasi_customer(request):
-    """Halaman form pendaftaran khusus untuk Customer"""
-    return render(request, 'Cpengguna_registCust.html')
-
-def registrasi_organizer(request):
-    """Halaman form pendaftaran khusus untuk Event Organizer"""
-    return render(request, 'Cpengguna_registOrganizer.html')
-
-def registrasi_administrator(request):
-    """Halaman form pendaftaran khusus untuk Event Organizer"""
-    return render(request, 'Cpengguna_registAdministrator.html')
-
-def dashboard(request):
-    return render(request, 'dashboard.html')
-
-def profile(request):
-    return render(request, 'profile.html')
-
-# ─── helper ─────────────────────────────────────────────────────────────────
 
 def _login_required(fn):
     @wraps(fn)
     def wrapper(request, *args, **kwargs):
         if not request.session.get('user_id'):
-            return redirect('fitur_wajib:login') # Disesuaikan ke URL login milik temanmu
+            return redirect('fitur_wajib:login')
         return fn(request, *args, **kwargs)
     return wrapper
 
 
-def _sc(cur):
-    # SUDAH DIUBAH KE tiktaktuk AGAR SESUAI DATABASE BARU
-    cur.execute("SET search_path TO tiktaktuk;")
-
-
 def _fmt_rp(value):
-    """Format angka ke string Rp X.XM."""
     if not value:
         return "Rp 0"
     return f"Rp {float(value)/1_000_000:.1f}M"
 
 
-# ─── DASHBOARD ──────────────────────────────────────────────────────────────
+def _clean_db_error(exc):
+    for line in str(exc).splitlines():
+        line = line.strip()
+        if line and not line.startswith('LINE') and not line.startswith('^'):
+            return line.removeprefix('ERROR:').strip()
+    return str(exc).strip()
+
+
+# ─── LOGIN / LOGOUT ───────────────────────────────────────────────────────────
+
+@csrf_protect
+def login(request):
+    # Kalau sudah login, langsung ke dashboard
+    if request.session.get('user_id'):
+        return redirect('fitur_wajib:dashboard')
+
+    error = None
+
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '').strip()
+
+        if not username or not password:
+            error = 'Username dan password wajib diisi.'
+        else:
+            with connection.cursor() as cur:
+                _sc(cur)
+
+                # Cek user_account (case-insensitive username)
+                cur.execute("""
+                    SELECT user_id, username, password
+                    FROM user_account
+                    WHERE LOWER(username) = LOWER(%s)
+                """, [username])
+                user = cur.fetchone()
+
+                if not user or user[2] != password:
+                    error = 'Username atau password salah.'
+                else:
+                    user_id = str(user[0])
+                    uname   = user[1]
+
+                    # Ambil semua role user ini
+                    cur.execute("""
+                        SELECT r.role_name
+                        FROM account_role ar
+                        JOIN role r ON ar.role_id = r.role_id
+                        WHERE ar.user_id = %s
+                    """, [user_id])
+                    roles = [row[0] for row in cur.fetchall()]
+
+                    # Prioritas: administrator > organizer > customer
+                    if 'administrator' in roles:
+                        role = 'admin'
+                    elif 'organizer' in roles:
+                        role = 'organizer'
+                    else:
+                        role = 'customer'
+
+                    # Set session dasar
+                    request.session['user_id']  = user_id
+                    request.session['username'] = uname
+                    request.session['role']     = role
+
+                    # Data tambahan per role
+                    if role == 'organizer':
+                        cur.execute("""
+                            SELECT organizer_id, organizer_name
+                            FROM organizer WHERE user_id = %s
+                        """, [user_id])
+                        org = cur.fetchone()
+                        if org:
+                            request.session['organizer_id']   = str(org[0])
+                            request.session['organizer_name'] = org[1]
+
+                    elif role == 'customer':
+                        cur.execute("""
+                            SELECT customer_id, full_name
+                            FROM customer WHERE user_id = %s
+                        """, [user_id])
+                        cust = cur.fetchone()
+                        if cust:
+                            request.session['customer_id'] = str(cust[0])
+                            request.session['full_name']   = cust[1]
+
+                    return redirect('fitur_wajib:dashboard')
+
+    return render(request, 'login.html', {'error': error})
+
+
+def logout_view(request):
+    request.session.flush()
+    return redirect('fitur_wajib:login')
+
+
+# ─── REGISTER (tetap pakai halaman teman) ────────────────────────────────────
+
+def pilih_role(request):
+    return render(request, 'Cpengguna_pilihRole.html')
+
+
+def registrasi_customer(request):
+    return render(request, 'Cpengguna_registCust.html')
+
+
+def registrasi_organizer(request):
+    return render(request, 'Cpengguna_registOrganizer.html')
+
+
+def registrasi_administrator(request):
+    return render(request, 'Cpengguna_registAdministrator.html')
+
+
+# ─── DASHBOARD ───────────────────────────────────────────────────────────────
 
 @_login_required
 def dashboard(request):
@@ -67,7 +155,6 @@ def dashboard(request):
     with connection.cursor() as cur:
         _sc(cur)
 
-        # ── Admin ──────────────────────────────────────────────
         if role == 'admin':
             cur.execute("SELECT COUNT(*) FROM user_account")
             ctx['total_users'] = cur.fetchone()[0]
@@ -76,7 +163,7 @@ def dashboard(request):
             ctx['total_events'] = cur.fetchone()[0]
 
             cur.execute("""
-                SELECT COALESCE(SUM(total_amount), 0) FROM "order"
+                SELECT COALESCE(SUM(total_amount), 0) FROM "ORDER"
                 WHERE payment_status = 'PAID'
             """)
             ctx['total_revenue'] = _fmt_rp(cur.fetchone()[0])
@@ -103,7 +190,6 @@ def dashboard(request):
             cur.execute("SELECT COUNT(*) FROM order_promotion")
             ctx['promo_usage'] = cur.fetchone()[0]
 
-        # ── Organizer ──────────────────────────────────────────
         elif role == 'organizer' and organizer_id:
             ctx['organizer_name'] = request.session.get('organizer_name', 'Organizer')
 
@@ -124,7 +210,7 @@ def dashboard(request):
 
             cur.execute("""
                 SELECT COALESCE(SUM(o.total_amount), 0)
-                FROM "order" o
+                FROM "ORDER" o
                 JOIN ticket t ON t.torder_id = o.order_id
                 JOIN ticket_category tc ON t.tcategory_id = tc.category_id
                 JOIN event e ON tc.tevent_id = e.event_id
@@ -155,13 +241,12 @@ def dashboard(request):
                 ep['event_id'] = str(ep['event_id'])
             ctx['events_performance'] = perf
 
-        # ── Customer ───────────────────────────────────────────
         elif role == 'customer' and customer_id:
             ctx['full_name'] = request.session.get('full_name', 'Customer')
 
             cur.execute("""
                 SELECT COUNT(*) FROM ticket t
-                JOIN "order" o ON t.torder_id = o.order_id
+                JOIN "ORDER" o ON t.torder_id = o.order_id
                 WHERE o.customer_id = %s AND o.payment_status = 'PAID'
             """, [str(customer_id)])
             ctx['active_tickets'] = cur.fetchone()[0]
@@ -169,7 +254,7 @@ def dashboard(request):
             cur.execute("""
                 SELECT COUNT(DISTINCT tc.tevent_id)
                 FROM ticket t
-                JOIN "order" o ON t.torder_id = o.order_id
+                JOIN "ORDER" o ON t.torder_id = o.order_id
                 JOIN ticket_category tc ON t.tcategory_id = tc.category_id
                 WHERE o.customer_id = %s AND o.payment_status = 'PAID'
             """, [str(customer_id)])
@@ -179,7 +264,7 @@ def dashboard(request):
             ctx['available_promos'] = cur.fetchone()[0]
 
             cur.execute("""
-                SELECT COALESCE(SUM(total_amount), 0) FROM "order"
+                SELECT COALESCE(SUM(total_amount), 0) FROM "ORDER"
                 WHERE customer_id = %s AND payment_status = 'PAID'
             """, [str(customer_id)])
             ctx['total_spending'] = _fmt_rp(cur.fetchone()[0])
@@ -188,7 +273,7 @@ def dashboard(request):
                 SELECT t.ticket_code, e.event_title, e.event_datetime,
                        v.venue_name, tc.category_name
                 FROM ticket t
-                JOIN "order" o ON t.torder_id = o.order_id
+                JOIN "ORDER" o ON t.torder_id = o.order_id
                 JOIN ticket_category tc ON t.tcategory_id = tc.category_id
                 JOIN event e ON tc.tevent_id = e.event_id
                 JOIN venue v ON e.venue_id = v.venue_id
@@ -209,7 +294,7 @@ def dashboard(request):
     return render(request, 'dashboard.html', ctx)
 
 
-# ─── PROFILE ────────────────────────────────────────────────────────────────
+# ─── PROFILE ─────────────────────────────────────────────────────────────────
 
 @_login_required
 def profile_view(request):
@@ -219,7 +304,6 @@ def profile_view(request):
 
     with connection.cursor() as cur:
         _sc(cur)
-
         cur.execute("SELECT username FROM user_account WHERE user_id = %s", [user_id])
         row = cur.fetchone()
         ctx['username'] = row[0] if row else ''
@@ -249,7 +333,6 @@ def profile_view(request):
 def profile_update(request):
     if request.method != 'POST':
         return JsonResponse({'success': False, 'error': 'Method tidak diizinkan.'}, status=405)
-
     try:
         data    = json.loads(request.body)
         role    = request.session.get('role')
@@ -257,7 +340,6 @@ def profile_update(request):
 
         with connection.cursor() as cur:
             _sc(cur)
-
             if role == 'customer':
                 full_name    = data.get('full_name', '').strip()
                 phone_number = data.get('phone_number', '').strip()
@@ -291,7 +373,6 @@ def profile_update(request):
 def profile_update_password(request):
     if request.method != 'POST':
         return JsonResponse({'success': False, 'error': 'Method tidak diizinkan.'}, status=405)
-
     try:
         data    = json.loads(request.body)
         user_id = request.session.get('user_id')
