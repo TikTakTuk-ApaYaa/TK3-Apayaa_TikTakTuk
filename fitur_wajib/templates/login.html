@@ -1,0 +1,181 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - TikTakTuk</title>
+  <style>
+    :root {
+      --bg: #eaf1ff;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #7b8494;
+      --border: #e5e7eb;
+      --primary: #2f5cf6;
+      --button: #151515;
+      --shadow: 0 16px 40px rgba(31, 41, 55, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+    }
+    .page { width: 100%; max-width: 480px; text-align: center; }
+    .logo {
+      width: 45px;
+      height: 45px;
+      margin: 0 auto 15px;
+      border-radius: 10px;
+      background: var(--primary);
+      color: white;
+      font-size: 19px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(47, 92, 246, 0.25);
+    }
+    .brand {
+      font-size: 28px;
+      line-height: 1;
+      font-weight: 800;
+      margin: 0 0 6px;
+      letter-spacing: 0;
+    }
+    .tagline {
+      font-size: 14px;
+      color: #6b7280;
+      margin: 0 0 24px;
+    }
+    .card {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      background: var(--card);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 32px 40px;
+      text-align: left;
+    }
+    .card h2 {
+      font-size: 20px;
+      line-height: 1.2;
+      margin: 0 0 6px;
+      font-weight: 800;
+    }
+    .card p {
+      font-size: 14px;
+      color: #8a8f99;
+      margin: 0 0 24px;
+      line-height: 1.35;
+    }
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #6b7280;
+      margin-bottom: 5px;
+    }
+    .form-group input {
+      width: 100%;
+      height: 46px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0 15px;
+      font-size: 15px;
+      color: var(--text);
+      outline: none;
+      background: white;
+      box-shadow: 0 2px 8px rgba(17, 24, 39, 0.05);
+    }
+    .form-group input:focus {
+      border-color: #c7d7ff;
+      box-shadow: 0 0 0 4px rgba(47, 92, 246, 0.10);
+    }
+    .hint {
+      margin: -4px 0 18px;
+      color: #8a8f99;
+      font-size: 12px;
+    }
+    .submit-btn {
+      width: 100%;
+      height: 48px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--button);
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .submit-btn:hover { background: #000000; }
+    .footer-link {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 14px;
+      color: #7b8494;
+      font-weight: 600;
+    }
+    .footer-link a {
+      color: #4f7cff;
+      text-decoration: none;
+      font-weight: 800;
+    }
+    .footer-link a:hover { text-decoration: underline; }
+    @media (max-width: 640px) {
+      body { padding: 32px 16px; align-items: flex-start; }
+      .card { padding: 28px 24px; border-radius: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="logo">TT</div>
+    <h1 class="brand">TikTakTuk</h1>
+    <p class="tagline">Platform Manajemen Pertunjukan &amp; Tiket</p>
+
+    <section class="card">
+      <h2>Masuk ke Akun Anda</h2>
+      <p>Gunakan kredensial Anda untuk mengakses platform</p>
+
+            <form method="POST" action="/login/">
+        {% csrf_token %}
+
+        {% if error %}
+        <div style="background:#fee2e2;color:#991b1b;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:14px;font-weight:600;">
+          ⚠ {{ error }}
+        </div>
+        {% endif %}
+
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username"
+                placeholder="Masukkan username" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password"
+                placeholder="Masukkan password" required>
+        </div>
+
+        <div class="hint">Contoh: admin1 / pass123</div>
+        <button type="submit" class="submit-btn">Masuk</button>
+      </form>
+    </section>
+
+    <div class="footer-link">
+      Belum punya akun? <a href="/pilih-role/">Daftar sekarang</a>
+    </div>
+  </main>
+</body>
+</html>

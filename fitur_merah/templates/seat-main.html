@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="id" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manajemen Kursi - TikTakTuk</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root { --sidebar-width: 260px; --primary-green: #1a7a4a; --transition-speed: 0.3s; }
+    body { font-family: 'Inter', sans-serif; background-color: var(--bs-body-bg); transition: background-color var(--transition-speed), color var(--transition-speed); }
+    .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; left: 0; top: 0; background: #111827; color: white; transition: all var(--transition-speed); z-index: 1000; border-right: 1px solid rgba(255,255,255,0.1); overflow-y: auto; }
+    [data-bs-theme="dark"] .sidebar { background: #000; }
+    .sidebar-header { padding: 1.5rem; font-weight: 800; font-size: 1.25rem; color: var(--primary-green); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .nav-list { list-style: none; padding: 1rem; margin: 0; }
+    .nav-item-custom { margin-bottom: 4px; }
+    .nav-link-custom { display: flex; align-items: center; gap: 12px; padding: 0.75rem 1rem; color: #9ca3af; text-decoration: none; border-radius: 8px; font-size: 0.875rem; font-weight: 500; transition: all 0.2s; }
+    .nav-link-custom:hover { background: rgba(255,255,255,0.05); color: white; }
+    .nav-link-custom.active { background: var(--primary-green); color: white; }
+    .nav-link-custom.logout-link { color: #f87171; }
+    .nav-link-custom.logout-link:hover { background: rgba(248,113,113,0.1); color: #f87171; }
+    .main-content { margin-left: var(--sidebar-width); padding: 0; min-height: 100vh; }
+    .top-bar { height: 70px; background: var(--bs-body-bg); border-bottom: 1px solid var(--bs-border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; position: sticky; top: 0; z-index: 999; }
+    .dev-tool-dropdown .dropdown-toggle::after { display: none; }
+    .theme-toggle-btn { cursor: pointer; font-size: 1.2rem; color: var(--bs-secondary-color); transition: color 0.2s; }
+    .theme-toggle-btn:hover { color: var(--primary-green); }
+    [data-bs-theme="dark"] .main-content { background: #0b0f17; color: #e5e7eb; }
+    [data-bs-theme="dark"] .main-content .bg-white,
+    [data-bs-theme="dark"] #seatModal .bg-white,
+    [data-bs-theme="dark"] #seatDeleteModal .bg-white { background-color: #111827 !important; }
+    [data-bs-theme="dark"] .main-content .bg-gray-50 { background-color: #1f2937 !important; }
+    [data-bs-theme="dark"] .main-content .text-gray-900,
+    [data-bs-theme="dark"] #seatModal .text-gray-900 { color: #f9fafb !important; }
+    [data-bs-theme="dark"] .main-content .text-gray-700,
+    [data-bs-theme="dark"] #seatModal .text-gray-700 { color: #d1d5db !important; }
+    [data-bs-theme="dark"] .main-content .text-gray-600,
+    [data-bs-theme="dark"] #seatDeleteModal .text-gray-600 { color: #cbd5e1 !important; }
+    [data-bs-theme="dark"] .main-content .text-gray-500,
+    [data-bs-theme="dark"] #seatModal .text-gray-500 { color: #9ca3af !important; }
+    [data-bs-theme="dark"] .main-content .border-gray-300,
+    [data-bs-theme="dark"] #seatModal .border,
+    [data-bs-theme="dark"] #seatDeleteModal .border { border-color: #374151 !important; }
+    [data-bs-theme="dark"] .main-content input,
+    [data-bs-theme="dark"] .main-content select,
+    [data-bs-theme="dark"] #seatModal input,
+    [data-bs-theme="dark"] #seatModal select {
+      background-color: #0f172a !important;
+      border-color: #374151 !important;
+      color: #f9fafb !important;
+    }
+    [data-bs-theme="dark"] .main-content input::placeholder,
+    [data-bs-theme="dark"] #seatModal input::placeholder { color: #94a3b8; }
+    [data-bs-theme="dark"] .main-content .divide-gray-200 > :not([hidden]) ~ :not([hidden]) { border-color: #1f2937 !important; }
+    [data-bs-theme="dark"] .main-content .shadow,
+    [data-bs-theme="dark"] #seatModal .shadow-xl,
+    [data-bs-theme="dark"] #seatDeleteModal .shadow-xl { box-shadow: 0 12px 30px rgba(0,0,0,0.35) !important; }
+    [data-bs-theme="dark"] .sidebar .bg-white { background-color: #ffffff !important; }
+    @media (max-width: 992px) { .sidebar { left: -100%; } .main-content { margin-left: 0; } }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="bg-white text-success rounded-2 px-2 py-1" style="font-size:14px;">TT</div>
+      <span>TikTakTuk</span>
+    </div>
+    <ul class="nav-list" id="sidebarMenu"></ul>
+  </aside>
+
+  <div class="main-content">
+    <header class="top-bar">
+      <h6 class="mb-0 fw-bold">Manajemen Kursi</h6>
+      <div class="d-flex align-items-center gap-3">
+        <div class="theme-toggle-btn" onclick="toggleDarkMode()">
+          <i id="themeIcon" class="bi bi-moon-stars"></i>
+        </div>
+        <div class="dropdown dev-tool-dropdown">
+          <button class="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+            <i class="bi bi-eye"></i><span id="roleLabel">Guest</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+            <li><h6 class="dropdown-header">Switch Role</h6></li>
+            <li><a class="dropdown-item" href="#" onclick="updateRole('admin')"><i class="bi bi-shield-check me-2"></i>Administrator</a></li>
+            <li><a class="dropdown-item" href="#" onclick="updateRole('organizer')"><i class="bi bi-calendar-event me-2"></i>Event Organizer</a></li>
+            <li><a class="dropdown-item" href="#" onclick="updateRole('customer')"><i class="bi bi-person me-2"></i>Customer</a></li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <div class="p-4">
+      <div class="max-w-7xl mx-auto">
+
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">Manajemen Kursi</h2>
+                <div class="text-gray-600 mt-1">Kelola kursi dan denah tempat duduk venue</div>
+            </div>
+            <a href="#" onclick="openModal('createSeatModal')" class="bg-blue-600 text-white px-4 py-2 rounded-lg no-underline hover:bg-blue-700">+ Tambah Kursi</a>
+        </div>
+
+        <!-- STATS -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div class="bg-white p-6 rounded-lg shadow">
+                <div class="text-sm font-medium text-gray-500">TOTAL KURSI</div>
+                <div id="seatTotal" class="text-2xl font-bold text-gray-900">{{ total_seat }}</div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow">
+                <div class="text-sm font-medium text-gray-500">TERSEDIA</div>
+                <div id="seatAvailable" class="text-2xl font-bold text-gray-900">{{ total_available }}</div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow">
+                <div class="text-sm font-medium text-gray-500">TERISI</div>
+                <div id="seatFilled" class="text-2xl font-bold text-gray-900">{{ total_filled }}</div>
+            </div>
+        </div>
+
+        <!-- FILTER -->
+        <div class="flex gap-4 mb-6">
+            <input id="seatSearch" type="text" placeholder="Cari section, baris, atau nomor..." class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <select id="seatVenueFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option>Semua Venue</option>
+                {% for v in venues %}
+                <option value="{{ v.id }}">{{ v.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- TABLE -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SECTION</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">BARIS</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NO. KURSI</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">VENUE</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">STATUS</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                    </tr>
+                </thead>
+
+                <tbody id="seatTableBody" class="divide-y divide-gray-200">
+                {% for seat in seats %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ seat.section }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ seat.row }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ seat.number }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ seat.venue_name }}</td>
+
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if seat.is_assigned %}
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800">TERISI</span>
+                            {% else %}
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">TERSEDIA</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <button class="text-indigo-600 hover:text-indigo-900 mr-2">✏️</button>
+
+                            {% if seat.is_assigned %}
+                                <button class="text-gray-400 cursor-not-allowed" title="Sudah dipakai">🗑️</button>
+                            {% else %}
+                                <button class="text-red-600 hover:text-red-900">🗑️</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div id="seatModal" class="hidden fixed inset-0 z-[2000] bg-black/40 flex items-center justify-center p-4">
+    <form id="seatForm" class="bg-white rounded-lg shadow-xl w-full max-w-lg p-6">
+      <div class="flex items-center justify-between mb-5">
+        <h3 id="seatModalTitle" class="text-xl font-bold text-gray-900">Tambah Kursi</h3>
+        <button type="button" onclick="closeSeatModal()" class="text-3xl leading-none text-gray-400 hover:text-gray-700">&times;</button>
+      </div>
+      <input id="seatId" type="hidden">
+      <div class="space-y-4">
+        <label class="block">
+          <span class="text-xs font-bold uppercase text-gray-500">Venue</span>
+          <select id="seatVenue" class="mt-1 w-full border rounded-lg px-3 py-2" required></select>
+        </label>
+        <label class="block">
+          <span class="text-xs font-bold uppercase text-gray-500">Seksi</span>
+          <input id="seatSection" class="mt-1 w-full border rounded-lg px-3 py-2" required>
+        </label>
+        <label class="block">
+          <span class="text-xs font-bold uppercase text-gray-500">Baris</span>
+          <input id="seatRow" class="mt-1 w-full border rounded-lg px-3 py-2" required>
+        </label>
+        <label class="block">
+          <span class="text-xs font-bold uppercase text-gray-500">Nomor</span>
+          <input id="seatNumber" class="mt-1 w-full border rounded-lg px-3 py-2" required>
+        </label>
+        <label class="flex items-center gap-2 text-sm text-gray-700">
+          <input id="seatAssigned" type="checkbox" class="rounded">
+          Sudah terisi / dipakai tiket
+        </label>
+      </div>
+      <div class="grid grid-cols-2 gap-3 mt-6">
+        <button type="button" onclick="closeSeatModal()" class="border rounded-lg py-2 font-bold">Batal</button>
+        <button type="submit" class="bg-blue-600 text-white rounded-lg py-2 font-bold">Simpan</button>
+      </div>
+    </form>
+  </div>
+
+  <div id="seatDeleteModal" class="hidden fixed inset-0 z-[2000] bg-black/40 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-lg p-6">
+      <h3 class="text-xl font-bold text-red-600 mb-3">Hapus Kursi</h3>
+      <p id="seatDeleteText" class="text-gray-600">Apakah Anda yakin ingin menghapus kursi ini?</p>
+      <div class="flex justify-end gap-3 mt-6">
+        <button type="button" onclick="closeSeatDeleteModal()" class="border rounded-lg px-5 py-2 font-bold">Batal</button>
+        <button id="seatDeleteConfirm" type="button" class="bg-red-600 text-white rounded-lg px-5 py-2 font-bold">Hapus</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../../fitur_wajib/templates/navbar.js"></script>
+  <script>
+  const seatVenues = ['Stadion Gelora Bung Karno', 'Jakarta Convention Center', 'The Kasablanka Hall'];
+  const seatSeed = [
+    { id: 1, venue: seatVenues[0], section: 'VIP', row: 'A', number: '1', isAssigned: false },
+    { id: 2, venue: seatVenues[0], section: 'VIP', row: 'A', number: '2', isAssigned: true },
+    { id: 3, venue: seatVenues[1], section: 'Festival', row: 'B', number: '7', isAssigned: false },
+    { id: 4, venue: seatVenues[2], section: 'Tribune', row: 'C', number: '12', isAssigned: false }
+  ];
+  let seats = JSON.parse(localStorage.getItem('tiktaktukSeats') || 'null') || seatSeed;
+  let seatPendingDeleteId = null;
+
+  function saveSeats() {
+    localStorage.setItem('tiktaktukSeats', JSON.stringify(seats));
+  }
+
+  function renderSeatOptions() {
+    const options = seatVenues.map(venue => `<option value="${venue}">${venue}</option>`).join('');
+    document.getElementById('seatVenue').innerHTML = options;
+    document.getElementById('seatVenueFilter').innerHTML = '<option>Semua Venue</option>' + options;
+  }
+
+  function renderSeats() {
+    const search = document.getElementById('seatSearch').value.toLowerCase();
+    const venue = document.getElementById('seatVenueFilter').value;
+    const filtered = seats.filter(seat => {
+      const text = `${seat.venue} ${seat.section} ${seat.row} ${seat.number}`.toLowerCase();
+      return text.includes(search) && (venue === 'Semua Venue' || seat.venue === venue);
+    });
+
+    document.getElementById('seatTotal').textContent = seats.length;
+    document.getElementById('seatAvailable').textContent = seats.filter(seat => !seat.isAssigned).length;
+    document.getElementById('seatFilled').textContent = seats.filter(seat => seat.isAssigned).length;
+    document.getElementById('seatTableBody').innerHTML = filtered.map(seat => `
+      <tr>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${seat.section}</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${seat.row}</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${seat.number}</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${seat.venue}</td>
+        <td class="px-6 py-4 whitespace-nowrap">
+          <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${seat.isAssigned ? 'bg-orange-100 text-orange-800' : 'bg-green-100 text-green-800'}">${seat.isAssigned ? 'TERISI' : 'TERSEDIA'}</span>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+          <button onclick="openSeatModal(${seat.id})" class="text-indigo-600 hover:text-indigo-900 mr-3">Update</button>
+          <button onclick="openSeatDeleteModal(${seat.id})" class="${seat.isAssigned ? 'text-gray-400 cursor-not-allowed' : 'text-red-600 hover:text-red-900'}" ${seat.isAssigned ? 'disabled title="Sudah dipakai tiket"' : ''}>Hapus</button>
+        </td>
+      </tr>`).join('');
+  }
+
+  function openModal(modalId) {
+    if (modalId === 'createSeatModal') openSeatModal();
+  }
+
+  function openSeatModal(id) {
+    const seat = seats.find(item => item.id === id);
+    document.getElementById('seatModalTitle').textContent = seat ? 'Update Kursi' : 'Tambah Kursi';
+    document.getElementById('seatId').value = seat?.id || '';
+    document.getElementById('seatVenue').value = seat?.venue || seatVenues[0];
+    document.getElementById('seatSection').value = seat?.section || '';
+    document.getElementById('seatRow').value = seat?.row || '';
+    document.getElementById('seatNumber').value = seat?.number || '';
+    document.getElementById('seatAssigned').checked = Boolean(seat?.isAssigned);
+    document.getElementById('seatModal').classList.remove('hidden');
+  }
+
+  function closeSeatModal() {
+    document.getElementById('seatModal').classList.add('hidden');
+  }
+
+  function openSeatDeleteModal(id) {
+    const seat = seats.find(item => item.id === id);
+    if (!seat || seat.isAssigned) return;
+    seatPendingDeleteId = id;
+    document.getElementById('seatDeleteText').textContent = `Hapus kursi ${seat.section}-${seat.row}${seat.number} di ${seat.venue}?`;
+    document.getElementById('seatDeleteModal').classList.remove('hidden');
+  }
+
+  function closeSeatDeleteModal() {
+    seatPendingDeleteId = null;
+    document.getElementById('seatDeleteModal').classList.add('hidden');
+  }
+
+  document.getElementById('seatForm').addEventListener('submit', event => {
+    event.preventDefault();
+    const id = Number(document.getElementById('seatId').value);
+    const payload = {
+      id: id || Date.now(),
+      venue: document.getElementById('seatVenue').value,
+      section: document.getElementById('seatSection').value.trim(),
+      row: document.getElementById('seatRow').value.trim(),
+      number: document.getElementById('seatNumber').value.trim(),
+      isAssigned: document.getElementById('seatAssigned').checked
+    };
+    seats = id ? seats.map(seat => seat.id === id ? payload : seat) : [...seats, payload];
+    saveSeats();
+    closeSeatModal();
+    renderSeats();
+  });
+
+  document.getElementById('seatDeleteConfirm').addEventListener('click', () => {
+    seats = seats.filter(seat => seat.id !== seatPendingDeleteId);
+    saveSeats();
+    closeSeatDeleteModal();
+    renderSeats();
+  });
+
+  document.getElementById('seatSearch').addEventListener('input', renderSeats);
+  document.getElementById('seatVenueFilter').addEventListener('change', renderSeats);
+  renderSeatOptions();
+  renderSeats();
+  </script>
+</body>
+</html>
