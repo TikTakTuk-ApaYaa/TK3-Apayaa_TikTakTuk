@@ -20,6 +20,7 @@
       border-radius: 20px; 
       border: none; 
       box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      margin: auto;
     }
     .logo-box {
       background-color: #2b59ff;
@@ -36,10 +37,9 @@
     }
     .form-label { font-size: 0.9rem; font-weight: 600; margin-bottom: 5px; }
     .form-control { border-radius: 8px; padding: 10px 15px; border: 1px solid #dee2e6; }
-    .btn-dark { background-color: #1a1a1a; border: none; padding: 12px; border-radius: 10px; font-weight: bold; }
+    .btn-dark { background-color: #1a1a1a; border: none; padding: 12px; border-radius: 10px; font-weight: bold; color: white; transition: 0.3s; }
+    .btn-dark:hover { background-color: #333; }
     .back-link { color: #2b59ff; text-decoration: none; font-size: 0.85rem; font-weight: 600; }
-    
-    /* Style untuk pesan error password */
     .error-message { color: #dc3545; font-size: 0.75rem; margin-top: 5px; display: none; }
   </style>
 </head>
@@ -54,36 +54,38 @@
       </div>
 
       <div class="text-center mb-4">
-        <a href="Cpengguna_pilihRole.html" class="back-link">← Kembali</a>
+        <a href="{% url 'fitur_wajib:pilih_role' %}" class="back-link">← Kembali</a>
       </div>
 
       <h5 class="fw-bold mb-1">Daftar sebagai Pelanggan</h5>
       <p class="text-muted small mb-4">Buat akun baru untuk memulai pengalaman Anda</p>
 
-      <form id="registerForm" action="login.html" onsubmit="return validateForm()">
+      {% if error %}
+      <div class="alert alert-danger small py-2" role="alert">
+        {{ error }}
+      </div>
+      {% endif %}
+
+      <form id="registerForm" method="POST" onsubmit="return validateForm()">
+        {% csrf_token %}
         <div class="mb-3">
           <label class="form-label">Nama Lengkap</label>
-          <input type="text" class="form-control" placeholder="Masukkan nama lengkap" required>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Email</label>
-          <input type="email" class="form-control" placeholder="Masukkan email" required>
+          <input type="text" name="full_name" class="form-control" placeholder="Masukkan nama lengkap" required>
         </div>
 
         <div class="mb-3">
           <label class="form-label">Nomor Telepon</label>
-          <input type="tel" class="form-control" pattern="[0-9]+" title="Hanya masukkan angka" placeholder="Contoh: 0812345678" required>
+          <input type="tel" name="phone_number" class="form-control" pattern="[0-9]+" title="Hanya masukkan angka" placeholder="Contoh: 0812345678" required>
         </div>
 
         <div class="mb-3">
           <label class="form-label">Username</label>
-          <input type="text" class="form-control" placeholder="Pilih username" required>
+          <input type="text" name="username" class="form-control" placeholder="Pilih username" required>
         </div>
 
         <div class="mb-3">
           <label class="form-label">Password</label>
-          <input type="password" id="password" class="form-control" placeholder="Minimal 6 karakter" required minlength="6">
+          <input type="password" id="password" name="password" class="form-control" placeholder="Minimal 6 karakter" required minlength="6">
         </div>
 
         <div class="mb-3">
@@ -103,7 +105,7 @@
       </form>
 
       <div class="text-center mt-4">
-        <p class="small text-muted">Sudah punya akun? <a href="/fitur_wajib/templates/login.html" class="text-primary text-decoration-none fw-bold">Login di sini</a></p>
+        <p class="small text-muted">Sudah punya akun? <a href="{% url 'fitur_wajib:login' %}" class="text-primary text-decoration-none fw-bold">Login di sini</a></p>
       </div>
     </div>
   </div>
@@ -117,11 +119,11 @@
       if (password !== confirmPassword) {
         errorDiv.style.display = "block";
         document.getElementById("confirm_password").classList.add("is-invalid");
-        return false; // Mencegah form dikirim
+        return false; 
       } else {
         errorDiv.style.display = "none";
         document.getElementById("confirm_password").classList.remove("is-invalid");
-        return true; // Form dikirim ke halaman login
+        return true; 
       }
     }
   </script>
