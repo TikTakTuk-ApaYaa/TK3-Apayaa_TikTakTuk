@@ -405,23 +405,38 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const realRole = '{{ role }}'; 
+  const realRole = '{{ role }}';
+  if (realRole) {
+      localStorage.setItem('role', realRole);
+      window.currentRole = realRole;
+  }
 
+  document.addEventListener('DOMContentLoaded', () => {
     const topBarTitle = document.getElementById('topBarTitle');
     if (topBarTitle) topBarTitle.textContent = 'Dashboard';
 
     const roleLabel = document.getElementById('roleLabel');
-    if (roleLabel && realRole) {
-        const formattedRole = realRole.charAt(0).toUpperCase() + realRole.slice(1);
-        roleLabel.textContent = formattedRole;
+    if (roleLabel && window.currentRole) {
+        roleLabel.textContent = window.currentRole.charAt(0).toUpperCase() + window.currentRole.slice(1);
     }
 
-    if (realRole) {
-        localStorage.setItem('role', realRole);
-        window.currentRole = realRole;
+    const dashAdmin = document.getElementById('dash-admin');
+    const dashOrg = document.getElementById('dash-organizer');
+    const dashCust = document.getElementById('dash-customer');
+
+    if (dashAdmin) dashAdmin.classList.add('d-none');
+    if (dashOrg) dashOrg.classList.add('d-none');
+    if (dashCust) dashCust.classList.add('d-none');
+
+    // Tampilkan yang sesuai dengan Role dari Django
+    if (window.currentRole === 'admin' && dashAdmin) {
+        dashAdmin.classList.remove('d-none');
+    } else if (window.currentRole === 'organizer' && dashOrg) {
+        dashOrg.classList.remove('d-none');
+    } else if (window.currentRole === 'customer' && dashCust) {
+        dashCust.classList.remove('d-none');
     }
-});
+  });
 </script>
 
 <script src="{% static 'js/navbar.js' %}?v=999"></script>

@@ -357,7 +357,8 @@
     }).join('')}</div>`;
   }
 
-  function beliTiket(eventId) { window.location.href = '/order/create/'; }
+  
+    function beliTiket(eventId) { window.location.href = `/events/${eventId}/checkout/`; }
 
   // ── Artist tags ───────────────────────────────────────────────────────────
   function addArtistTag(ev, mode) {
@@ -555,5 +556,18 @@
     }, 100);
   });
 </script>
+{% if messages %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    {% for message in messages %}
+      // Map warna: error/danger jadi merah, success jadi hijau
+      let msgType = "{{ message.tags }}";
+      if (msgType === 'error') msgType = 'danger';
+      
+      showToast("{{ message }}", msgType);
+    {% endfor %}
+  });
+</script>
+{% endif %}
 </body>
 </html>
