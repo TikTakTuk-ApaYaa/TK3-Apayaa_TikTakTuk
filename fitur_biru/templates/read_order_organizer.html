@@ -1,296 +1,106 @@
-<!DOCTYPE html>
-<html lang="id" data-bs-theme="light">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Laporan Pesanan - Organizer TikTakTuk</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-  <style>
-    
-    :root { --sidebar-width: 260px; --primary-green: #1a7a4a; --transition-speed: 0.3s; }
-    body { font-family: 'Inter', sans-serif; background-color: var(--bs-body-bg); transition: background-color var(--transition-speed), color var(--transition-speed); color: #333; }
-    .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; left: 0; top: 0; background: #111827; color: white; transition: all var(--transition-speed); z-index: 1000; border-right: 1px solid rgba(255,255,255,0.1); overflow-y: auto; }
-    [data-bs-theme="dark"] .sidebar { background: #000; }
-    .sidebar-header { padding: 1.5rem; font-weight: 800; font-size: 1.25rem; color: var(--primary-green); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-    .nav-list { list-style: none; padding: 1rem; margin: 0; }
-    .nav-item-custom { margin-bottom: 4px; }
-    .nav-link-custom { display: flex; align-items: center; gap: 12px; padding: 0.75rem 1rem; color: #9ca3af; text-decoration: none; border-radius: 8px; font-size: 0.875rem; font-weight: 500; transition: all 0.2s; }
-    .nav-link-custom:hover { background: rgba(255,255,255,0.05); color: white; }
-    .nav-link-custom.active { background: var(--primary-green); color: white; }
-    .nav-link-custom.logout-link { color: #f87171; }
-    .nav-link-custom.logout-link:hover { background: rgba(248,113,113,0.1); color: #f87171; }
-    .main-content { margin-left: var(--sidebar-width); padding: 0; min-height: 100vh; }
-    .top-bar { height: 70px; background: var(--bs-body-bg); border-bottom: 1px solid var(--bs-border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; position: sticky; top: 0; z-index: 999; }
-    .dev-tool-dropdown .dropdown-toggle::after { display: none; }
-    .theme-toggle-btn { cursor: pointer; font-size: 1.2rem; color: var(--bs-secondary-color); transition: color 0.2s; }
-    .theme-toggle-btn:hover { color: var(--primary-green); }
-    @media (max-width: 992px) { .sidebar { left: -100%; } .main-content { margin-left: 0; } }
+{% include '_topbar.html' %}
+{% load static %}
 
-    .container { max-width: 900px; margin-top: 40px; padding-bottom: 50px; }
-    .header-section { margin-bottom: 25px; }
-    .header-section h4 { font-weight: 800; color: #1a1a1a; }
-    .stat-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 30px; }
-    .stat-box { padding: 15px; border-radius: 12px; border: 1px solid #f0f0f0; background: #fafafa; }
-    .stat-label { font-size: 0.75rem; color: #888; display: block; font-weight: 600; text-transform: uppercase; margin-bottom: 5px; }
-    .stat-value { font-size: 1.1rem; font-weight: 800; color: #2b59ff; }
-    .filter-section { display: flex; gap: 10px; margin-bottom: 20px; }
-    .search-input { border-radius: 10px; border: 1px solid #eee; padding: 10px 15px; font-size: 0.9rem; flex: 3; }
-    .status-select { border-radius: 10px; border: 1px solid #eee; padding: 10px; font-size: 0.9rem; flex: 1; color: #666; cursor: pointer; background-color: #fff; }
-    .order-list-header { display: grid; grid-template-columns: 1.2fr 1.5fr 1fr 1fr 1fr; padding: 12px 15px; border-bottom: 2px solid #f8f9fa; font-size: 0.75rem; font-weight: 700; color: #bbb; text-transform: uppercase; }
-    .order-item { display: grid; grid-template-columns: 1.2fr 1.5fr 1fr 1fr 1fr; align-items: center; padding: 18px 15px; border-bottom: 1px solid #f0f0f0; text-decoration: none; color: inherit; transition: all 0.2s; }
-    .order-item:hover { background: #fcfcfc; }
-    .order-id { font-weight: 700; color: #2b59ff; font-size: 0.9rem; }
-    .customer-name { font-weight: 600; font-size: 0.9rem; color: #333; }
-    .order-date { font-size: 0.85rem; color: #666; }
-    .order-total { font-weight: 800; font-size: 0.9rem; color: #1a1a1a; }
-    .status-text { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
-    .status-lunas { color: #00ab66; }
-    .status-pending { color: #ff9800; }
-    .status-dibatalkan { color: #dc3545; }
-    .btn-back { color: #666; text-decoration: none; font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 15px; }
-  </style>
-</head>
-<body>
+{% block title %}Laporan Pesanan - Organizer TikTakTuk{% endblock %}
 
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <div class="bg-white text-success rounded-2 px-2 py-1" style="font-size:14px;">TT</div>
-      <span>TikTakTuk</span>
+{% block extra_css %}
+<style>
+  .container-page { max-width: 950px; margin-top: 40px; padding-bottom: 50px; }
+  .stat-container { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 30px; }
+  .stat-box { padding: 15px; border-radius: 12px; border: 1px solid #f0f0f0; background: #fafafa; }
+  [data-bs-theme="dark"] .stat-box { background: #1e1e2e; border-color: #2a2a3e; }
+  .stat-label { font-size: 0.75rem; color: #888; display: block; font-weight: 600; text-transform: uppercase; margin-bottom: 5px; }
+  .stat-value { font-size: 1.1rem; font-weight: 800; color: #2b59ff; }
+  .filter-section { display: flex; gap: 10px; margin-bottom: 20px; }
+  .search-input { border-radius: 10px; border: 1px solid #eee; padding: 10px 15px; font-size: 0.9rem; flex: 3; background: var(--bs-body-bg); color: var(--bs-body-color); }
+  .status-select { border-radius: 10px; border: 1px solid #eee; padding: 10px; font-size: 0.9rem; flex: 1; cursor: pointer; background: var(--bs-body-bg); color: var(--bs-body-color); }
+  .order-list-header { display: grid; grid-template-columns: 1.5fr 1.5fr 1fr 1fr 1fr; padding: 10px 15px; border-bottom: 2px solid #f8f9fa; font-size: 0.8rem; font-weight: 700; color: #999; text-transform: uppercase; }
+  .order-item { display: grid; grid-template-columns: 1.5fr 1.5fr 1fr 1fr 1fr; align-items: center; padding: 18px 15px; border-bottom: 1px solid #f0f0f0; }
+  [data-bs-theme="dark"] .order-item { border-bottom-color: #2a2a3e; }
+  .order-id { font-weight: 700; color: #2b59ff; font-size: 0.85rem; word-break: break-all; }
+  .customer-name { font-weight: 600; font-size: 0.9rem; }
+  .order-date { font-size: 0.85rem; color: #666; }
+  .order-total { font-weight: 800; }
+  .status-text { font-size: 0.75rem; font-weight: 700; }
+  .status-PAID { color: #00ab66; }
+  .status-UNPAID { color: #ff9800; }
+  .status-CANCELLED { color: #dc3545; }
+  .empty-state { text-align: center; padding: 60px; color: #aaa; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-page px-4">
+  <div class="mb-4">
+    <h4 class="fw-bold">Daftar Order</h4>
+    <p class="text-muted small">Order dari event yang Anda selenggarakan</p>
+  </div>
+
+  {% if messages %}
+    {% for msg in messages %}
+      <div class="alert alert-{{ msg.tags|default:'info' }} alert-dismissible fade show" role="alert">
+        {{ msg }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Statistik -->
+  <div class="stat-container">
+    <div class="stat-box">
+      <span class="stat-label">Total Order</span>
+      <span class="stat-value">{{ stats.0|default:0 }}</span>
     </div>
-    <ul class="nav-list mt-2" id="sidebarMenu"></ul>
-  </aside>
-
-  <div class="main-content">
-    
-    <header class="top-bar">
-      <div>
-        <h6 class="mb-0 fw-bold" id="currentSectionTitle">Semua Order</h6>
-      </div>
-      <div class="d-flex align-items-center gap-3">
-        <div class="theme-toggle-btn" onclick="toggleDarkMode()">
-          <i id="themeIcon" class="bi bi-moon-stars"></i>
-        </div>
-        <div class="dropdown dev-tool-dropdown">
-          <button class="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
-            <i class="bi bi-eye"></i><span id="roleLabel">Guest</span>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
-            <li><h6 class="dropdown-header">Switch Role</h6></li>
-            <li><a class="dropdown-item" href="#" onclick="updateRole('admin')"><i class="bi bi-shield-check me-2"></i>Administrator</a></li>
-            <li><a class="dropdown-item" href="#" onclick="updateRole('organizer')"><i class="bi bi-calendar-event me-2"></i>Event Organizer</a></li>
-            <li><a class="dropdown-item" href="#" onclick="updateRole('customer')"><i class="bi bi-person me-2"></i>Customer</a></li>
-          </ul>
-        </div>
-      </div>
-    </header>
-
-    <div class="container">
-      <a href="#" class="btn-back" onclick="window.history.back()">← Kembali</a>
-      
-      <div class="header-section">
-        <h4>Manajemen Pesanan</h4>
-      </div>
-
-      <div class="stat-container">
-        <div class="stat-box">
-          <span class="stat-label">Total Order</span>
-          <span class="stat-value" id="statTotalOrder">45</span>
-        </div>
-        <div class="stat-box">
-          <span class="stat-label">Lunas</span>
-          <span class="stat-value" id="statLunas" style="color: #00ab66;">39</span>
-        </div>
-        <div class="stat-box">
-          <span class="stat-label">Pending</span>
-          <span class="stat-value" id="statPending" style="color: #ff9800;">6</span>
-        </div>
-        <div class="stat-box" style="background: #f0f4ff; border-color: #dbe4ff;">
-          <span class="stat-label" style="color: #2b59ff;">Revenue</span>
-          <span class="stat-value" id="statRevenue" style="color: #1a1a1a;">Rp 45M</span>
-        </div>
-      </div>
-
-      <div class="filter-section">
-        <input type="text" id="searchInput" class="search-input" placeholder="Cari Order ID atau Nama Pelanggan..." oninput="filterOrders()">
-        <select id="statusFilter" class="status-select" onchange="filterOrders()">
-          <option value="all">Semua Status</option>
-          <option value="pending">Pending</option>
-          <option value="lunas">Lunas</option>
-          <option value="dibatalkan">Dibatalkan</option>
-        </select>
-      </div>
-
-      <div class="order-list-header">
-        <span>Order ID</span>
-        <span>Pelanggan</span>
-        <span>Tanggal</span>
-        <span>Status</span>
-        <span>Total</span>
-      </div>
-
-      <div class="order-list">
-        <a href="#" class="order-item">
-          <span class="order-id">#ORD-99281</span>
-          <span class="customer-name">Andi Herlambang</span>
-          <span class="order-date">23/04/2026</span>
-          <span class="status-text status-pending">Pending</span>
-          <span class="order-total" data-value="500000">Rp 500.000</span>
-        </a>
-
-        <a href="#" class="order-item">
-          <span class="order-id">#ORD-99282</span>
-          <span class="customer-name">Budiono Siregar</span>
-          <span class="order-date">23/05/2026</span>
-          <span class="status-text status-lunas">Lunas</span>
-          <span class="order-total" data-value="1800000">Rp 1.800.000</span>
-        </a>
-
-        <a href="#" class="order-item">
-          <span class="order-id">#ORD-99283</span>
-          <span class="customer-name">Caitlin Pevita Bunga</span>
-          <span class="order-date">30/05/2026</span>
-          <span class="status-text status-lunas">Lunas</span>
-          <span class="order-total" data-value="5000000">Rp 5.000.000</span>
-        </a>
-
-        <a href="#" class="order-item">
-          <span class="order-id">#ORD-99284</span>
-          <span class="customer-name">Dr. Grace</span>
-          <span class="order-date">02/06/2026</span>
-          <span class="status-text status-lunas">Lunas</span>
-          <span class="order-total" data-value="900000">Rp 900.000</span>
-        </a>
-
-        <a href="#" class="order-item">
-          <span class="order-id">#ORD-99285</span>
-          <span class="customer-name">Rocky</span>
-          <span class="order-date">13/06/2026</span>
-          <span class="status-text status-pending">Pending</span>
-          <span class="order-total" data-value="400000">Rp 400.000</span>
-        </a>
-
-        <a href="#" class="order-item">
-          <span class="order-id">#ORD-99286</span>
-          <span class="customer-name">Murphy Cooper</span>
-          <span class="order-date">15/06/2026</span>
-          <span class="status-text status-lunas">Lunas</span>
-          <span class="order-total" data-value="1000000">Rp 1.000.000</span>
-        </a>
-
-        <a href="#" class="order-item">
-          <span class="order-id">#ORD-99287</span>
-          <span class="customer-name">Brand</span>
-          <span class="order-date">23/06/2026</span>
-          <span class="status-text status-pending">Pending</span>
-          <span class="order-total" data-value="300000">Rp 300.000</span>
-        </a>
-
-        <a href="#" class="order-item">
-          <span class="order-id">#ORD-99288</span>
-          <span class="customer-name">Ryan Gosling</span>
-          <span class="order-date">25/06/2026</span>
-          <span class="status-text status-lunas">Lunas</span>
-          <span class="order-total" data-value="12000000">Rp 12.000.000</span>
-        </a>
-
-        <a href="#" class="order-item">
-          <span class="order-id">#ORD-99289</span>
-          <span class="customer-name">Windah Basudara</span>
-          <span class="order-date">25/06/2026</span>
-          <span class="status-text status-lunas">Lunas</span>
-          <span class="order-total" data-value="500000">Rp 500.000</span>
-        </a>
-
-        <a href="#" class="order-item">
-          <span class="order-id">#ORD-99290</span>
-          <span class="customer-name">Niky Putra</span>
-          <span class="order-date">30/06/2026</span>
-          <span class="status-text status-lunas">Lunas</span>
-          <span class="order-total" data-value="700000">Rp 700.000</span>
-        </a>
-
-        <a href="#" class="order-item">
-          <span class="order-id">#ORD-99291</span>
-          <span class="customer-name">Mario Caesar</span>
-          <span class="order-date">23/04/2026</span>
-          <span class="status-text status-lunas">Lunas</span>
-          <span class="order-total" data-value="900000">Rp 900.000</span>
-        </a>
-
-        <a href="#" class="order-item">
-          <span class="order-id">#ORD-99292</span>
-          <span class="customer-name">Peter Parker</span>
-          <span class="order-date">23/04/2026</span>
-          <span class="status-text status-pending">Pending</span>
-          <span class="order-total" data-value="500000">Rp 500.000</span>
-        </a>
-      </div>
+    <div class="stat-box">
+      <span class="stat-label">Lunas</span>
+      <span class="stat-value" style="color:#00ab66">{{ stats.1|default:0 }}</span>
+    </div>
+    <div class="stat-box">
+      <span class="stat-label">Pending</span>
+      <span class="stat-value" style="color:#ff9800">{{ stats.2|default:0 }}</span>
+    </div>
+    <div class="stat-box">
+      <span class="stat-label">Total Revenue</span>
+      <span class="stat-value" style="color:#333;font-size:0.95rem;">Rp {{ stats.3|floatformat:0 }}</span>
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="../../fitur_wajib/templates/navbar.js"></script>
-  
-  <script>
-    // Fungsi untuk menghitung ulang stat Total, Lunas, Pending, dan Revenue
-    function calculateStats() {
-      const items = document.querySelectorAll('.order-item');
-      let total = 0, lunas = 0, pending = 0, revenue = 0;
+  <!-- Filter -->
+  <form method="GET" class="filter-section">
+    <input type="text" name="search" value="{{ search }}" class="search-input" placeholder="Cari Order ID atau Pelanggan...">
+    <select name="status" class="status-select" onchange="this.form.submit()">
+      <option value="all"       {% if status_filter == 'all'       %}selected{% endif %}>Semua Status</option>
+      <option value="lunas"     {% if status_filter == 'lunas'     %}selected{% endif %}>Lunas</option>
+      <option value="pending"   {% if status_filter == 'pending'   %}selected{% endif %}>Pending</option>
+      <option value="dibatalkan"{% if status_filter == 'dibatalkan'%}selected{% endif %}>Dibatalkan</option>
+    </select>
+    <button type="submit" class="btn btn-success px-3">Cari</button>
+  </form>
 
-      items.forEach(item => {
-        if (item.style.display !== 'none') {
-          total++;
-          const status = item.querySelector('.status-text').innerText.toLowerCase();
-          const amount = parseInt(item.querySelector('.order-total').getAttribute('data-value'));
-          
-          if (status === 'lunas') {
-            lunas++;
-            revenue += amount;
-          } else if (status === 'pending') {
-            pending++;
-          }
-        }
-      });
+  <!-- Tabel -->
+  <div class="order-list-header">
+    <span>Order ID</span>
+    <span>Pelanggan</span>
+    <span>Tanggal</span>
+    <span>Status</span>
+    <span>Total</span>
+  </div>
 
-      document.getElementById('statTotalOrder').innerText = total;
-      document.getElementById('statLunas').innerText = lunas;
-      document.getElementById('statPending').innerText = pending;
-      
-      if (revenue > 1000000) {
-        document.getElementById('statRevenue').innerText = 'Rp ' + (revenue / 1000000).toFixed(1) + 'M';
-      } else {
-        document.getElementById('statRevenue').innerText = 'Rp ' + revenue.toLocaleString('id');
-      }
-    }
-
-    // Fungsi Filter Data
-    function filterOrders() {
-      const query = document.getElementById('searchInput').value.toLowerCase();
-      const statusFilter = document.getElementById('statusFilter').value.toLowerCase();
-      const items = document.querySelectorAll('.order-item');
-
-      items.forEach(item => {
-        const idText = item.querySelector('.order-id').innerText.toLowerCase();
-        const nameText = item.querySelector('.customer-name').innerText.toLowerCase();
-        const statusText = item.querySelector('.status-text').innerText.toLowerCase();
-
-        const matchSearch = idText.includes(query) || nameText.includes(query);
-        const matchStatus = statusFilter === 'all' || statusText === statusFilter;
-
-        if (matchSearch && matchStatus) {
-          item.style.display = 'grid'; 
-        } else {
-          item.style.display = 'none'; 
-        }
-      });
-      calculateStats();
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      calculateStats();
-    });
-  </script>
-</body>
-</html>
+  {% if orders %}
+    {% for o in orders %}
+    <div class="order-item">
+      <span class="order-id">#{{ o.0|slice:":8"|upper }}</span>
+      <span class="customer-name">{{ o.1 }}</span>
+      <span class="order-date">{{ o.2|date:"d/m/Y H:i" }}</span>
+      <span class="status-text status-{{ o.3 }}">{{ o.3 }}</span>
+      <span class="order-total">Rp {{ o.4|floatformat:0 }}</span>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">
+      <i class="bi bi-inbox" style="font-size:3rem;"></i>
+      <p class="mt-3">Belum ada order untuk event Anda.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
