@@ -2,147 +2,116 @@ import uuid
 import psycopg2
 from django.shortcuts import render, redirect
 from django.contrib import messages
-
 from django.conf import settings
 from decimal import Decimal
 
+
 # ============================================================
-# HELPER: Get raw DB connection (Supabase / PostgreSQL)
+# HELPER
 # ============================================================
 def get_db_conn():
-    """
-    Kembalikan koneksi psycopg2 ke Supabase menggunakan URL string langsung.
-    """
     conn = psycopg2.connect(
         settings.DATABASE_URL_STRING,
         options="-c search_path=tiktaktuk"
     )
     return conn
 
-
 def get_user_role(request):
-    """Ambil role user yang sedang login dari session."""
     return request.session.get('role', None)
-
 
 def get_customer_id(request):
     return request.session.get('customer_id', None)
 
-
 def get_organizer_id(request):
     return request.session.get('organizer_id', None)
 
-
-# ============================================================
-# HELPER: tangkap pesan error dari trigger PostgreSQL
-# ============================================================
 def extract_trigger_message(exc):
-    """
-    psycopg2.errors.RaiseException menyimpan pesan di exc.diag.message_primary.
-    Fallback ke str(exc) kalau atribut tidak ada.
-    """
     try:
         return exc.diag.message_primary
     except AttributeError:
         return str(exc)
 
 
-# ================================================================
-#  14 – R-ORDER (Customer)
-# ================================================================
-
+# ============================================================
+# 14 – R-ORDER (Customer)
+# ============================================================
 def read_order_customer(request):
     role = get_user_role(request)
     customer_id = get_customer_id(request)
-
+    if not request.session.get('user_id'):
+        return redirect('fitur_wajib:login')
     if role != 'customer' or not customer_id:
-        messages.error(request, "Akses ditolak.")
-        return redirect('dashboard')
+        messages.error(request, "Akses ditolak. Hanya customer yang bisa melihat pesanan.")
+        return redirect('fitur_wajib:dashboard')
 
     conn = get_db_conn()
     try:
         cur = conn.cursor()
-
-        # Statistik
         cur.execute("""
             SELECT
                 COUNT(*) AS total,
-                COUNT(*) FILTER (WHERE payment_status = 'PAID')       AS lunas,
-                COUNT(*) FILTER (WHERE payment_status = 'UNPAID')     AS pending,
-                COUNT(*) FILTER (WHERE payment_status = 'CANCELLED')  AS dibatalkan
-            FROM "ORDER"
-            WHERE customer_id = %s
+                COUNT(*) FILTER (WHERE payment_status = 'PAID')      AS lunas,
+                COUNT(*) FILTER (WHERE payment_status = 'UNPAID')    AS pending,
+                COUNT(*) FILTER (WHERE payment_status = 'CANCELLED') AS dibatalkan
+            FROM "ORDER" WHERE customer_id = %s
         """, (customer_id,))
         stats = cur.fetchone()
 
-        # Daftar order
         search = request.GET.get('search', '')
         status_filter = request.GET.get('status', 'all')
 
         query = """
-            SELECT
-                o.order_id,
-                o.order_date,
-                o.payment_status,
-                o.total_amount
-            FROM "ORDER" o
-            WHERE o.customer_id = %s
+            SELECT order_id, order_date, payment_status, total_amount
+            FROM "ORDER" WHERE customer_id = %s
         """
         params = [customer_id]
-
         if search:
-            query += " AND CAST(o.order_id AS TEXT) ILIKE %s"
+            query += " AND CAST(order_id AS TEXT) ILIKE %s"
             params.append(f'%{search}%')
-
         if status_filter != 'all':
             status_map = {'lunas': 'PAID', 'pending': 'UNPAID', 'dibatalkan': 'CANCELLED'}
             db_status = status_map.get(status_filter)
             if db_status:
-                query += " AND o.payment_status = %s"
+                query += " AND payment_status = %s"
                 params.append(db_status)
-
-        query += " ORDER BY o.order_date DESC"
+        query += " ORDER BY order_date DESC"
         cur.execute(query, params)
         orders = cur.fetchall()
-
     finally:
         conn.close()
 
     return render(request, 'read_order_cust.html', {
-        'orders': orders,
-        'stats': stats,
-        'search': search,
-        'status_filter': status_filter,
+        'orders': orders, 'stats': stats,
+        'search': search, 'status_filter': status_filter,
+        'role': role,
     })
 
 
-# ================================================================
-#  14 – R-ORDER (Organizer)
-# ================================================================
-
+# ============================================================
+# 14 – R-ORDER (Organizer)
+# ============================================================
 def read_order_organizer(request):
     role = get_user_role(request)
     organizer_id = get_organizer_id(request)
-
+    if not request.session.get('user_id'):
+        return redirect('fitur_wajib:login')
     if role != 'organizer' or not organizer_id:
         messages.error(request, "Akses ditolak.")
-        return redirect('dashboard')
+        return redirect('fitur_wajib:dashboard')
 
     conn = get_db_conn()
     try:
         cur = conn.cursor()
-
-        # Statistik
         cur.execute("""
             SELECT
-                COUNT(DISTINCT o.order_id)                                                       AS total,
-                COUNT(DISTINCT o.order_id) FILTER (WHERE o.payment_status = 'PAID')             AS lunas,
-                COUNT(DISTINCT o.order_id) FILTER (WHERE o.payment_status = 'UNPAID')           AS pending,
-                COALESCE(SUM(o.total_amount) FILTER (WHERE o.payment_status = 'PAID'), 0)       AS revenue
+                COUNT(DISTINCT o.order_id) AS total,
+                COUNT(DISTINCT o.order_id) FILTER (WHERE o.payment_status = 'PAID')   AS lunas,
+                COUNT(DISTINCT o.order_id) FILTER (WHERE o.payment_status = 'UNPAID') AS pending,
+                COALESCE(SUM(o.total_amount) FILTER (WHERE o.payment_status = 'PAID'), 0) AS revenue
             FROM "ORDER" o
-            JOIN TICKET t       ON t.torder_id  = o.order_id
+            JOIN TICKET t ON t.torder_id = o.order_id
             JOIN TICKET_CATEGORY tc ON tc.category_id = t.tcategory_id
-            JOIN EVENT e        ON e.event_id   = tc.tevent_id
+            JOIN EVENT e ON e.event_id = tc.tevent_id
             WHERE e.organizer_id = %s
         """, (organizer_id,))
         stats = cur.fetchone()
@@ -151,67 +120,56 @@ def read_order_organizer(request):
         status_filter = request.GET.get('status', 'all')
 
         query = """
-            SELECT DISTINCT
-                o.order_id,
-                c.full_name     AS customer_name,
-                o.order_date,
-                o.payment_status,
-                o.total_amount
+            SELECT DISTINCT o.order_id, c.full_name, o.order_date, o.payment_status, o.total_amount
             FROM "ORDER" o
-            JOIN CUSTOMER c     ON c.customer_id = o.customer_id
-            JOIN TICKET t       ON t.torder_id   = o.order_id
+            JOIN CUSTOMER c ON c.customer_id = o.customer_id
+            JOIN TICKET t ON t.torder_id = o.order_id
             JOIN TICKET_CATEGORY tc ON tc.category_id = t.tcategory_id
-            JOIN EVENT e        ON e.event_id    = tc.tevent_id
+            JOIN EVENT e ON e.event_id = tc.tevent_id
             WHERE e.organizer_id = %s
         """
         params = [organizer_id]
-
         if search:
             query += " AND (CAST(o.order_id AS TEXT) ILIKE %s OR c.full_name ILIKE %s)"
             params.extend([f'%{search}%', f'%{search}%'])
-
         if status_filter != 'all':
             status_map = {'lunas': 'PAID', 'pending': 'UNPAID', 'dibatalkan': 'CANCELLED'}
             db_status = status_map.get(status_filter)
             if db_status:
                 query += " AND o.payment_status = %s"
                 params.append(db_status)
-
         query += " ORDER BY o.order_date DESC"
         cur.execute(query, params)
         orders = cur.fetchall()
-
     finally:
         conn.close()
 
     return render(request, 'read_order_organizer.html', {
-        'orders': orders,
-        'stats': stats,
-        'search': search,
-        'status_filter': status_filter,
+        'orders': orders, 'stats': stats,
+        'search': search, 'status_filter': status_filter,
+        'role': role,
     })
 
 
-# ================================================================
-#  14 – R-ORDER (Admin)  +  15 – UD-ORDER (Admin)
-# ================================================================
-
+# ============================================================
+# 14/15 – R/UD-ORDER (Admin)
+# ============================================================
 def read_order_admin(request):
     role = get_user_role(request)
-    if role != 'administrator':
+    if not request.session.get('user_id'):
+        return redirect('fitur_wajib:login')
+    if role != 'admin':                          # ← FIX: was 'administrator'
         messages.error(request, "Akses ditolak.")
-        return redirect('dashboard')
+        return redirect('fitur_wajib:dashboard')
 
     conn = get_db_conn()
     try:
         cur = conn.cursor()
-
-        # Statistik
         cur.execute("""
             SELECT
-                COUNT(*)                                                              AS total,
-                COUNT(*) FILTER (WHERE payment_status = 'PAID')                      AS lunas,
-                COUNT(*) FILTER (WHERE payment_status = 'UNPAID')                    AS pending,
+                COUNT(*) AS total,
+                COUNT(*) FILTER (WHERE payment_status = 'PAID')      AS lunas,
+                COUNT(*) FILTER (WHERE payment_status = 'UNPAID')    AS pending,
                 COALESCE(SUM(total_amount) FILTER (WHERE payment_status = 'PAID'), 0) AS revenue
             FROM "ORDER"
         """)
@@ -221,55 +179,44 @@ def read_order_admin(request):
         status_filter = request.GET.get('status', 'all')
 
         query = """
-            SELECT
-                o.order_id,
-                c.full_name     AS customer_name,
-                o.order_date,
-                o.payment_status,
-                o.total_amount
+            SELECT o.order_id, c.full_name, o.order_date, o.payment_status, o.total_amount
             FROM "ORDER" o
             JOIN CUSTOMER c ON c.customer_id = o.customer_id
             WHERE 1=1
         """
         params = []
-
         if search:
             query += " AND (CAST(o.order_id AS TEXT) ILIKE %s OR c.full_name ILIKE %s)"
             params.extend([f'%{search}%', f'%{search}%'])
-
         if status_filter != 'all':
             status_map = {'lunas': 'PAID', 'pending': 'UNPAID', 'dibatalkan': 'CANCELLED'}
             db_status = status_map.get(status_filter)
             if db_status:
                 query += " AND o.payment_status = %s"
                 params.append(db_status)
-
         query += " ORDER BY o.order_date DESC"
         cur.execute(query, params)
         orders = cur.fetchall()
-
     finally:
         conn.close()
 
     return render(request, 'read_order_admin.html', {
-        'orders': orders,
-        'stats': stats,
-        'search': search,
-        'status_filter': status_filter,
+        'orders': orders, 'stats': stats,
+        'search': search, 'status_filter': status_filter,
+        'role': role,
     })
 
 
-
 def update_order_admin(request, order_id):
-    """Update payment_status order — Admin only."""
-    if get_user_role(request) != 'administrator':
+    if not request.session.get('user_id'):
+        return redirect('fitur_wajib:login')
+    if get_user_role(request) != 'admin':         # ← FIX
         messages.error(request, "Akses ditolak.")
-        return redirect('dashboard')
+        return redirect('fitur_wajib:dashboard')
 
     if request.method == 'POST':
         new_status = request.POST.get('payment_status')
-        allowed = {'PAID', 'UNPAID', 'CANCELLED'}
-        if new_status not in allowed:
+        if new_status not in {'PAID', 'UNPAID', 'CANCELLED'}:
             messages.error(request, "Status tidak valid.")
             return redirect('read_order_admin')
 
@@ -291,32 +238,23 @@ def update_order_admin(request, order_id):
     return redirect('read_order_admin')
 
 
-
 def delete_order_admin(request, order_id):
-    """Delete order — Admin only."""
-    if get_user_role(request) != 'administrator':
+    if not request.session.get('user_id'):
+        return redirect('fitur_wajib:login')
+    if get_user_role(request) != 'admin':         # ← FIX
         messages.error(request, "Akses ditolak.")
-        return redirect('dashboard')
+        return redirect('fitur_wajib:dashboard')
 
     if request.method == 'POST':
         conn = get_db_conn()
         try:
             cur = conn.cursor()
-            # Hapus ORDER_PROMOTION dulu (FK)
-            cur.execute(
-                'DELETE FROM ORDER_PROMOTION WHERE order_id = %s',
-                (order_id,)
-            )
-            # Hapus HAS_RELATIONSHIP via TICKET
+            cur.execute('DELETE FROM ORDER_PROMOTION WHERE order_id = %s', (order_id,))
             cur.execute("""
                 DELETE FROM HAS_RELATIONSHIP
-                WHERE ticket_id IN (
-                    SELECT ticket_id FROM TICKET WHERE torder_id = %s
-                )
+                WHERE ticket_id IN (SELECT ticket_id FROM TICKET WHERE torder_id = %s)
             """, (order_id,))
-            # Hapus TICKET
             cur.execute('DELETE FROM TICKET WHERE torder_id = %s', (order_id,))
-            # Hapus ORDER
             cur.execute('DELETE FROM "ORDER" WHERE order_id = %s', (order_id,))
             conn.commit()
             messages.success(request, "Order berhasil dihapus.")
@@ -329,22 +267,19 @@ def delete_order_admin(request, order_id):
     return redirect('read_order_admin')
 
 
-# ================================================================
-#  13 – C-ORDER (Customer) — Checkout Tiket
-# ================================================================
-
+# ============================================================
+# 13 – C-ORDER (Customer) — Checkout
+# ============================================================
 def create_order(request, event_id):
-    """
-    Halaman checkout tiket untuk Customer.
-    Menampilkan info event + kategori tiket beserta sisa kuota
-    (menggunakan stored procedure get_ticket_category_quota).
-    """
+    if not request.session.get('user_id'):
+        return redirect('fitur_wajib:login')
+
     role = get_user_role(request)
     customer_id = get_customer_id(request)
 
     if role != 'customer' or not customer_id:
-        messages.error(request, "Hanya Customer yang bisa membeli tiket.")
-        return redirect('read_event')
+        messages.error(request, "Hanya customer yang bisa membeli tiket.")
+        return redirect('fitur_kuning:event_list')
 
     conn = get_db_conn()
     try:
@@ -353,47 +288,46 @@ def create_order(request, event_id):
         # Info event
         cur.execute("""
             SELECT e.event_id, e.event_title, v.venue_name, e.event_datetime,
-                   e.description
+                   e.description, v.is_reserved
             FROM EVENT e
             JOIN VENUE v ON v.venue_id = e.venue_id
             WHERE e.event_id = %s
-        """, (event_id,))
+        """, (str(event_id),))
         event = cur.fetchone()
         if not event:
-            messages.error(request, "Event tidak ditemukan.")
-            return redirect('read_event')
+            messages.error(request, f"Event tidak ditemukan.")
+            return redirect('fitur_kuning:event_list')
 
-        # Sisa kuota per kategori — panggil stored procedure (YANG BENER & JOIN HARGA)
+        # Sisa kuota pakai stored procedure
         cur.execute("""
             SELECT sp.category_id, sp.category_name, tc.price, sp.remaining
             FROM sp_sisa_kuota_event(%s) sp
             JOIN TICKET_CATEGORY tc ON tc.category_id = sp.category_id
         """, (str(event_id),))
         categories = cur.fetchall()
-        # returns: (category_id, category_name, price, remaining_quota)
 
         if request.method == 'POST':
-            category_id  = request.POST.get('category_id')
-            qty          = int(request.POST.get('qty', 1))
-            promo_code   = request.POST.get('promo_code', '').strip()
+            category_id = request.POST.get('category_id')
+            qty         = int(request.POST.get('qty', 1))
+            promo_code  = request.POST.get('promo_code', '').strip()
 
             if qty < 1 or qty > 10:
                 messages.error(request, "Jumlah tiket harus antara 1–10.")
-                conn.close()
                 return redirect('create_order', event_id=event_id)
 
-            # Harga dari kategori yang dipilih
             selected_cat = next((c for c in categories if str(c[0]) == category_id), None)
             if not selected_cat:
                 messages.error(request, "Kategori tiket tidak valid.")
-                conn.close()
+                return redirect('create_order', event_id=event_id)
+
+            if selected_cat[3] < qty:
+                messages.error(request, f"Kuota tidak cukup. Sisa: {selected_cat[3]} tiket.")
                 return redirect('create_order', event_id=event_id)
 
             price_per_ticket = Decimal(str(selected_cat[2]))
             total_amount     = price_per_ticket * qty
+            promotion_id     = None
 
-            # Terapkan promo jika ada — trigger akan validasi di server
-            promotion_id = None
             if promo_code:
                 cur.execute(
                     "SELECT promotion_id, discount_type, discount_value FROM PROMOTION WHERE promo_code = %s",
@@ -409,21 +343,18 @@ def create_order(request, event_id):
                         total_amount = max(total_amount - disc_val, Decimal('0'))
                 else:
                     messages.error(request, "Kode promo tidak valid.")
-                    conn.close()
                     return redirect('create_order', event_id=event_id)
 
             total_amount = max(total_amount, Decimal('0'))
 
             try:
                 order_id = uuid.uuid4()
-                # INSERT ORDER — trigger check_promotion_before_order_promotion
                 cur.execute("""
                     INSERT INTO "ORDER" (order_id, order_date, payment_status, total_amount, customer_id)
                     VALUES (%s, NOW(), 'UNPAID', %s, %s)
                 """, (str(order_id), total_amount, customer_id))
 
-                # INSERT ORDER_PROMOTION jika ada promo
-                # Trigger validate_promotion_usage akan jalan di sini
+                # Trigger validate_promotion akan jalan di sini
                 if promotion_id:
                     op_id = uuid.uuid4()
                     cur.execute("""
@@ -431,22 +362,22 @@ def create_order(request, event_id):
                         VALUES (%s, %s, %s)
                     """, (str(op_id), str(promotion_id), str(order_id)))
 
-                # Buat tiket sejumlah qty
-                # Trigger check_ticket_quota_before_insert akan jalan tiap INSERT
+                # Trigger check_ticket_quota akan jalan tiap INSERT
                 for i in range(qty):
                     ticket_id   = uuid.uuid4()
-                    ticket_code = f"TTK-{str(order_id)[:8].upper()}-{category_id[:4].upper()}-{i+1:03d}"
+                    ticket_code = f"TTK-{str(order_id)[:8].upper()}-{str(category_id)[:4].upper()}-{i+1:03d}"
                     cur.execute("""
                         INSERT INTO TICKET (ticket_id, ticket_code, tcategory_id, torder_id)
                         VALUES (%s, %s, %s, %s)
                     """, (str(ticket_id), ticket_code, category_id, str(order_id)))
 
                 conn.commit()
-                messages.success(request, f"Pesanan berhasil dibuat! Order ID: {order_id}")
+                messages.success(request, f"Pesanan berhasil! Order ID: {str(order_id)[:8].upper()}")
                 return redirect('read_order_customer')
 
             except psycopg2.Error as e:
                 conn.rollback()
+                # ← Pesan ERROR dari trigger PostgreSQL tampil di sini
                 err_msg = extract_trigger_message(e)
                 messages.error(request, err_msg)
                 return redirect('create_order', event_id=event_id)
@@ -457,112 +388,96 @@ def create_order(request, event_id):
     return render(request, 'create_order.html', {
         'event': event,
         'categories': categories,
+        'role': role,
     })
 
 
-# ================================================================
-#  17 – R-PROMOTION  (Semua role + Guest)
-# ================================================================
+# ============================================================
+# 17 – R-PROMOTION (Semua role)
+# ============================================================
 def read_promotion(request):
-    """
-    Semua pengguna (termasuk guest) bisa lihat daftar promosi.
-    Admin mendapatkan tombol aksi CUD.
-    """
+    if not request.session.get('user_id'):
+        return redirect('fitur_wajib:login')
+
     conn = get_db_conn()
     try:
         cur = conn.cursor()
-
-        # Statistik
         cur.execute("""
             SELECT
                 COUNT(*) AS total_promo,
-                COALESCE(SUM(
-                    (SELECT COUNT(*) FROM ORDER_PROMOTION op WHERE op.promotion_id = p.promotion_id)
-                ), 0) AS total_usage,
-                COUNT(*) FILTER (WHERE p.discount_type = 'PERCENTAGE') AS total_persen
-            FROM PROMOTION p
+                COALESCE((SELECT COUNT(*) FROM ORDER_PROMOTION), 0) AS total_usage,
+                COUNT(*) FILTER (WHERE discount_type = 'PERCENTAGE') AS total_persen
+            FROM PROMOTION
         """)
         stats = cur.fetchone()
 
-        search = request.GET.get('search', '')
+        search      = request.GET.get('search', '')
         type_filter = request.GET.get('type', 'all')
 
         query = """
             SELECT
-                p.promotion_id,
-                p.promo_code,
-                p.discount_type,
-                p.discount_value,
-                p.start_date,
-                p.end_date,
-                p.usage_limit,
+                p.promotion_id, p.promo_code, p.discount_type, p.discount_value,
+                p.start_date, p.end_date, p.usage_limit,
                 (SELECT COUNT(*) FROM ORDER_PROMOTION op WHERE op.promotion_id = p.promotion_id) AS used_count
-            FROM PROMOTION p
-            WHERE 1=1
+            FROM PROMOTION p WHERE 1=1
         """
         params = []
-
         if search:
             query += " AND p.promo_code ILIKE %s"
             params.append(f'%{search}%')
-
         if type_filter != 'all':
             type_map = {'persentase': 'PERCENTAGE', 'nominal': 'NOMINAL'}
             db_type = type_map.get(type_filter)
             if db_type:
                 query += " AND p.discount_type = %s"
                 params.append(db_type)
-
         query += " ORDER BY p.promo_code ASC"
         cur.execute(query, params)
         promotions = cur.fetchall()
-
     finally:
         conn.close()
 
     role = get_user_role(request)
-    template = 'CRUD_promo_admin.html' if role == 'administrator' else (
-        'read_promo_organizer.html' if role == 'organizer' else
-        'read_promo_guest.html'
-    )
-    # customer dan guest pakai template yang sama
-    if role == 'customer':
+    if role == 'admin':                    # ← FIX: was 'administrator'
+        template = 'CRUD_promo_admin.html'
+    elif role == 'organizer':
+        template = 'read_promo_organizer.html'
+    elif role == 'customer':
         template = 'read_promo_cust.html'
+    else:
+        template = 'read_promo_guest.html'
 
     return render(request, template, {
-        'promotions': promotions,
-        'stats': stats,
-        'search': search,
-        'type_filter': type_filter,
+        'promotions': promotions, 'stats': stats,
+        'search': search, 'type_filter': type_filter,
+        'role': role,
     })
 
 
-# ================================================================
-#  16 – CUD-PROMOTION  (Admin only)
-# ================================================================
-
+# ============================================================
+# 16 – CUD-PROMOTION (Admin)
+# ============================================================
 def create_promotion(request):
-    if get_user_role(request) != 'administrator':
+    if not request.session.get('user_id'):
+        return redirect('fitur_wajib:login')
+    if get_user_role(request) != 'admin':  # ← FIX
         messages.error(request, "Akses ditolak.")
         return redirect('read_promotion')
 
     if request.method == 'POST':
-        promo_code    = request.POST.get('promo_code', '').strip()
-        discount_type = request.POST.get('discount_type', '').upper()
+        promo_code     = request.POST.get('promo_code', '').strip()
+        discount_type  = request.POST.get('discount_type', '').upper()
         discount_value = request.POST.get('discount_value')
-        start_date    = request.POST.get('start_date')
-        end_date      = request.POST.get('end_date')
-        usage_limit   = request.POST.get('usage_limit')
+        start_date     = request.POST.get('start_date')
+        end_date       = request.POST.get('end_date')
+        usage_limit    = request.POST.get('usage_limit')
 
-        # Validasi basic
         if not all([promo_code, discount_type, discount_value, start_date, end_date, usage_limit]):
             messages.error(request, "Semua field wajib diisi.")
             return redirect('read_promotion')
-
         if discount_type not in ('NOMINAL', 'PERCENTAGE'):
             messages.error(request, "Tipe diskon tidak valid.")
             return redirect('read_promotion')
-
         if end_date < start_date:
             messages.error(request, "Tanggal berakhir harus >= tanggal mulai.")
             return redirect('read_promotion')
@@ -588,24 +503,24 @@ def create_promotion(request):
     return redirect('read_promotion')
 
 
-
 def update_promotion(request, promotion_id):
-    if get_user_role(request) != 'administrator':
+    if not request.session.get('user_id'):
+        return redirect('fitur_wajib:login')
+    if get_user_role(request) != 'admin':  # ← FIX
         messages.error(request, "Akses ditolak.")
         return redirect('read_promotion')
 
     if request.method == 'POST':
-        promo_code    = request.POST.get('promo_code', '').strip()
-        discount_type = request.POST.get('discount_type', '').upper()
+        promo_code     = request.POST.get('promo_code', '').strip()
+        discount_type  = request.POST.get('discount_type', '').upper()
         discount_value = request.POST.get('discount_value')
-        start_date    = request.POST.get('start_date')
-        end_date      = request.POST.get('end_date')
-        usage_limit   = request.POST.get('usage_limit')
+        start_date     = request.POST.get('start_date')
+        end_date       = request.POST.get('end_date')
+        usage_limit    = request.POST.get('usage_limit')
 
         if not all([promo_code, discount_type, discount_value, start_date, end_date, usage_limit]):
             messages.error(request, "Semua field wajib diisi.")
             return redirect('read_promotion')
-
         if end_date < start_date:
             messages.error(request, "Tanggal berakhir harus >= tanggal mulai.")
             return redirect('read_promotion')
@@ -615,9 +530,9 @@ def update_promotion(request, promotion_id):
             cur = conn.cursor()
             cur.execute("""
                 UPDATE PROMOTION
-                SET promo_code = %s, discount_type = %s, discount_value = %s,
-                    start_date = %s, end_date = %s, usage_limit = %s
-                WHERE promotion_id = %s
+                SET promo_code=%s, discount_type=%s, discount_value=%s,
+                    start_date=%s, end_date=%s, usage_limit=%s
+                WHERE promotion_id=%s
             """, (promo_code, discount_type, discount_value,
                   start_date, end_date, usage_limit, promotion_id))
             conn.commit()
@@ -631,9 +546,10 @@ def update_promotion(request, promotion_id):
     return redirect('read_promotion')
 
 
-
 def delete_promotion(request, promotion_id):
-    if get_user_role(request) != 'administrator':
+    if not request.session.get('user_id'):
+        return redirect('fitur_wajib:login')
+    if get_user_role(request) != 'admin':  # ← FIX
         messages.error(request, "Akses ditolak.")
         return redirect('read_promotion')
 
@@ -641,7 +557,6 @@ def delete_promotion(request, promotion_id):
         conn = get_db_conn()
         try:
             cur = conn.cursor()
-            # Hapus ORDER_PROMOTION dulu karena FK
             cur.execute('DELETE FROM ORDER_PROMOTION WHERE promotion_id = %s', (promotion_id,))
             cur.execute('DELETE FROM PROMOTION WHERE promotion_id = %s', (promotion_id,))
             conn.commit()
