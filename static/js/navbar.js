@@ -5,7 +5,7 @@ const ROLE_MENUS = {
     { label: 'Registrasi', icon: 'bi-person-plus',        href: '/pilih-role/' }, 
   ],
 
-  admin: [
+  administrator: [
     { label: 'Dashboard',       icon: 'bi-grid-1x2',           href: '/' },
     { label: 'Manajemen Venue', icon: 'bi-building',           href: '/venue/', },
     { label: 'Manajemen Kursi', icon: 'bi-grid-3x3',           href: '/fitur_merah/templates/seat-main.html' },
@@ -57,7 +57,7 @@ const ROLE_MENUS = {
 };
 
 const ROLE_DISPLAY_NAMES = {
-  admin:     'Administrator',
+  administrator:     'Administrator',
   organizer: 'Event Organizer',
   customer:  'Customer',
   guest:     'Guest'
@@ -99,12 +99,6 @@ function renderSidebar(role) {
       </a>`;
     menuContainer.appendChild(li);
   });
-}
-
-// UPDATE ROLE
-function updateRole(newRole) {
-  localStorage.setItem('role', newRole);
-  renderSidebar(newRole);
 }
 
 // LOGOUT

@@ -2,6 +2,8 @@
 from django.urls import path
 from . import views as v   # sesuaikan nama module
 
+app_name = 'fitur_biru' 
+
 urlpatterns = [
     # ---- ORDER ----
     # Customer: lihat pesanan sendiri

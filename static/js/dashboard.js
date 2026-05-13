@@ -45,10 +45,12 @@ function showPage(pageId) {
   document.getElementById('topBarTitle').textContent = titles[pageId] || pageId;
 }
 
-//  DASHBOARD RENDER
 function renderDashboard(role) {
   const r = role || currentRole;
-  document.getElementById('dash-admin').classList.toggle('d-none',    r !== 'admin');
+  // Cek apakah dia admin atau administrator
+  const isAdmin = (r === 'admin' || r === 'administrator');
+  
+  document.getElementById('dash-admin').classList.toggle('d-none',    !isAdmin);
   document.getElementById('dash-organizer').classList.toggle('d-none', r !== 'organizer');
   document.getElementById('dash-customer').classList.toggle('d-none',  r !== 'customer');
 }

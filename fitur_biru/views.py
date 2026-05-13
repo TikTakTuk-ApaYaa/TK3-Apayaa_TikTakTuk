@@ -158,7 +158,9 @@ def read_order_admin(request):
     role = get_user_role(request)
     if not request.session.get('user_id'):
         return redirect('fitur_wajib:login')
-    if role != 'admin':                          # ← FIX: was 'administrator'
+    
+    # KUNCI: Sesuaikan dengan nama role di database (administrator)
+    if role != 'administrator': 
         messages.error(request, "Akses ditolak.")
         return redirect('fitur_wajib:dashboard')
 
@@ -210,7 +212,7 @@ def read_order_admin(request):
 def update_order_admin(request, order_id):
     if not request.session.get('user_id'):
         return redirect('fitur_wajib:login')
-    if get_user_role(request) != 'admin':         # ← FIX
+    if get_user_role(request) != 'administrator':         # ← FIX
         messages.error(request, "Akses ditolak.")
         return redirect('fitur_wajib:dashboard')
 
@@ -218,7 +220,7 @@ def update_order_admin(request, order_id):
         new_status = request.POST.get('payment_status')
         if new_status not in {'PAID', 'UNPAID', 'CANCELLED'}:
             messages.error(request, "Status tidak valid.")
-            return redirect('read_order_admin')
+            return redirect('fitur_biru:read_order_admin')
 
         conn = get_db_conn()
         try:
@@ -235,13 +237,13 @@ def update_order_admin(request, order_id):
         finally:
             conn.close()
 
-    return redirect('read_order_admin')
+    return redirect('fitur_biru:read_order_admin')
 
 
 def delete_order_admin(request, order_id):
     if not request.session.get('user_id'):
         return redirect('fitur_wajib:login')
-    if get_user_role(request) != 'admin':         # ← FIX
+    if get_user_role(request) != 'administrator':         # ← FIX
         messages.error(request, "Akses ditolak.")
         return redirect('fitur_wajib:dashboard')
 
@@ -264,7 +266,7 @@ def delete_order_admin(request, order_id):
         finally:
             conn.close()
 
-    return redirect('read_order_admin')
+    return redirect('fitur_biru:read_order_admin')
 
 
 # ============================================================
@@ -313,16 +315,16 @@ def create_order(request, event_id):
 
             if qty < 1 or qty > 10:
                 messages.error(request, "Jumlah tiket harus antara 1–10.")
-                return redirect('create_order', event_id=event_id)
+                return redirect('fitur_biru:create_order', event_id=event_id)
 
             selected_cat = next((c for c in categories if str(c[0]) == category_id), None)
             if not selected_cat:
                 messages.error(request, "Kategori tiket tidak valid.")
-                return redirect('create_order', event_id=event_id)
+                return redirect('fitur_biru:create_order', event_id=event_id)
 
             if selected_cat[3] < qty:
                 messages.error(request, f"Kuota tidak cukup. Sisa: {selected_cat[3]} tiket.")
-                return redirect('create_order', event_id=event_id)
+                return redirect('fitur_biru:create_order', event_id=event_id)
 
             price_per_ticket = Decimal(str(selected_cat[2]))
             total_amount     = price_per_ticket * qty
@@ -343,7 +345,7 @@ def create_order(request, event_id):
                         total_amount = max(total_amount - disc_val, Decimal('0'))
                 else:
                     messages.error(request, "Kode promo tidak valid.")
-                    return redirect('create_order', event_id=event_id)
+                    return redirect('fitur_biru:create_order', event_id=event_id)
 
             total_amount = max(total_amount, Decimal('0'))
 
@@ -373,14 +375,14 @@ def create_order(request, event_id):
 
                 conn.commit()
                 messages.success(request, f"Pesanan berhasil! Order ID: {str(order_id)[:8].upper()}")
-                return redirect('read_order_customer')
+                return redirect('fitur_biru:read_order_customer')
 
             except psycopg2.Error as e:
                 conn.rollback()
                 # ← Pesan ERROR dari trigger PostgreSQL tampil di sini
                 err_msg = extract_trigger_message(e)
                 messages.error(request, err_msg)
-                return redirect('create_order', event_id=event_id)
+                return redirect('fitur_biru:create_order', event_id=event_id)
 
     finally:
         conn.close()
@@ -438,7 +440,7 @@ def read_promotion(request):
         conn.close()
 
     role = get_user_role(request)
-    if role == 'admin':                    # ← FIX: was 'administrator'
+    if role == 'administrator':                    
         template = 'CRUD_promo_admin.html'
     elif role == 'organizer':
         template = 'read_promo_organizer.html'
@@ -460,9 +462,9 @@ def read_promotion(request):
 def create_promotion(request):
     if not request.session.get('user_id'):
         return redirect('fitur_wajib:login')
-    if get_user_role(request) != 'admin':  # ← FIX
+    if get_user_role(request) != 'administrator':  
         messages.error(request, "Akses ditolak.")
-        return redirect('read_promotion')
+        return redirect('fitur_biru:read_promotion')
 
     if request.method == 'POST':
         promo_code     = request.POST.get('promo_code', '').strip()
@@ -474,13 +476,13 @@ def create_promotion(request):
 
         if not all([promo_code, discount_type, discount_value, start_date, end_date, usage_limit]):
             messages.error(request, "Semua field wajib diisi.")
-            return redirect('read_promotion')
+            return redirect('fitur_biru:read_promotion')
         if discount_type not in ('NOMINAL', 'PERCENTAGE'):
             messages.error(request, "Tipe diskon tidak valid.")
-            return redirect('read_promotion')
+            return redirect('fitur_biru:read_promotion')
         if end_date < start_date:
             messages.error(request, "Tanggal berakhir harus >= tanggal mulai.")
-            return redirect('read_promotion')
+            return redirect('fitur_biru:read_promotion')
 
         conn = get_db_conn()
         try:
@@ -500,15 +502,15 @@ def create_promotion(request):
         finally:
             conn.close()
 
-    return redirect('read_promotion')
+    return redirect('fitur_biru:read_promotion')
 
 
 def update_promotion(request, promotion_id):
     if not request.session.get('user_id'):
         return redirect('fitur_wajib:login')
-    if get_user_role(request) != 'admin':  # ← FIX
+    if get_user_role(request) != 'administrator':  
         messages.error(request, "Akses ditolak.")
-        return redirect('read_promotion')
+        return redirect('fitur_biru:read_promotion')
 
     if request.method == 'POST':
         promo_code     = request.POST.get('promo_code', '').strip()
@@ -520,10 +522,10 @@ def update_promotion(request, promotion_id):
 
         if not all([promo_code, discount_type, discount_value, start_date, end_date, usage_limit]):
             messages.error(request, "Semua field wajib diisi.")
-            return redirect('read_promotion')
+            return redirect('fitur_biru:read_promotion')
         if end_date < start_date:
             messages.error(request, "Tanggal berakhir harus >= tanggal mulai.")
-            return redirect('read_promotion')
+            return redirect('fitur_biru:read_promotion')
 
         conn = get_db_conn()
         try:
@@ -543,15 +545,15 @@ def update_promotion(request, promotion_id):
         finally:
             conn.close()
 
-    return redirect('read_promotion')
+    return redirect('fitur_biru:read_promotion')
 
 
 def delete_promotion(request, promotion_id):
     if not request.session.get('user_id'):
         return redirect('fitur_wajib:login')
-    if get_user_role(request) != 'admin':  # ← FIX
+    if get_user_role(request) != 'administrator': 
         messages.error(request, "Akses ditolak.")
-        return redirect('read_promotion')
+        return redirect('fitur_biru:read_promotion')
 
     if request.method == 'POST':
         conn = get_db_conn()
@@ -567,4 +569,4 @@ def delete_promotion(request, promotion_id):
         finally:
             conn.close()
 
-    return redirect('read_promotion')
+    return redirect('fitur_biru:read_promotion')

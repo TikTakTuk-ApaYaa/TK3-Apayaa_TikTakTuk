@@ -83,7 +83,7 @@ def login(request):
 
                     # Prioritas: administrator > organizer > customer
                     if 'administrator' in roles:
-                        role = 'admin'
+                        role = 'administrator'
                     elif 'organizer' in roles:
                         role = 'organizer'
                     else:
@@ -215,7 +215,8 @@ def registrasi_administrator(request):
 
 @_login_required
 def dashboard(request):
-    role         = request.session.get('role', 'admin')
+    # role         = request.session.get('role', 'admin')
+    role = request.session.get('role', 'customer')
     organizer_id = request.session.get('organizer_id')
     customer_id  = request.session.get('customer_id')
     ctx          = {'role': role}
@@ -223,7 +224,7 @@ def dashboard(request):
     with connection.cursor() as cur:
         _sc(cur)
 
-        if role == 'admin':
+        if role == 'administrator':
             cur.execute("SELECT COUNT(*) FROM user_account")
             ctx['total_users'] = cur.fetchone()[0]
 
@@ -467,3 +468,4 @@ def profile_update_password(request):
 
     except Exception as exc:
         return JsonResponse({'success': False, 'error': str(exc)})
+    

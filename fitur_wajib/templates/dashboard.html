@@ -429,8 +429,8 @@
     if (dashCust) dashCust.classList.add('d-none');
 
     // Tampilkan yang sesuai dengan Role dari Django
-    if (window.currentRole === 'admin' && dashAdmin) {
-        dashAdmin.classList.remove('d-none');
+    if ((window.currentRole === 'admin' || window.currentRole === 'administrator') && dashAdmin) {
+    dashAdmin.classList.remove('d-none');
     } else if (window.currentRole === 'organizer' && dashOrg) {
         dashOrg.classList.remove('d-none');
     } else if (window.currentRole === 'customer' && dashCust) {
