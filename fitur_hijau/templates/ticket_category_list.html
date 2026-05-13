@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="id" data-bs-theme="light">
 <head>
@@ -7,43 +8,16 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
-  <style>
-    :root { --sidebar-width: 260px; --primary-green: #1a7a4a; --transition-speed: 0.3s; }
-    body { font-family: 'Inter', sans-serif; background-color: var(--bs-body-bg); }
-    .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; left: 0; top: 0; background: #111827; color: white; z-index: 1000; border-right: 1px solid rgba(255,255,255,0.1); overflow-y: auto; }
-    [data-bs-theme="dark"] .sidebar { background: #000; }
-    .sidebar-header { padding: 1.5rem; font-weight: 800; font-size: 1.25rem; color: var(--primary-green); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-    .nav-list { list-style: none; padding: 1rem; margin: 0; }
-    .nav-item-custom { margin-bottom: 4px; }
-    .nav-link-custom { display: flex; align-items: center; gap: 12px; padding: 0.75rem 1rem; color: #9ca3af; text-decoration: none; border-radius: 8px; font-size: 0.875rem; font-weight: 500; transition: all 0.2s; }
-    .nav-link-custom:hover { background: rgba(255,255,255,0.05); color: white; }
-    .nav-link-custom.active { background: var(--primary-green); color: white; }
-    .nav-link-custom.logout-link { color: #f87171; }
-    .nav-link-custom.logout-link:hover { background: rgba(248,113,113,0.1); color: #f87171; }
-    .main-content { margin-left: var(--sidebar-width); padding: 0; min-height: 100vh; }
-    .top-bar { height: 70px; background: var(--bs-body-bg); border-bottom: 1px solid var(--bs-border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; position: sticky; top: 0; z-index: 999; }
-    .dev-tool-dropdown .dropdown-toggle::after { display: none; }
-    .theme-toggle-btn { cursor: pointer; font-size: 1.2rem; color: var(--bs-secondary-color); transition: color 0.2s; }
-    .theme-toggle-btn:hover { color: var(--primary-green); }
-    @media (max-width: 992px) { .sidebar { left: -100%; } .main-content { margin-left: 0; } }
-  </style>
+  <link href="{% static 'css/main.css' %}" rel="stylesheet"/>
 </head>
 <body>
 
-<aside class="sidebar">
-  <div class="sidebar-header">
-    <div class="bg-white text-success rounded-2 px-2 py-1" style="font-size:14px;">TT</div>
-    <span>TikTakTuk</span>
-  </div>
-  <ul class="nav-list" id="sidebarMenu"></ul>
-</aside>
+{% include '_navbar.html' %}
 
 <div class="main-content">
-
   {% include '_topbar.html' %}
 
   <div class="p-4">
-
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
         <h4 class="fw-bold mb-1">Kategori Tiket</h4>
@@ -60,7 +34,6 @@
       <span id="alertErrorMsg"></span>
     </div>
 
-    <!-- Stat Cards -->
     <div class="row g-3 mb-4">
       <div class="col-md-4">
         <div class="card border-0 shadow-sm">
@@ -88,7 +61,6 @@
       </div>
     </div>
 
-    <!-- Filter & Search -->
     <div class="card border-0 shadow-sm mb-4">
       <div class="card-body">
         <div class="row g-2 align-items-center">
@@ -108,7 +80,6 @@
       </div>
     </div>
 
-    <!-- Tabel -->
     <div class="card border-0 shadow-sm">
       <div class="card-body p-0">
         <div class="table-responsive">
@@ -126,7 +97,7 @@
               </tr>
             </thead>
             <tbody id="tabelKategori">
-              <tr><td colspan="7" class="text-center py-4 text-muted">
+              <tr><td colspan="8" class="text-center py-4 text-muted">
                 <div class="spinner-border spinner-border-sm me-2"></div>Memuat data...
               </td></tr>
             </tbody>
@@ -134,10 +105,8 @@
         </div>
       </div>
     </div>
-
   </div>
 </div>
-
 
 <!-- MODAL TAMBAH -->
 <div class="modal fade" id="modalTambah" tabindex="-1">
@@ -151,9 +120,7 @@
         <div class="alert alert-danger d-none" id="errTambah"></div>
         <div class="mb-3">
           <label class="form-label fw-semibold">EVENT <span class="text-danger">*</span></label>
-          <select class="form-select" id="inputAcara">
-            <option value="">-- Pilih Event --</option>
-          </select>
+          <select class="form-select" id="inputAcara"><option value="">-- Pilih Event --</option></select>
           <div class="text-danger small d-none mt-1" id="errAcara">Event wajib dipilih.</div>
         </div>
         <div class="mb-3">
@@ -245,23 +212,15 @@
   </div>
 </div>
 
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/static/js/navbar.js"></script>
-
+<script src="{% static 'js/navbar.js' %}"></script>
 <script>
   const API_CATEGORIES = '/api/ticket-categories/';
   const API_EVENTS     = '/api/events/';
+  let daftarKategori = [], daftarEvents = [], idHapus = null;
 
-  let daftarKategori = [];
-  let daftarEvents   = [];
-  let idHapus        = null;
+  function formatRp(angka) { return 'Rp ' + Number(angka).toLocaleString('id-ID'); }
 
-  function formatRp(angka) {
-    return 'Rp ' + Number(angka).toLocaleString('id-ID');
-  }
-
-  // Override renderSidebar
   const _renderSidebar = renderSidebar;
   renderSidebar = function(role) {
     _renderSidebar(role);
@@ -271,49 +230,34 @@
     renderTabel(daftarKategori);
   };
 
-  // Load events untuk dropdown 
   async function loadEvents() {
     try {
       const res  = await fetch(API_EVENTS);
       const data = await res.json();
       daftarEvents = data.events || [];
-
-      // Isi filter event
       const filterSel = document.getElementById('filterAcara');
       filterSel.innerHTML = '<option value="">-- Semua Event --</option>';
-      daftarEvents.forEach(e => {
-        filterSel.insertAdjacentHTML('beforeend',
-          `<option value="${e.id}">${escapeHtml(e.title)}</option>`);
-      });
-
-      // Isi dropdown tambah
       const inputSel = document.getElementById('inputAcara');
       inputSel.innerHTML = '<option value="">-- Pilih Event --</option>';
       daftarEvents.forEach(e => {
-        inputSel.insertAdjacentHTML('beforeend',
-          `<option value="${e.id}">${escapeHtml(e.title)}</option>`);
+        filterSel.insertAdjacentHTML('beforeend', `<option value="${e.id}">${escapeHtml(e.title)}</option>`);
+        inputSel.insertAdjacentHTML('beforeend',  `<option value="${e.id}">${escapeHtml(e.title)}</option>`);
       });
-    } catch (err) {
-      console.error('Gagal memuat events:', err);
-    }
+    } catch (err) { console.error('Gagal memuat events:', err); }
   }
 
-  // Load kategori dari API
   async function loadKategori() {
-    const q       = document.getElementById('searchInput').value.trim();
+    const q = document.getElementById('searchInput').value.trim();
     const eventId = document.getElementById('filterAcara').value;
-
     let url = API_CATEGORIES;
     const params = new URLSearchParams();
     if (q) params.set('q', q);
     if (eventId) params.set('event_id', eventId);
     if (params.toString()) url += '?' + params.toString();
-
     try {
       const res  = await fetch(url);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Gagal memuat data.');
-
       daftarKategori = data.categories;
       updateStats(data.categories);
       renderTabel(data.categories);
@@ -335,13 +279,11 @@
     const role    = localStorage.getItem('role') || 'guest';
     const canEdit = role === 'admin' || role === 'organizer';
     const tbody   = document.getElementById('tabelKategori');
-
     if (data.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-muted">Tidak ada kategori ditemukan.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted">Tidak ada kategori ditemukan.</td></tr>';
       document.getElementById('jumlahDitemukan').textContent = '0 kategori ditemukan';
       return;
     }
-
     tbody.innerHTML = data.map(k => `
       <tr>
         <td class="ps-4"><code class="small text-muted">${k.id}</code></td>
@@ -349,81 +291,48 @@
         <td><span class="text-muted small">${escapeHtml(k.event_title)}</span></td>
         <td><span class="text-success fw-semibold">${formatRp(k.price)}</span></td>
         <td>${k.quota.toLocaleString('id-ID')} tiket</td>
-        <td>
-          <span class="${k.remaining <= 0 ? 'text-danger' : 'text-muted'} small">
-            ${k.sold} / ${k.quota}
-            ${k.remaining <= 0 ? '<span class="badge bg-danger ms-1">HABIS</span>' : ''}
-          </span>
-        </td>
-        <td>
-          <span class="fw-semibold ${k.remaining <= 0 ? 'text-danger' : 'text-success'}">
-            ${k.remaining.toLocaleString('id-ID')}
-          </span>
-        </td>
+        <td><span class="${k.remaining<=0?'text-danger':'text-muted'} small">${k.sold} / ${k.quota}${k.remaining<=0?'<span class="badge bg-danger ms-1">HABIS</span>':''}</span></td>
+        <td><span class="fw-semibold ${k.remaining<=0?'text-danger':'text-success'}">${k.remaining.toLocaleString('id-ID')}</span></td>
         ${canEdit ? `
         <td>
-          <button class="btn btn-sm btn-outline-primary me-1"
-            onclick="bukaEdit('${k.id}','${escapeAttr(k.name)}',${k.price},${k.quota},'${k.event_id}')">
-            <i class="bi bi-pencil me-1"></i>Update
-          </button>
-          <button class="btn btn-sm btn-outline-danger"
-            onclick="bukaHapus('${k.id}','${escapeAttr(k.name)}')">
-            <i class="bi bi-trash me-1"></i>Delete
-          </button>
+          <button class="btn btn-sm btn-outline-primary me-1" onclick="bukaEdit('${k.id}','${escapeAttr(k.name)}',${k.price},${k.quota},'${k.event_id}')"><i class="bi bi-pencil me-1"></i>Update</button>
+          <button class="btn btn-sm btn-outline-danger" onclick="bukaHapus('${k.id}','${escapeAttr(k.name)}')"><i class="bi bi-trash me-1"></i>Delete</button>
         </td>` : ''}
       </tr>`).join('');
-
     document.getElementById('jumlahDitemukan').textContent = `${data.length} kategori ditemukan`;
   }
 
-  // Search & filter — debounced
   let searchTimer;
-  document.getElementById('searchInput').addEventListener('input', () => {
-    clearTimeout(searchTimer);
-    searchTimer = setTimeout(loadKategori, 400);
-  });
+  document.getElementById('searchInput').addEventListener('input', () => { clearTimeout(searchTimer); searchTimer = setTimeout(loadKategori, 400); });
   document.getElementById('filterAcara').addEventListener('change', loadKategori);
 
-  // TAMBAH 
   async function tambahKategori() {
     const eventId = document.getElementById('inputAcara').value;
     const nama    = document.getElementById('inputNama').value.trim();
     const harga   = parseFloat(document.getElementById('inputHarga').value);
     const kuota   = parseInt(document.getElementById('inputKuota').value);
     document.getElementById('errTambah').classList.add('d-none');
-
     let ok = true;
-    ['errAcara','errNama','errHarga','errKuota'].forEach(id =>
-      document.getElementById(id).classList.add('d-none'));
-
+    ['errAcara','errNama','errHarga','errKuota'].forEach(id => document.getElementById(id).classList.add('d-none'));
     if (!eventId) { document.getElementById('errAcara').classList.remove('d-none'); ok = false; }
     if (!nama)    { document.getElementById('errNama').classList.remove('d-none');  ok = false; }
-    if (isNaN(harga) || harga < 0) { document.getElementById('errHarga').classList.remove('d-none'); ok = false; }
-    if (isNaN(kuota) || kuota < 1) { document.getElementById('errKuota').classList.remove('d-none'); ok = false; }
+    if (isNaN(harga)||harga<0) { document.getElementById('errHarga').classList.remove('d-none'); ok = false; }
+    if (isNaN(kuota)||kuota<1) { document.getElementById('errKuota').classList.remove('d-none'); ok = false; }
     if (!ok) return;
-
     setLoading('btnSimpanTambah', true);
     try {
-      const res  = await fetch(API_CATEGORIES, {
-        method:  'POST',
-        headers: {'Content-Type': 'application/json'},
-        body:    JSON.stringify({ category_name: nama, price: harga, quota: kuota, event_id: eventId }),
-      });
+      const res  = await fetch(API_CATEGORIES, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ category_name: nama, price: harga, quota: kuota, event_id: eventId }) });
       const data = await res.json();
       if (!res.ok) { document.getElementById('errTambah').textContent = data.error; document.getElementById('errTambah').classList.remove('d-none'); return; }
-
       bootstrap.Modal.getInstance(document.getElementById('modalTambah')).hide();
       tampilkanToast('Kategori tiket berhasil ditambahkan!', 'success');
       await loadKategori();
     } catch (err) {
       document.getElementById('errTambah').textContent = err.message;
       document.getElementById('errTambah').classList.remove('d-none');
-    } finally {
-      setLoading('btnSimpanTambah', false);
-    }
+    } finally { setLoading('btnSimpanTambah', false); }
   }
 
-  // EDIT
   function bukaEdit(id, nama, harga, kuota, eventId) {
     document.getElementById('editId').value    = id;
     document.getElementById('editNama').value  = nama;
@@ -431,15 +340,9 @@
     document.getElementById('editKuota').value = kuota;
     document.getElementById('errEdit').classList.add('d-none');
     document.getElementById('errNamaEdit').classList.add('d-none');
-
-    // Isi dropdown event di modal edit
     const sel = document.getElementById('editAcara');
     sel.innerHTML = '';
-    daftarEvents.forEach(e => {
-      sel.insertAdjacentHTML('beforeend',
-        `<option value="${e.id}" ${e.id === eventId ? 'selected' : ''}>${escapeHtml(e.title)}</option>`);
-    });
-
+    daftarEvents.forEach(e => sel.insertAdjacentHTML('beforeend', `<option value="${e.id}" ${e.id===eventId?'selected':''}>${escapeHtml(e.title)}</option>`));
     new bootstrap.Modal(document.getElementById('modalEdit')).show();
   }
 
@@ -451,31 +354,21 @@
     const eventId = document.getElementById('editAcara').value;
     document.getElementById('errEdit').classList.add('d-none');
     document.getElementById('errNamaEdit').classList.add('d-none');
-
     if (!nama) { document.getElementById('errNamaEdit').classList.remove('d-none'); return; }
-
     setLoading('btnSimpanEdit', true);
     try {
-      const res  = await fetch(`${API_CATEGORIES}${id}/`, {
-        method:  'PUT',
-        headers: {'Content-Type': 'application/json'},
-        body:    JSON.stringify({ category_name: nama, price: harga, quota: kuota, event_id: eventId }),
-      });
+      const res  = await fetch(`${API_CATEGORIES}${id}/`, { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ category_name: nama, price: harga, quota: kuota, event_id: eventId }) });
       const data = await res.json();
       if (!res.ok) { document.getElementById('errEdit').textContent = data.error; document.getElementById('errEdit').classList.remove('d-none'); return; }
-
       bootstrap.Modal.getInstance(document.getElementById('modalEdit')).hide();
       tampilkanToast('Kategori tiket berhasil diperbarui!', 'success');
       await loadKategori();
     } catch (err) {
       document.getElementById('errEdit').textContent = err.message;
       document.getElementById('errEdit').classList.remove('d-none');
-    } finally {
-      setLoading('btnSimpanEdit', false);
-    }
+    } finally { setLoading('btnSimpanEdit', false); }
   }
 
-  // HAPUS
   function bukaHapus(id, nama) {
     idHapus = id;
     document.getElementById('hapusId').textContent   = id;
@@ -490,19 +383,15 @@
       const res  = await fetch(`${API_CATEGORIES}${idHapus}/`, { method: 'DELETE' });
       const data = await res.json();
       if (!res.ok) { document.getElementById('errHapus').textContent = data.error; document.getElementById('errHapus').classList.remove('d-none'); return; }
-
       bootstrap.Modal.getInstance(document.getElementById('modalHapus')).hide();
       tampilkanToast('Kategori tiket berhasil dihapus!', 'danger');
       await loadKategori();
     } catch (err) {
       document.getElementById('errHapus').textContent = err.message;
       document.getElementById('errHapus').classList.remove('d-none');
-    } finally {
-      setLoading('btnKonfirmasiHapus', false);
-    }
+    } finally { setLoading('btnKonfirmasiHapus', false); }
   }
 
-  // Utility
   function tampilkanToast(pesan, tipe) {
     const t = document.createElement('div');
     t.className = `alert alert-${tipe} position-fixed bottom-0 end-0 m-3 shadow`;
@@ -511,22 +400,14 @@
     document.body.appendChild(t);
     setTimeout(() => t.remove(), 3000);
   }
-
   function setLoading(btnId, loading) {
     const btn = document.getElementById(btnId);
     btn.disabled = loading;
     if (loading) btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Menyimpan...';
   }
+  function escapeHtml(str) { return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function escapeAttr(str) { return String(str||'').replace(/'/g,"\\'").replace(/"/g,'\\"'); }
 
-  function escapeHtml(str) {
-    return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
-  function escapeAttr(str) {
-    return String(str||'').replace(/'/g,"\\'").replace(/"/g,'\\"');
-  }
-
-  // Init
   renderSidebar(localStorage.getItem('role') || 'guest');
   Promise.all([loadEvents(), loadKategori()]);
 </script>
