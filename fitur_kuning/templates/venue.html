@@ -55,25 +55,7 @@
 </aside>
 
 <div class="main-content">
-  <header class="top-bar">
-    <div><h6 class="mb-0 fw-bold">Manajemen Venue</h6></div>
-    <div class="d-flex align-items-center gap-4">
-      <div class="theme-toggle-btn" onclick="toggleDarkMode()">
-        <i class="bi bi-moon-stars" id="themeIcon"></i>
-      </div>
-      <div class="dropdown dev-tool-dropdown">
-        <button class="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
-          <i class="bi bi-person-gear"></i><span id="roleLabel">Admin</span>
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
-          <li><h6 class="dropdown-header">Simulasi Role</h6></li>
-          <li><a class="dropdown-item" href="#" onclick="updateRole('admin')"><i class="bi bi-shield-check me-2"></i>Administrator</a></li>
-          <li><a class="dropdown-item" href="#" onclick="updateRole('organizer')"><i class="bi bi-calendar-event me-2"></i>Organizer</a></li>
-          <li><a class="dropdown-item" href="#" onclick="updateRole('customer')"><i class="bi bi-person me-2"></i>Customer</a></li>
-        </ul>
-      </div>
-    </div>
-  </header>
+  {% include '_topbar.html' %}
 
   <div class="p-4">
     <div class="container-fluid">
@@ -313,6 +295,9 @@
   function updateVenueUI() {
     const canManage = currentRole === 'admin' || currentRole === 'organizer';
     document.getElementById('btnTambahVenue').classList.toggle('d-none', !canManage);
+  
+    const topBarTitle = document.getElementById('topBarTitle');
+    if (topBarTitle) topBarTitle.textContent = 'Manajemen Venue';
   }
 
   function updateStats() {

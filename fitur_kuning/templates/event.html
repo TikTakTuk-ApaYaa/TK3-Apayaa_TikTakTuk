@@ -59,27 +59,7 @@
 </aside>
 
 <div class="main-content">
-  <header class="top-bar">
-    <div>
-      <h6 class="mb-0 fw-bold" id="topBarTitle">Jelajahi Acara</h6>
-    </div>
-    <div class="d-flex align-items-center gap-4">
-      <div class="theme-toggle-btn" onclick="toggleDarkMode()">
-        <i class="bi bi-moon-stars" id="themeIcon"></i>
-      </div>
-      <div class="dropdown dev-tool-dropdown">
-        <button class="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
-          <i class="bi bi-person-gear"></i><span id="roleLabel">Admin</span>
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
-          <li><h6 class="dropdown-header">Simulasi Role</h6></li>
-          <li><a class="dropdown-item" href="#" onclick="updateRole('admin')"><i class="bi bi-shield-check me-2"></i>Administrator</a></li>
-          <li><a class="dropdown-item" href="#" onclick="updateRole('organizer')"><i class="bi bi-calendar-event me-2"></i>Organizer</a></li>
-          <li><a class="dropdown-item" href="#" onclick="updateRole('customer')"><i class="bi bi-person me-2"></i>Customer</a></li>
-        </ul>
-      </div>
-    </div>
-  </header>
+  {% include '_topbar.html' %}
 
   <div class="p-4">
     <div class="container-fluid">
@@ -282,18 +262,22 @@
   function updatePageUI() {
     const canManage = currentRole === 'admin' || currentRole === 'organizer';
     document.getElementById('btnBuatAcara').classList.toggle('d-none', !canManage);
+    
+    // TAMBAHKAN INI: Update judul di Topbar yang baru kita include
+    const topBarTitle = document.getElementById('topBarTitle');
+    
     if (currentRole === 'organizer') {
+      if (topBarTitle) topBarTitle.textContent = 'Acara Saya'; // Judul di atas
       document.getElementById('pageTitle').textContent    = 'Acara Saya';
       document.getElementById('pageSubtitle').textContent = 'Kelola acara yang Anda selenggarakan';
-      document.getElementById('topBarTitle').textContent  = 'Acara Saya';
     } else if (currentRole === 'admin') {
+      if (topBarTitle) topBarTitle.textContent = 'Semua Acara'; // Judul di atas
       document.getElementById('pageTitle').textContent    = 'Semua Acara';
       document.getElementById('pageSubtitle').textContent = 'Kelola seluruh acara di platform TikTakTuk';
-      document.getElementById('topBarTitle').textContent  = 'Semua Acara';
     } else {
+      if (topBarTitle) topBarTitle.textContent = 'Jelajahi Acara'; // Judul di atas
       document.getElementById('pageTitle').textContent    = 'Jelajahi Acara';
       document.getElementById('pageSubtitle').textContent = 'Temukan acara terbaik dan beli tiket favorit Anda';
-      document.getElementById('topBarTitle').textContent  = 'Jelajahi Acara';
     }
   }
 
