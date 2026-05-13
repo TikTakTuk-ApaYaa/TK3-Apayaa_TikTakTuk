@@ -140,3 +140,6 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = 'login'
+
+
+DATABASE_URL_STRING = 'postgresql://postgres.kmyshghsxqwwngvzyijs:tiktaktuk-apayaa@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres'

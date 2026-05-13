@@ -1,0 +1,92 @@
+{% extends '_topbar.html' %}
+{% load static %}
+
+{% block title %}Order - TikTakTuk{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    
+    {% if is_checkout_page %}
+    <h2 class="fw-bold mb-4">Checkout Tiket</h2>
+    <form action="{% url 'process_order' %}" method="POST">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card p-4 shadow-sm border-0 mb-4">
+                    <h5>Informasi Pembeli</h5>
+                    <p class="text-muted">{{ user_full_name }} ({{ user_phone }})</p>
+                    <hr>
+                    <h5>Pilih Kode Promo (Opsional)</h5>
+                    <select name="promo_id" class="form-select">
+                        <option value="">Tanpa Promo</option>
+                        {% for p in active_promos %}
+                        <option value="{{ p.0 }}">{{ p.1 }} - Potongan Rp {{ p.3 }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-4 shadow-sm border-0 bg-light">
+                    <h5 class="fw-bold">Ringkasan Pesanan</h5>
+                    <div class="d-flex justify-content-between mt-3">
+                        <span>Tiket Terpilih</span>
+                        <span class="fw-bold">{{ ticket_name }}</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <span class="h5 fw-bold">Total</span>
+                        <span class="h5 fw-bold text-success">Rp {{ total_price }}</span>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100 py-3 mt-3 fw-bold">BAYAR SEKARANG</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    {% else %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Riwayat Pesanan</h2>
+        <div class="text-muted">Role: <span class="badge bg-secondary">{{ role }}</span></div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="ps-4">ORDER ID</th>
+                        {% if role != 'Customer' %} <th>PEMBELI</th> {% endif %}
+                        <th>TANGGAL</th>
+                        <th>TOTAL</th>
+                        <th>STATUS</th>
+                        {% if role == 'Admin' %} <th>AKSI</th> {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for o in orders %}
+                    <tr>
+                        <td class="ps-4 fw-bold text-primary">#{{ o.0|truncatechars:8 }}</td>
+                        {% if role != 'Customer' %} <td>{{ o.customer_name }}</td> {% endif %}
+                        <td>{{ o.2 }}</td> <td class="fw-bold">Rp {{ o.3 }}</td> <td>
+                            <span class="badge {% if o.status == 'Lunas' %}bg-success{% else %}bg-warning{% endif %}">
+                                {{ o.status }}
+                            </span>
+                        </td>
+                        {% if role == 'Admin' %}
+                        <td>
+                            <button class="btn btn-sm btn-light"><i class="bi bi-pencil-square"></i> Update Status</button>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4">Belum ada riwayat pesanan.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
