@@ -357,7 +357,8 @@
     }).join('')}</div>`;
   }
 
-  function beliTiket(eventId) { window.location.href = '/order/create/'; }
+  
+    function beliTiket(eventId) { window.location.href = `/events/${eventId}/checkout/`; }
 
   // ── Artist tags ───────────────────────────────────────────────────────────
   function addArtistTag(ev, mode) {

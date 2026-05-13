@@ -363,8 +363,12 @@ def create_order(request, event_id):
             messages.error(request, "Event tidak ditemukan.")
             return redirect('read_event')
 
-        # Sisa kuota per kategori — panggil stored procedure
-        cur.execute("SELECT * FROM get_ticket_category_quota(%s)", (event_id,))
+        # Sisa kuota per kategori — panggil stored procedure (YANG BENER & JOIN HARGA)
+        cur.execute("""
+            SELECT sp.category_id, sp.category_name, tc.price, sp.remaining
+            FROM sp_sisa_kuota_event(%s) sp
+            JOIN TICKET_CATEGORY tc ON tc.category_id = sp.category_id
+        """, (str(event_id),))
         categories = cur.fetchall()
         # returns: (category_id, category_name, price, remaining_quota)
 
