@@ -277,7 +277,7 @@
   // {{ venues_json }} sudah di-serialize oleh view sebagai JSON yang aman
   let venues = {{ venues_json|safe }};
 
-  let currentRole = '{{ role }}';
+  let currentRole = localStorage.getItem('role') || 'guest';
   let pendingDeleteId = null;
 
   // override updateRole agar sinkron dengan session (tidak pakai localStorage role utama)

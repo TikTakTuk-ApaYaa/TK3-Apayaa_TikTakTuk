@@ -164,7 +164,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <form method="POST" action="{% url 'create_promotion' %}">
+        <form method="POST" action="{% url 'fitur_biru:create_promotion' %}">
           {% csrf_token %}
           <div class="mb-3"><label>Kode Promo</label><input type="text" name="promo_code" class="form-control form-bold" placeholder="cth. TIKTAK20" required></div>
           <div class="mb-3"><label>Tipe Diskon</label>
@@ -250,7 +250,7 @@
 <script>
   document.getElementById('editPromoModal').addEventListener('show.bs.modal', function(e) {
     const btn = e.relatedTarget;
-    const baseUrl = "{% url 'update_promotion' '00000000-0000-0000-0000-000000000000' %}";
+    const baseUrl = "{% url 'fitur_biru:update_promotion' '00000000-0000-0000-0000-000000000000' %}";
     document.getElementById('editPromoForm').action = baseUrl.replace('00000000-0000-0000-0000-000000000000', btn.dataset.id);
     document.getElementById('editCode').value  = btn.dataset.code;
     document.getElementById('editValue').value = btn.dataset.value;
@@ -263,7 +263,7 @@
 
   document.getElementById('deletePromoModal').addEventListener('show.bs.modal', function(e) {
     const btn = e.relatedTarget;
-    const baseUrl = "{% url 'delete_promotion' '00000000-0000-0000-0000-000000000000' %}";
+    const baseUrl = "{% url 'fitur_biru:delete_promotion' '00000000-0000-0000-0000-000000000000' %}";
     document.getElementById('deletePromoForm').action = baseUrl.replace('00000000-0000-0000-0000-000000000000', btn.dataset.id);
     document.getElementById('deletePromoCode').textContent = btn.dataset.code;
   });

@@ -551,7 +551,7 @@ def update_promotion(request, promotion_id):
 def delete_promotion(request, promotion_id):
     if not request.session.get('user_id'):
         return redirect('fitur_wajib:login')
-    if get_user_role(request) != 'administrator': 
+    if get_user_role(request) != 'administrator':  # ← FIX
         messages.error(request, "Akses ditolak.")
         return redirect('fitur_biru:read_promotion')
 

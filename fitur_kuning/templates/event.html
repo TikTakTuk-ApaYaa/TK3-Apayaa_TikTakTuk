@@ -244,7 +244,7 @@
   let venues      = {{ venues_json|safe }};
   let allArtists  = {{ all_artists_json|safe }};
 
-  let currentRole    = '{{ role }}';
+  let currentRole    = localStorage.getItem('role') || 'guest';
   let createArtists  = [];
   let editArtists    = [];
   let catCounter     = 0;

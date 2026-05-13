@@ -82,7 +82,13 @@
   </style>
 </head>
 <body>
+<script>
+  (function(){
+    var r = '{{ role|default:"" }}';
+    if (r) localStorage.setItem('role', r);
+  })();
 
+</script>
 <aside class="sidebar">
   <div class="sidebar-header">
     <div class="bg-white text-success rounded-2 px-2 py-1" style="font-size:14px;">TT</div>
@@ -108,7 +114,7 @@
               <h3 class="fw-bold mb-0">System Console</h3>
               <p class="text-muted small mb-0">Pantau dan kelola platform TikTakTuk</p>
             </div>
-            <button class="btn btn-success btn-sm" onclick="window.location.href='/promo/admin/'">
+            <button class="btn btn-success btn-sm" onclick="window.location.href='/promotions/'">
               <i class="bi bi-tag me-1"></i>Promosi
             </button>
           </div>
@@ -199,7 +205,7 @@
                   <div class="inline-stat"><span>Promo Persentase</span><strong>{{ promo_percentage }} Aktif</strong></div>
                   <div class="inline-stat"><span>Promo Potongan Nominal</span><strong>{{ promo_nominal }} Aktif</strong></div>
                   <div class="inline-stat"><span>Total Penggunaan</span><strong>{{ promo_usage }} Kali</strong></div>
-                  <button class="btn btn-outline-warning btn-sm w-100 mt-3" onclick="window.location.href='/promo/admin/'">
+                  <button class="btn btn-outline-warning btn-sm w-100 mt-3" onclick="window.location.href='/promotions/'">
                     Kelola Promosi <i class="bi bi-arrow-right ms-1"></i>
                   </button>
                 </div>
@@ -404,43 +410,31 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+<!-- ✅ FIX: Tidak perlu set localStorage lagi di sini -->
 <script>
-  const realRole = '{{ role }}';
-  if (realRole) {
-      localStorage.setItem('role', realRole);
-      window.currentRole = realRole;
-  }
+  window.currentRole = '{{ role }}';
 
   document.addEventListener('DOMContentLoaded', () => {
-    const topBarTitle = document.getElementById('topBarTitle');
-    if (topBarTitle) topBarTitle.textContent = 'Dashboard';
-
     const roleLabel = document.getElementById('roleLabel');
     if (roleLabel && window.currentRole) {
-        roleLabel.textContent = window.currentRole.charAt(0).toUpperCase() + window.currentRole.slice(1);
+      const labels = { admin: 'Administrator', organizer: 'Event Organizer', customer: 'Customer' };
+      roleLabel.textContent = labels[window.currentRole] || window.currentRole;
     }
 
-    const dashAdmin = document.getElementById('dash-admin');
-    const dashOrg = document.getElementById('dash-organizer');
-    const dashCust = document.getElementById('dash-customer');
+    const dAdmin = document.getElementById('dash-admin');
+    const dOrg   = document.getElementById('dash-organizer');
+    const dCust  = document.getElementById('dash-customer');
 
-    if (dashAdmin) dashAdmin.classList.add('d-none');
-    if (dashOrg) dashOrg.classList.add('d-none');
-    if (dashCust) dashCust.classList.add('d-none');
+    [dAdmin, dOrg, dCust].forEach(el => { if (el) el.classList.add('d-none'); });
 
-    // Tampilkan yang sesuai dengan Role dari Django
-    if ((window.currentRole === 'admin' || window.currentRole === 'administrator') && dashAdmin) {
-    dashAdmin.classList.remove('d-none');
-    } else if (window.currentRole === 'organizer' && dashOrg) {
-        dashOrg.classList.remove('d-none');
-    } else if (window.currentRole === 'customer' && dashCust) {
-        dashCust.classList.remove('d-none');
-    }
+    if (window.currentRole === 'admin' && dAdmin)         dAdmin.classList.remove('d-none');
+    else if (window.currentRole === 'organizer' && dOrg)  dOrg.classList.remove('d-none');
+    else if (window.currentRole === 'customer' && dCust)  dCust.classList.remove('d-none');
   });
 </script>
 
-<script src="{% static 'js/navbar.js' %}?v=999"></script>
-<script src="{% static 'js/dashboard.js' %}?v=1"></script>
+<script src="{% static 'js/navbar.js' %}?v=9999"></script>
+<script src="{% static 'js/dashboard.js' %}?v=9999"></script>
 
 </body>
 </html>

@@ -83,7 +83,7 @@ def login(request):
 
                     # Prioritas: administrator > organizer > customer
                     if 'administrator' in roles:
-                        role = 'administrator'
+                        role = 'admin'
                     elif 'organizer' in roles:
                         role = 'organizer'
                     else:
@@ -224,7 +224,7 @@ def dashboard(request):
     with connection.cursor() as cur:
         _sc(cur)
 
-        if role == 'administrator':
+        if role == 'admin' :
             cur.execute("SELECT COUNT(*) FROM user_account")
             ctx['total_users'] = cur.fetchone()[0]
 

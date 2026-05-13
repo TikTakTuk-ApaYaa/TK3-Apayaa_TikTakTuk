@@ -1,10 +1,10 @@
-let currentRole = localStorage.getItem('role') || 'admin';
+// Ambil dari localStorage yang sudah di-set server
+let currentRole = localStorage.getItem('role') || 'guest';
 let currentPage = 'dashboard';
 
 function adaptSidebarLinks() {
   document.querySelectorAll('.nav-link-custom').forEach(link => {
     const text = link.textContent.trim().toLowerCase();
-    // Cukup atur yang Dashboard aja, Profile biarkan normal pindah halaman
     if (text === 'dashboard') {
       link.href = '#';
       link.setAttribute('onclick', "showPage('dashboard'); return false;");
@@ -12,22 +12,21 @@ function adaptSidebarLinks() {
   });
 }
 
+// ✅ FIX: updateRole harus update currentRole DAN re-render dashboard
 window.updateRole = function(role) {
   currentRole = role;
   localStorage.setItem('role', role);
-  currentPage = 'dashboard';
-  
-  if (typeof renderSidebar === 'function') {
-      renderSidebar(role);
+
+  if (typeof renderSidebar === 'function') renderSidebar(role);
+
+  // Update label di topbar
+  const roleLabel = document.getElementById('roleLabel');
+  if (roleLabel) {
+    const labels = { admin: 'Administrator', organizer: 'Event Organizer', customer: 'Customer', guest: 'Guest' };
+    roleLabel.textContent = labels[role] || role;
   }
-  
-  adaptSidebarLinks();
-  
-  renderDashboard(role);
-  showPage('dashboard');
 };
 
-//  PAGE NAVIGATION
 function showPage(pageId) {
   currentPage = pageId;
   document.querySelectorAll('.tt-page').forEach(p => p.classList.remove('active'));
@@ -35,39 +34,26 @@ function showPage(pageId) {
   if (pg) pg.classList.add('active');
 
   document.querySelectorAll('.nav-link-custom').forEach(n => {
-      n.classList.remove('active');
-      if (n.textContent.trim().toLowerCase() === pageId) {
-          n.classList.add('active');
-      }
+    n.classList.remove('active');
+    if (n.textContent.trim().toLowerCase() === pageId) n.classList.add('active');
   });
 
-  const titles = { dashboard:'Dashboard' };
-  document.getElementById('topBarTitle').textContent = titles[pageId] || pageId;
+  const topTitle = document.getElementById('topBarTitle');
+  if (topTitle) topTitle.textContent = 'Dashboard';
 }
 
-function renderDashboard(role) {
-  const r = role || currentRole;
-  // Cek apakah dia admin atau administrator
-  const isAdmin = (r === 'admin' || r === 'administrator');
-  
-  document.getElementById('dash-admin').classList.toggle('d-none',    !isAdmin);
-  document.getElementById('dash-organizer').classList.toggle('d-none', r !== 'organizer');
-  document.getElementById('dash-customer').classList.toggle('d-none',  r !== 'customer');
-}
-
-//  TOAST
-function showToast(msg, type='success') {
+function showToast(msg, type = 'success') {
   const el = document.getElementById('liveToast');
-  el.className = `toast align-items-center border-0 text-bg-${type}`;
-  document.getElementById('toastMsg').textContent = msg;
-  new bootstrap.Toast(el, { delay: 3000 }).show();
+  if (el) {
+    el.className = `toast align-items-center border-0 text-bg-${type}`;
+    document.getElementById('toastMsg').textContent = msg;
+    new bootstrap.Toast(el, { delay: 3000 }).show();
+  }
 }
 
-// INIT LOKAL
 document.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
-     adaptSidebarLinks();
-     showPage(currentPage);
-     renderDashboard(currentRole);
-  }, 100); 
+    adaptSidebarLinks();
+    showPage(currentPage);
+  }, 50);
 });

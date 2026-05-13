@@ -82,7 +82,7 @@
         </div>
       </div>
 
-      <form method="POST" action="{% url 'create_order' event.0 %}">
+      <form method="POST" action="{% url 'fitur_biru:create_order' event.0 %}">
         {% csrf_token %}
         <input type="hidden" name="category_id" id="hidden_category_id" value="">
         <input type="hidden" name="qty" id="hidden_qty" value="1">

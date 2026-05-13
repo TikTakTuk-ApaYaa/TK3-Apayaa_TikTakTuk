@@ -5,7 +5,7 @@ const ROLE_MENUS = {
     { label: 'Registrasi', icon: 'bi-person-plus',        href: '/pilih-role/' }, 
   ],
 
-  administrator: [
+  admin: [
     { label: 'Dashboard',       icon: 'bi-grid-1x2',           href: '/' },
     { label: 'Manajemen Venue', icon: 'bi-building',           href: '/venue/', },
     { label: 'Manajemen Kursi', icon: 'bi-grid-3x3',           href: '/fitur_merah/templates/seat-main.html' },
@@ -57,7 +57,7 @@ const ROLE_MENUS = {
 };
 
 const ROLE_DISPLAY_NAMES = {
-  administrator:     'Administrator',
+  admin:     'Administrator',
   organizer: 'Event Organizer',
   customer:  'Customer',
   guest:     'Guest'
