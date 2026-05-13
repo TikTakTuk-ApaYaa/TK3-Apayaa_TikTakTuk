@@ -121,6 +121,7 @@
                 <th>HARGA</th>
                 <th>KUOTA</th>
                 <th>TERJUAL</th>
+                <th>SISA</th>
                 <th class="d-none" id="thAction">AKSI</th>
               </tr>
             </thead>
@@ -352,6 +353,11 @@
           <span class="${k.remaining <= 0 ? 'text-danger' : 'text-muted'} small">
             ${k.sold} / ${k.quota}
             ${k.remaining <= 0 ? '<span class="badge bg-danger ms-1">HABIS</span>' : ''}
+          </span>
+        </td>
+        <td>
+          <span class="fw-semibold ${k.remaining <= 0 ? 'text-danger' : 'text-success'}">
+            ${k.remaining.toLocaleString('id-ID')}
           </span>
         </td>
         ${canEdit ? `
