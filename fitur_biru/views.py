@@ -156,7 +156,7 @@ def read_order_organizer(request):
 # ============================================================
 def read_order_admin(request):
     role = get_user_role(request)
-    print(f"DEBUG: Role kamu adalah '{role}'") # Lihat di terminal/console
+    print(f"DEBUG: Role kamu adalah '{role}'") 
     
     if not request.session.get('user_id'):
         print("DEBUG: user_id tidak ditemukan!")
@@ -306,7 +306,7 @@ def create_order(request, event_id):
         # Sisa kuota pakai stored procedure
         cur.execute("""
             SELECT sp.category_id, sp.category_name, tc.price, sp.remaining
-            FROM sp_sisa_kuota_biru(%s::uuid) sp
+            FROM tiktaktuk.sp_sisa_kuota_biru(%s::uuid) sp
             JOIN TICKET_CATEGORY tc ON tc.category_id = sp.category_id
         """, (str(event_id),))
         categories = cur.fetchall()
@@ -359,7 +359,6 @@ def create_order(request, event_id):
                     VALUES (%s, NOW(), 'UNPAID', %s, %s)
                 """, (str(order_id), total_amount, customer_id))
 
-                # Trigger validate_promotion akan jalan di sini
                 if promotion_id:
                     op_id = uuid.uuid4()
                     cur.execute("""
@@ -367,7 +366,6 @@ def create_order(request, event_id):
                         VALUES (%s, %s, %s)
                     """, (str(op_id), str(promotion_id), str(order_id)))
 
-                # Trigger check_ticket_quota akan jalan tiap INSERT
                 for i in range(qty):
                     ticket_id   = uuid.uuid4()
                     ticket_code = f"TTK-{str(order_id)[:8].upper()}-{str(category_id)[:4].upper()}-{i+1:03d}"
