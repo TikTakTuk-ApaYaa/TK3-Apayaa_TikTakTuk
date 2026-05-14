@@ -156,12 +156,15 @@ def read_order_organizer(request):
 # ============================================================
 def read_order_admin(request):
     role = get_user_role(request)
+    print(f"DEBUG: Role kamu adalah '{role}'") # Lihat di terminal/console
+    
     if not request.session.get('user_id'):
+        print("DEBUG: user_id tidak ditemukan!")
         return redirect('fitur_wajib:login')
     
-    # KUNCI: Sesuaikan dengan nama role di database (administrator)
-    if role != 'administrator': 
-        messages.error(request, "Akses ditolak.")
+    if role != 'admin': 
+        print(f"DEBUG: Akses ditolak karena '{role}' bukan 'administrator'")
+        messages.error(request, f"Role kamu {role}, butuh administrator.")
         return redirect('fitur_wajib:dashboard')
 
     conn = get_db_conn()
@@ -212,7 +215,7 @@ def read_order_admin(request):
 def update_order_admin(request, order_id):
     if not request.session.get('user_id'):
         return redirect('fitur_wajib:login')
-    if get_user_role(request) != 'administrator':         # ← FIX
+    if get_user_role(request) != 'admin':         # ← FIX
         messages.error(request, "Akses ditolak.")
         return redirect('fitur_wajib:dashboard')
 
@@ -243,7 +246,7 @@ def update_order_admin(request, order_id):
 def delete_order_admin(request, order_id):
     if not request.session.get('user_id'):
         return redirect('fitur_wajib:login')
-    if get_user_role(request) != 'administrator':         # ← FIX
+    if get_user_role(request) != 'admin':         # ← FIX
         messages.error(request, "Akses ditolak.")
         return redirect('fitur_wajib:dashboard')
 
@@ -440,7 +443,7 @@ def read_promotion(request):
         conn.close()
 
     role = get_user_role(request)
-    if role == 'administrator':                    
+    if role == 'admin':                    
         template = 'CRUD_promo_admin.html'
     elif role == 'organizer':
         template = 'read_promo_organizer.html'
@@ -462,7 +465,7 @@ def read_promotion(request):
 def create_promotion(request):
     if not request.session.get('user_id'):
         return redirect('fitur_wajib:login')
-    if get_user_role(request) != 'administrator':  
+    if get_user_role(request) != 'admin':  
         messages.error(request, "Akses ditolak.")
         return redirect('fitur_biru:read_promotion')
 
@@ -508,7 +511,7 @@ def create_promotion(request):
 def update_promotion(request, promotion_id):
     if not request.session.get('user_id'):
         return redirect('fitur_wajib:login')
-    if get_user_role(request) != 'administrator':  
+    if get_user_role(request) != 'admin':  
         messages.error(request, "Akses ditolak.")
         return redirect('fitur_biru:read_promotion')
 
@@ -551,7 +554,7 @@ def update_promotion(request, promotion_id):
 def delete_promotion(request, promotion_id):
     if not request.session.get('user_id'):
         return redirect('fitur_wajib:login')
-    if get_user_role(request) != 'administrator':  # ← FIX
+    if get_user_role(request) != 'admin':  # ← FIX
         messages.error(request, "Akses ditolak.")
         return redirect('fitur_biru:read_promotion')
 
