@@ -303,7 +303,7 @@ def create_order(request, event_id):
         # Sisa kuota pakai stored procedure
         cur.execute("""
             SELECT sp.category_id, sp.category_name, tc.price, sp.remaining
-            FROM sp_sisa_kuota_event(%s) sp
+            FROM sp_sisa_kuota_event(%s::uuid) sp
             JOIN TICKET_CATEGORY tc ON tc.category_id = sp.category_id
         """, (str(event_id),))
         categories = cur.fetchall()

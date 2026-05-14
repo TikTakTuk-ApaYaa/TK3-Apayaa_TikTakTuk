@@ -1,6 +1,8 @@
 SET search_path TO tiktaktuk;
 
-CREATE OR REPLACE FUNCTION sp_sisa_kuota_event(p_event_id UUID)
+-- 1. UBAH NAMA FUNGSI JADI: sp_sisa_kuota_biru
+DROP FUNCTION IF EXISTS sp_sisa_kuota_biru(UUID) CASCADE;
+CREATE OR REPLACE FUNCTION sp_sisa_kuota_biru(p_event_id UUID)
 RETURNS TABLE(
     category_id UUID,
     category_name VARCHAR,
@@ -19,6 +21,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+
+-- 2. TRIGGER CEK KUOTA
 CREATE OR REPLACE FUNCTION check_ticket_quota()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -43,10 +47,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_check_ticket_quota ON TICKET;
 CREATE TRIGGER trg_check_ticket_quota
 BEFORE INSERT ON TICKET
 FOR EACH ROW EXECUTE FUNCTION check_ticket_quota();
 
+
+-- 3. TRIGGER VALIDASI PROMOSI
 CREATE OR REPLACE FUNCTION validate_promotion()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -78,6 +85,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_validate_promotion ON ORDER_PROMOTION;
 CREATE TRIGGER trg_validate_promotion
 BEFORE INSERT ON ORDER_PROMOTION
 FOR EACH ROW EXECUTE FUNCTION validate_promotion();
