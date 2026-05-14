@@ -36,6 +36,7 @@ const ROLE_MENUS = {
     { label: 'Tiket (Aset)',    icon: 'bi-collection',         href: '/fitur_merah/templates/ticket-main.html?mode=asset'},
     // PERBAIKAN FITUR BIRU
     { label: 'Order (Aset)',    icon: 'bi-receipt',            href: '/orders/organizer/' },
+    { label: 'Promosi',    icon: 'bi-megaphone',        href: '/promotions/' },
     { label: 'Artis',           icon: 'bi-people',             href: '/artists/'},
     { label: 'Profile',         icon: 'bi-person-circle',      href: '/profile/' },
     { label: 'Logout',          icon: 'bi-box-arrow-right',    href: '/logout/', isLogout: true },
