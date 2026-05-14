@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="id" data-bs-theme="light">
 <head>
@@ -7,66 +8,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+  <link href="{% static 'css/main.css' %}" rel="stylesheet"/>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    :root { --sidebar-width: 260px; --primary-green: #1a7a4a; --transition-speed: 0.3s; }
-    body { font-family: 'Inter', sans-serif; background-color: var(--bs-body-bg); transition: background-color var(--transition-speed), color var(--transition-speed); }
-    .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; left: 0; top: 0; background: #111827; color: white; transition: all var(--transition-speed); z-index: 1000; border-right: 1px solid rgba(255,255,255,0.1); overflow-y: auto; }
-    [data-bs-theme="dark"] .sidebar { background: #000; }
-    .sidebar-header { padding: 1.5rem; font-weight: 800; font-size: 1.25rem; color: var(--primary-green); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-    .nav-list { list-style: none; padding: 1rem; margin: 0; }
-    .nav-item-custom { margin-bottom: 4px; }
-    .nav-link-custom { display: flex; align-items: center; gap: 12px; padding: 0.75rem 1rem; color: #9ca3af; text-decoration: none; border-radius: 8px; font-size: 0.875rem; font-weight: 500; transition: all 0.2s; }
-    .nav-link-custom:hover { background: rgba(255,255,255,0.05); color: white; }
-    .nav-link-custom.active { background: var(--primary-green); color: white; }
-    .nav-link-custom.logout-link { color: #f87171; }
-    .nav-link-custom.logout-link:hover { background: rgba(248,113,113,0.1); color: #f87171; }
-    .main-content { margin-left: var(--sidebar-width); padding: 0; min-height: 100vh; }
-    .top-bar { height: 70px; background: var(--bs-body-bg); border-bottom: 1px solid var(--bs-border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; position: sticky; top: 0; z-index: 999; }
-    .dev-tool-dropdown .dropdown-toggle::after { display: none; }
-    .theme-toggle-btn { cursor: pointer; font-size: 1.2rem; color: var(--bs-secondary-color); transition: color 0.2s; }
-    .theme-toggle-btn:hover { color: var(--primary-green); }
-    [data-bs-theme="dark"] .main-content { background: #0b0f17; color: #e5e7eb; }
-    [data-bs-theme="dark"] .main-content .bg-white,
-    [data-bs-theme="dark"] #ticketModal .bg-white,
-    [data-bs-theme="dark"] #ticketDeleteModal .bg-white { background-color: #111827 !important; }
-    [data-bs-theme="dark"] .main-content .bg-gray-50 { background-color: #1f2937 !important; }
-    [data-bs-theme="dark"] .main-content .bg-gray-200 { background-color: #334155 !important; }
-    [data-bs-theme="dark"] .main-content .text-gray-900,
-    [data-bs-theme="dark"] #ticketModal .text-gray-900 { color: #f9fafb !important; }
-    [data-bs-theme="dark"] .main-content .text-gray-700 { color: #d1d5db !important; }
-    [data-bs-theme="dark"] .main-content .text-gray-600,
-    [data-bs-theme="dark"] #ticketDeleteModal .text-gray-600 { color: #cbd5e1 !important; }
-    [data-bs-theme="dark"] .main-content .text-gray-500,
-    [data-bs-theme="dark"] #ticketModal .text-gray-500 { color: #9ca3af !important; }
-    [data-bs-theme="dark"] .main-content .border-gray-300,
-    [data-bs-theme="dark"] #ticketModal .border,
-    [data-bs-theme="dark"] #ticketDeleteModal .border { border-color: #374151 !important; }
-    [data-bs-theme="dark"] .main-content input,
-    [data-bs-theme="dark"] .main-content select,
-    [data-bs-theme="dark"] #ticketModal input,
-    [data-bs-theme="dark"] #ticketModal select {
-      background-color: #0f172a !important;
-      border-color: #374151 !important;
-      color: #f9fafb !important;
-    }
-    [data-bs-theme="dark"] .main-content input::placeholder,
-    [data-bs-theme="dark"] #ticketModal input::placeholder { color: #94a3b8; }
-    [data-bs-theme="dark"] .main-content .shadow,
-    [data-bs-theme="dark"] #ticketModal .shadow-xl,
-    [data-bs-theme="dark"] #ticketDeleteModal .shadow-xl { box-shadow: 0 12px 30px rgba(0,0,0,0.35) !important; }
-    [data-bs-theme="dark"] .sidebar .bg-white { background-color: #ffffff !important; }
-    @media (max-width: 992px) { .sidebar { left: -100%; } .main-content { margin-left: 0; } }
-  </style>
 </head>
 <body>
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <div class="bg-white text-success rounded-2 px-2 py-1" style="font-size:14px;">TT</div>
-      <span>TikTakTuk</span>
-    </div>
-    <ul class="nav-list" id="sidebarMenu"></ul>
-  </aside>
+  {% include '_navbar.html' %}
 
   <div class="main-content">
     <header class="top-bar">
@@ -194,7 +140,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="../../fitur_wajib/templates/navbar.js"></script>
+  <script src="{% static 'js/navbar.js' %}"></script>
   <script>
   const ticketParams = new URLSearchParams(window.location.search);
   const ticketRole = ticketParams.get('view') === 'customer' || localStorage.getItem('role') === 'customer' ? 'customer' : 'manager';
