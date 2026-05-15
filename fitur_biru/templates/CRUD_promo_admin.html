@@ -13,7 +13,6 @@
   <link href="{% static 'css/main.css' %}" rel="stylesheet"/>
 
   <style>
-
     .container-page { max-width: 1050px; margin-top: 20px; padding-bottom: 50px; }
     .btn-create { background: #2b59ff; color: white; border-radius: 12px; padding: 10px 20px; font-weight: 700; border: none; transition: 0.2s; }
     .btn-create:hover { background: #1a44d6; color: white; }
@@ -37,7 +36,7 @@
     .type-PERCENTAGE { background: #f0f3ff; color: #2b59ff; }
     .type-NOMINAL { background: #fff4e5; color: #ff9800; }
     
-    /* Modal Styling sesuai tema bold kamu */
+    /* Modal Styling */
     .modal-content { border: 3px solid #000 !important; border-radius: 30px !important; padding: 15px; }
     .modal-title { font-weight: 800; font-size: 1.6rem; }
     .form-bold { border: 2px solid #000 !important; border-radius: 15px !important; padding: 12px 18px !important; font-weight: 600 !important; }
@@ -148,7 +147,6 @@
           </table>
         </div>
       </div>
-
     </div>
   </div>
 </div>
@@ -202,19 +200,96 @@
   </div>
 </div>
 
+<div class="modal fade" id="editPromoModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title">Edit Promo</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editPromoForm" method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label class="small fw-bold text-muted text-uppercase">Kode Promo</label>
+              <input type="text" name="promo_code" id="editCode" class="form-control form-bold" required>
+            </div>
+            <div class="mb-3">
+              <label class="small fw-bold text-muted text-uppercase">Tipe Diskon</label>
+              <select name="discount_type" id="editType" class="form-select form-bold" required>
+                <option value="PERCENTAGE">Persentase (%)</option>
+                <option value="NOMINAL">Nominal (Rp)</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="small fw-bold text-muted text-uppercase">Nilai Diskon</label>
+              <input type="number" name="discount_value" id="editValue" class="form-control form-bold" step="0.01" required>
+            </div>
+            <div class="row">
+              <div class="col-6 mb-3">
+                <label class="small fw-bold text-muted text-uppercase">Mulai</label>
+                <input type="date" name="start_date" id="editStart" class="form-control form-bold" required>
+              </div>
+              <div class="col-6 mb-3">
+                <label class="small fw-bold text-muted text-uppercase">Berakhir</label>
+                <input type="date" name="end_date" id="editEnd" class="form-control form-bold" required>
+              </div>
+            </div>
+            <div class="mb-4">
+              <label class="small fw-bold text-muted text-uppercase">Batas Penggunaan</label>
+              <input type="number" name="usage_limit" id="editLimit" class="form-control form-bold" required>
+            </div>
+            <div class="d-flex gap-3 justify-content-end">
+              <button type="button" class="btn-modal-batal" data-bs-dismiss="modal">Batal</button>
+              <button type="submit" class="btn-modal-buat">Simpan Perubahan</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal fade" id="deletePromoModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title text-danger">Hapus Promo</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body text-center">
+          <form id="deletePromoForm" method="POST">
+            {% csrf_token %}
+            <div class="mb-4">
+                <i class="bi bi-exclamation-octagon text-danger" style="font-size: 4rem;"></i>
+                <p class="fw-bold mt-3 fs-5">Apakah Anda yakin ingin menghapus kode promo <span id="deletePromoCode" class="text-primary"></span>?</p>
+                <p class="text-muted">Tindakan ini tidak bisa dibatalkan.</p>
+            </div>
+            <div class="d-flex gap-3 justify-content-center">
+              <button type="button" class="btn-modal-batal" data-bs-dismiss="modal">Batal</button>
+              <button type="submit" class="btn btn-danger rounded-pill fw-bold px-4 border-2 border-dark">Ya, Hapus</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{% static 'js/navbar.js' %}"></script>
 <script>
-  // Script logika pengisian modal edit/delete tetap sama
   document.getElementById('editPromoModal')?.addEventListener('show.bs.modal', function(e) {
     const btn = e.relatedTarget;
+    // Ganti URL dengan ID promo
     const baseUrl = "{% url 'fitur_biru:update_promotion' '00000000-0000-0000-0000-000000000000' %}";
     document.getElementById('editPromoForm').action = baseUrl.replace('00000000-0000-0000-0000-000000000000', btn.dataset.id);
+    
+    // Isi field form
     document.getElementById('editCode').value  = btn.dataset.code;
     document.getElementById('editValue').value = btn.dataset.value;
     document.getElementById('editStart').value = btn.dataset.start;
     document.getElementById('editEnd').value   = btn.dataset.end;
     document.getElementById('editLimit').value = btn.dataset.limit;
+    
     const sel = document.getElementById('editType');
     for (let o of sel.options) o.selected = o.value === btn.dataset.type;
   });
