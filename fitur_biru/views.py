@@ -1,11 +1,11 @@
-from datetime import timezone
+
 import uuid
 from django.db import connection
-import psycopg2
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.conf import settings
 from decimal import Decimal
+from django.utils import timezone
 
 
 # ============================================================
