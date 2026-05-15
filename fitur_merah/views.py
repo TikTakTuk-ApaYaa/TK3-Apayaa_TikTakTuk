@@ -35,11 +35,16 @@ def _can_manage(role):
 
 
 def _clean_db_error(exc):
-    for line in str(exc).splitlines():
+    msg = str(exc)
+    for line in msg.splitlines():
         line = line.strip()
-        if line and not line.startswith("LINE") and not line.startswith("^"):
-            return line.removeprefix("ERROR:").strip()
-    return str(exc).strip() or "Terjadi kesalahan."
+        if line and not any(line.startswith(x) for x in ["LINE", "^", "QUERY", "CONTEXT"]):
+            if ":" in line:
+                parts = line.split(":", 1)
+                if parts[0].strip().upper() == "ERROR":
+                    return parts[1].strip()
+            return line
+    return msg or "Terjadi kesalahan database."
 
 
 def _json_body(request):
