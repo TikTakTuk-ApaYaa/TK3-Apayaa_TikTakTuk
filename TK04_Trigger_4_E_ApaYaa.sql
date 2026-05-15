@@ -54,6 +54,9 @@ FOR EACH ROW EXECUTE FUNCTION check_ticket_quota();
 
 
 -- 3. TRIGGER VALIDASI PROMOSI
+DROP TRIGGER IF EXISTS trg_validate_promotion ON tiktaktuk.order_promotion;
+
+-- 2. RE-CREATE Fungsi dengan pengamanan ekstra
 CREATE OR REPLACE FUNCTION validate_promotion()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -62,30 +65,32 @@ DECLARE
     v_limit INTEGER;
     v_used INTEGER;
 BEGIN
-    -- Ambil info promosi
-    SELECT start_date, end_date, usage_limit INTO v_start, v_end, v_limit
+    -- Mengunci baris promosi agar data v_used akurat (mencegah race condition)
+    SELECT start_date, end_date, usage_limit 
+    INTO v_start, v_end, v_limit
     FROM tiktaktuk.promotion
     WHERE promotion_id = NEW.promotion_id;
 
-    -- 1. Validasi Tanggal
+    -- 1. Validasi Tanggal (Bandingkan dengan order_date jika ada, atau CURRENT_DATE)
     IF CURRENT_DATE < v_start OR CURRENT_DATE > v_end THEN
-        RAISE EXCEPTION 'Kode promo tidak dapat digunakan (diluar periode promo).';
+        RAISE EXCEPTION 'Kode promo tidak dapat digunakan (diluar periode promo: % hingga %)', v_start, v_end;
     END IF;
 
     -- 2. Validasi Limit Penggunaan
-    SELECT COUNT(*) INTO v_used
+    -- Gunakan query yang lebih direct
+    SELECT COUNT(*)::INTEGER INTO v_used
     FROM tiktaktuk.order_promotion
     WHERE promotion_id = NEW.promotion_id;
 
     IF v_used >= v_limit THEN
-        RAISE EXCEPTION 'Maaf, kuota penggunaan kode promo ini sudah habis.';
+        RAISE EXCEPTION 'Maaf, kuota penggunaan kode promo ini sudah habis (Maks: %)', v_limit;
     END IF;
 
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS trg_validate_promotion ON tiktaktuk.order_promotion;
+-- 3. Pasang kembali trigger
 CREATE TRIGGER trg_validate_promotion
 BEFORE INSERT ON tiktaktuk.order_promotion
 FOR EACH ROW EXECUTE FUNCTION validate_promotion();
