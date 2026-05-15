@@ -179,7 +179,7 @@ def api_ticket_categories(request):
                 with connection.cursor() as c:
                     _sp(c)
                     c.execute(
-                        "SELECT * FROM sp_sisa_kuota_event(%s::UUID)",
+                        "SELECT * FROM tiktaktuk.sp_sisa_kuota_event(%s::UUID)",
                         [event_filter],
                     )
                     sp_rows = c.fetchall()
