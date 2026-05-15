@@ -6,7 +6,7 @@ RETURNS TRIGGER AS $$
 BEGIN
 
     IF NEW.username !~ '^[a-zA-Z0-9]+$' THEN
-        RAISE EXCEPTION 'ERROR: Username "%" hanya boleh mengandung huruf dan angka tanpa simbol atau spasi.', NEW.username;
+        RAISE EXCEPTION 'Username "%" hanya boleh mengandung huruf dan angka tanpa simbol atau spasi.', NEW.username;
     END IF;
 
     IF EXISTS (
