@@ -5,15 +5,12 @@ import dj_database_url
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # --- 1. SECURITY SETTINGS ---
-# Mengambil dari Render Environment Variables
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-lokal-aja')
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-# Jika di lokal pakai '*', jika di Render pakai domain kamu
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 
 # --- 2. DATABASE SETTINGS ---
-# dj_database_url otomatis membaca variabel 'DATABASE_URL' di Render
 DATABASES = {
     'default': dj_database_url.config(
         default='postgresql://postgres.kmyshghsxqwwngvzyijs:tiktaktuk-apayaa@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres',
@@ -21,7 +18,6 @@ DATABASES = {
     )
 }
 
-# Tambahkan opsi search_path (public penting agar session django jalan)
 DATABASES['default']['OPTIONS'] = {'options': '-c search_path=tiktaktuk,public'}
 
 # --- 3. APP DEFINITION ---
@@ -41,6 +37,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -84,5 +81,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = 'fitur_wajib:login'
