@@ -8,7 +8,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-lokal-aja')
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
+ALLOWED_HOSTS = [
+    'web-production-13ce7.up.railway.app', 
+    'localhost', 
+    '127.0.0.1'
+]
+CSRF_TRUSTED_ORIGINS = [
+    'https://web-production-e6018.up.railway.app',
+]
 
 # --- 2. DATABASE SETTINGS ---
 DATABASES = {
