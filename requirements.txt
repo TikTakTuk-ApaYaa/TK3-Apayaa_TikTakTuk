@@ -1,0 +1,21 @@
+# Core Framework
+django>=4.2.0
+
+# Database (Pilih salah satu yang sesuai)
+psycopg2-binary          # Kalau pake PostgreSQL (Sangat disarankan buat prod)
+# mysqlclient            # Kalau pake MySQL
+
+# Environment & Security
+python-dotenv            # Buat baca file .env (rahasia dapur/API keys)
+django-environ           # Alternatif handle env variables
+
+# Production Server
+gunicorn                 # WSGI HTTP Server buat deployment di Linux
+whitenoise               # Buat handle static files (CSS, JS, Images) di server
+
+# Image Handling 
+Pillow
+
+# Optional: REST API (Kalau mau bikin API)
+djangorestframework
+django-cors-headers

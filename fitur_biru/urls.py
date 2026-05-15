@@ -28,4 +28,5 @@ urlpatterns = [
     path('promotions/<uuid:promotion_id>/update/', v.update_promotion, name='update_promotion'),
     # Admin: hapus promosi
     path('promotions/<uuid:promotion_id>/delete/', v.delete_promotion, name='delete_promotion'),
+    path('order/confirm/<uuid:order_id>/', v.confirm_payment, name='confirm_payment'),
 ]

@@ -1,6 +1,5 @@
 SET search_path TO tiktaktuk;
 
--- 1. UBAH NAMA FUNGSI JADI: sp_sisa_kuota_biru
 DROP FUNCTION IF EXISTS sp_sisa_kuota_biru(UUID) CASCADE;
 CREATE OR REPLACE FUNCTION sp_sisa_kuota_biru(p_event_id UUID)
 RETURNS TABLE(
@@ -22,19 +21,16 @@ END;
 $$ LANGUAGE plpgsql;
 
 
--- 2. TRIGGER CEK KUOTA
 CREATE OR REPLACE FUNCTION check_ticket_quota()
 RETURNS TRIGGER AS $$
 DECLARE
     v_quota INTEGER;
     v_terjual INTEGER;
 BEGIN
-    -- Ambil kuota maksimal
     SELECT quota INTO v_quota 
     FROM tiktaktuk.ticket_category 
     WHERE category_id = NEW.tcategory_id;
 
-    -- Hitung yang sudah terjual
     SELECT COUNT(*) INTO v_terjual 
     FROM tiktaktuk.ticket 
     WHERE tcategory_id = NEW.tcategory_id;
@@ -53,10 +49,8 @@ BEFORE INSERT ON tiktaktuk.ticket
 FOR EACH ROW EXECUTE FUNCTION check_ticket_quota();
 
 
--- 3. TRIGGER VALIDASI PROMOSI
 DROP TRIGGER IF EXISTS trg_validate_promotion ON tiktaktuk.order_promotion;
 
--- 2. RE-CREATE Fungsi dengan pengamanan ekstra
 CREATE OR REPLACE FUNCTION validate_promotion()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -65,19 +59,16 @@ DECLARE
     v_limit INTEGER;
     v_used INTEGER;
 BEGIN
-    -- Mengunci baris promosi agar data v_used akurat (mencegah race condition)
+
     SELECT start_date, end_date, usage_limit 
     INTO v_start, v_end, v_limit
     FROM tiktaktuk.promotion
     WHERE promotion_id = NEW.promotion_id;
 
-    -- 1. Validasi Tanggal (Bandingkan dengan order_date jika ada, atau CURRENT_DATE)
     IF CURRENT_DATE < v_start OR CURRENT_DATE > v_end THEN
         RAISE EXCEPTION 'Kode promo tidak dapat digunakan (diluar periode promo: % hingga %)', v_start, v_end;
     END IF;
 
-    -- 2. Validasi Limit Penggunaan
-    -- Gunakan query yang lebih direct
     SELECT COUNT(*)::INTEGER INTO v_used
     FROM tiktaktuk.order_promotion
     WHERE promotion_id = NEW.promotion_id;
@@ -90,7 +81,22 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- 3. Pasang kembali trigger
 CREATE TRIGGER trg_validate_promotion
 BEFORE INSERT ON tiktaktuk.order_promotion
 FOR EACH ROW EXECUTE FUNCTION validate_promotion();
+
+ALTER TABLE "ORDER" ADD COLUMN IF NOT EXISTS payment_deadline TIMESTAMP;
+
+-- Trigger untuk menset deadline 30 detik setelah order dibuat
+CREATE OR REPLACE FUNCTION set_payment_deadline()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.payment_deadline := NOW() + INTERVAL '30 seconds';
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_set_payment_deadline ON "ORDER";
+CREATE TRIGGER trg_set_payment_deadline
+BEFORE INSERT ON "ORDER"
+FOR EACH ROW EXECUTE FUNCTION set_payment_deadline();
