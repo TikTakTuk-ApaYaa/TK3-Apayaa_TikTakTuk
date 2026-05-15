@@ -10,6 +10,7 @@ DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = [
     'web-production-13ce7.up.railway.app', 
+    'web-production-e6018.up.railway.app'
     'localhost', 
     '127.0.0.1'
 ]
