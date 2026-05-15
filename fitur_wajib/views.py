@@ -31,12 +31,37 @@ def _fmt_rp(value):
 
 
 def _clean_db_error(exc):
-    for line in str(exc).splitlines():
-        line = line.strip()
-        if line and not line.startswith('LINE') and not line.startswith('^'):
-            return line.removeprefix('ERROR:').strip()
-    return str(exc).strip()
+    msg = str(exc)
+    # Ambil setelah ERROR:
+    if "ERROR:" in msg:
+        msg = msg.split("ERROR:")[-1]
+    # Potong CONTEXT dkk
+    for term in ["CONTEXT:", "PL/pgSQL", "line ", "at "]:
+        if term in msg:
+            msg = msg.split(term)[0]
+    return msg.strip()
 
+def extract_trigger_message(exc):
+    """
+    Membersihkan pesan error dari database/trigger.
+    Menghilangkan bagian 'CONTEXT', 'PL/pgSQL line...', dll.
+    """
+    msg = str(exc)
+    
+    # 1. Kalau ada kata 'ERROR:', ambil setelahnya
+    if "ERROR:" in msg:
+        msg = msg.split("ERROR:")[1]
+    
+    # 2. Buang bagian CONTEXT dan seterusnya (biasanya dipisah baris baru)
+    if "CONTEXT:" in msg:
+        msg = msg.split("CONTEXT:")[0]
+        
+    # 3. Buang bagian 'at line ...' atau 'line ...' jika masih nyangkut
+    if "line " in msg:
+        msg = msg.split("line ")[0]
+
+    # 4. Bersihkan spasi atau karakter aneh di ujung-ujung
+    return msg.strip()
 
 # ─── LOGIN / LOGOUT ───────────────────────────────────────────────────────────
 
@@ -146,19 +171,30 @@ def registrasi_customer(request):
                 with connection.cursor() as cur:
                     _sc(cur)
                     u_id = str(uuid.uuid4())
-                    # 1. Insert ke USER_ACCOUNT
+                    # 1. Insert ke USER_ACCOUNT (Di sini trigger & unique constraint beraksi)
                     cur.execute("INSERT INTO USER_ACCOUNT (user_id, username, password) VALUES (%s, %s, %s)", [u_id, username, password])
-                    # 2. Ambil role_id untuk customer
+                    
+                    # 2. Ambil role_id
                     cur.execute("SELECT role_id FROM ROLE WHERE LOWER(role_name) = 'customer'")
                     r_id = cur.fetchone()[0]
+                    
                     # 3. Insert ke ACCOUNT_ROLE
                     cur.execute("INSERT INTO ACCOUNT_ROLE (role_id, user_id) VALUES (%s, %s)", [r_id, u_id])
+                    
                     # 4. Insert ke CUSTOMER
                     cur.execute("INSERT INTO CUSTOMER (customer_id, full_name, phone_number, user_id) VALUES (%s, %s, %s, %s)", 
                                 [str(uuid.uuid4()), full_name, phone, u_id])
                 return redirect('fitur_wajib:login')
+
             except Exception as e:
-                error = _clean_db_error(e)
+                err_str = str(e)
+                # CEK: Apakah ini error duplikasi dari UNIQUE CONSTRAINT index?
+                if "user_account_username_key" in err_str:
+                    error = f'Username "{username}" sudah terdaftar, gunakan username lain.'
+                else:
+                    # Ini akan menangkap pesan trigger "Karakter Spesial" kamu dengan bersih
+                    error = _clean_db_error(e)
+
     return render(request, 'Cpengguna_registCust.html', {'error': error})
 
 @csrf_protect
@@ -177,15 +213,33 @@ def registrasi_organizer(request):
                 with connection.cursor() as cur:
                     _sc(cur)
                     u_id = str(uuid.uuid4())
-                    cur.execute("INSERT INTO USER_ACCOUNT (user_id, username, password) VALUES (%s, %s, %s)", [u_id, username, password])
+                    
+                    # 1. Insert ke USER_ACCOUNT (Memicu Trigger & Unique Constraint)
+                    cur.execute("INSERT INTO USER_ACCOUNT (user_id, username, password) VALUES (%s, %s, %s)", 
+                                [u_id, username, password])
+                    
+                    # 2. Ambil role_id untuk organizer
                     cur.execute("SELECT role_id FROM ROLE WHERE LOWER(role_name) = 'organizer'")
                     r_id = cur.fetchone()[0]
+                    
+                    # 3. Insert ke ACCOUNT_ROLE
                     cur.execute("INSERT INTO ACCOUNT_ROLE (role_id, user_id) VALUES (%s, %s)", [r_id, u_id])
+                    
+                    # 4. Insert ke ORGANIZER
                     cur.execute("INSERT INTO ORGANIZER (organizer_id, organizer_name, contact_email, user_id) VALUES (%s, %s, %s, %s)", 
                                 [str(uuid.uuid4()), org_name, email, u_id])
+                                
                 return redirect('fitur_wajib:login')
+            
             except Exception as e:
-                error = _clean_db_error(e)
+                err_str = str(e)
+                # Cek duplikasi username (Constraint)
+                if "user_account_username_key" in err_str:
+                    error = f'Username "{username}" sudah terdaftar, gunakan username lain.'
+                else:
+                    # Bersihkan pesan dari trigger (Regex/Custom Error)
+                    error = _clean_db_error(e)
+                    
     return render(request, 'Cpengguna_registOrganizer.html', {'error': error})
 
 @csrf_protect
@@ -202,13 +256,29 @@ def registrasi_administrator(request):
                 with connection.cursor() as cur:
                     _sc(cur)
                     u_id = str(uuid.uuid4())
-                    cur.execute("INSERT INTO USER_ACCOUNT (user_id, username, password) VALUES (%s, %s, %s)", [u_id, username, password])
+                    
+                    # 1. Insert ke USER_ACCOUNT (Memicu Trigger & Unique Constraint)
+                    cur.execute("INSERT INTO USER_ACCOUNT (user_id, username, password) VALUES (%s, %s, %s)", 
+                                [u_id, username, password])
+                    
+                    # 2. Ambil role_id untuk administrator
                     cur.execute("SELECT role_id FROM ROLE WHERE LOWER(role_name) = 'administrator'")
                     r_id = cur.fetchone()[0]
+                    
+                    # 3. Insert ke ACCOUNT_ROLE
                     cur.execute("INSERT INTO ACCOUNT_ROLE (role_id, user_id) VALUES (%s, %s)", [r_id, u_id])
+                    
                 return redirect('fitur_wajib:login')
+            
             except Exception as e:
-                error = _clean_db_error(e)
+                err_str = str(e)
+                # Cek duplikasi username (Constraint)
+                if "user_account_username_key" in err_str:
+                    error = f'Username "{username}" sudah terdaftar, gunakan username lain.'
+                else:
+                    # Bersihkan pesan dari trigger (Regex/Custom Error)
+                    error = _clean_db_error(e)
+                    
     return render(request, 'Cpengguna_registAdmin.html', {'error': error})
 
 # ─── DASHBOARD ───────────────────────────────────────────────────────────────
