@@ -239,24 +239,22 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="{% static 'js/navbar.js' %}?v=999"></script>
+<script src="{% static 'js/navbar.js' %}?v=2026"></script>
 
 <script>
-  // ── CSRF helper ──────────────────────────────────────────────────────────
+  // ── CSRF helper ────
   function getCsrf() {
     const v = document.cookie.split(';')
       .find(c => c.trim().startsWith('csrftoken='));
     return v ? v.split('=')[1].trim() : '';
   }
 
-  // ── Data dari server ─────────────────────────────────────────────────────
-  // {{ venues_json }} sudah di-serialize oleh view sebagai JSON yang aman
+  // ── Data dari server ───
   let venues = {{ venues_json|safe }};
 
   let currentRole = localStorage.getItem('role') || 'guest';
   let pendingDeleteId = null;
 
-  // override updateRole agar sinkron dengan session (tidak pakai localStorage role utama)
   window.updateRole = function(role) {
     currentRole = role;
     localStorage.setItem('role', role);
@@ -267,7 +265,7 @@
     filterVenues();
   };
 
-  // ── UI helpers ───────────────────────────────────────────────────────────
+  // ── UI helpers ─────
   function updateVenueUI() {
     const canManage = currentRole === 'admin' || currentRole === 'organizer';
     document.getElementById('btnTambahVenue').classList.toggle('d-none', !canManage);
@@ -345,7 +343,7 @@
       </div>`).join('')}</div>`;
   }
 
-  // ── CREATE ───────────────────────────────────────────────────────────────
+  // ── CREATE ────
   function openCreateVenue() {
     ['c-name','c-capacity','c-city','c-address'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('c-reserved').checked = false;
@@ -381,7 +379,7 @@
     } catch { showToast('Terjadi kesalahan jaringan.', 'danger'); }
   }
 
-  // ── EDIT ─────────────────────────────────────────────────────────────────
+  // ── EDIT ────
   function openEditVenue(id) {
     const v = venues.find(x => x.id === id);
     if (!v) return;
@@ -425,7 +423,7 @@
     } catch { showToast('Terjadi kesalahan jaringan.', 'danger'); }
   }
 
-  // ── DELETE ───────────────────────────────────────────────────────────────
+  // ── DELETE ────
   function openDeleteVenue(id) {
     pendingDeleteId = id;
     const v = venues.find(x => x.id === id);
@@ -455,7 +453,7 @@
     } catch { showToast('Terjadi kesalahan jaringan.', 'danger'); }
   }
 
-  // ── TOAST ────────────────────────────────────────────────────────────────
+  // ── TOAST ────
   function showToast(msg, type = 'success') {
     const el = document.getElementById('liveToast');
     el.className = `toast align-items-center border-0 text-bg-${type}`;
@@ -463,7 +461,7 @@
     new bootstrap.Toast(el, { delay: 3500 }).show();
   }
 
-  // ── INIT ─────────────────────────────────────────────────────────────────
+  // ── INIT ─────
   document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       updateVenueUI();

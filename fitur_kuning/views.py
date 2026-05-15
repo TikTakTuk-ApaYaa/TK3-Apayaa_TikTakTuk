@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, render
 
 
-# ─── helpers ────────────────────────────────────────────────────────────────
+# ─── helpers ────
 
 def _login_required(fn):
     @wraps(fn)
@@ -31,7 +31,7 @@ def _clean_db_error(exc):
     return str(exc).strip()
 
 
-# ─── VENUE ──────────────────────────────────────────────────────────────────
+# ─── VENUE ─────
 
 @_login_required
 def venue_list(request):
@@ -156,7 +156,7 @@ def venue_delete(request, venue_id):
         return JsonResponse({'success': False, 'error': _clean_db_error(exc)})
 
 
-# ─── EVENT ──────────────────────────────────────────────────────────────────
+# ─── EVENT ──────
 
 @_login_required
 def event_list(request):

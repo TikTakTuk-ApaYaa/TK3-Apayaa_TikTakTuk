@@ -52,6 +52,7 @@ const ROLE_MENUS = {
     { label: 'Promosi',    icon: 'bi-megaphone',        href: '/promotions/' },
     { label: 'Venue',      icon: 'bi-geo-alt',          href: '/venue/' },
     { label: 'Artis',      icon: 'bi-people',           href: '/artists/' },
+    { label: 'Profile',    icon: 'bi-person-circle',    href: '/profile/' },
     { label: 'Logout',     icon: 'bi-box-arrow-right',  href: '/logout/', isLogout: true },
   ]
 

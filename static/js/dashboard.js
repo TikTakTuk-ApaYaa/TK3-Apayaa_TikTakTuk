@@ -1,4 +1,4 @@
-// Ambil dari localStorage yang sudah di-set server
+
 let currentRole = localStorage.getItem('role') || 'guest';
 let currentPage = 'dashboard';
 
@@ -12,7 +12,6 @@ function adaptSidebarLinks() {
   });
 }
 
-// ✅ FIX: updateRole harus update currentRole DAN re-render dashboard
 window.updateRole = function(role) {
   currentRole = role;
   localStorage.setItem('role', role);
