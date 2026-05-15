@@ -156,12 +156,15 @@ def read_order_organizer(request):
 # ============================================================
 def read_order_admin(request):
     role = get_user_role(request)
+    print(f"DEBUG: Role kamu adalah '{role}'") 
+    
     if not request.session.get('user_id'):
+        print("DEBUG: user_id tidak ditemukan!")
         return redirect('fitur_wajib:login')
     
-    # KUNCI: Sesuaikan dengan nama role di database (administrator)
-    if role != 'administrator': 
-        messages.error(request, "Akses ditolak.")
+    if role != 'admin': 
+        print(f"DEBUG: Akses ditolak karena '{role}' bukan 'administrator'")
+        messages.error(request, f"Role kamu {role}, butuh administrator.")
         return redirect('fitur_wajib:dashboard')
 
     conn = get_db_conn()
@@ -212,7 +215,7 @@ def read_order_admin(request):
 def update_order_admin(request, order_id):
     if not request.session.get('user_id'):
         return redirect('fitur_wajib:login')
-    if get_user_role(request) != 'administrator':         # ← FIX
+    if get_user_role(request) != 'admin':         # ← FIX
         messages.error(request, "Akses ditolak.")
         return redirect('fitur_wajib:dashboard')
 
@@ -243,7 +246,7 @@ def update_order_admin(request, order_id):
 def delete_order_admin(request, order_id):
     if not request.session.get('user_id'):
         return redirect('fitur_wajib:login')
-    if get_user_role(request) != 'administrator':         # ← FIX
+    if get_user_role(request) != 'admin':         # ← FIX
         messages.error(request, "Akses ditolak.")
         return redirect('fitur_wajib:dashboard')
 
@@ -303,7 +306,7 @@ def create_order(request, event_id):
         # Sisa kuota pakai stored procedure
         cur.execute("""
             SELECT sp.category_id, sp.category_name, tc.price, sp.remaining
-            FROM sp_sisa_kuota_biru(%s::uuid) sp
+            FROM tiktaktuk.sp_sisa_kuota_biru(%s::uuid) sp
             JOIN TICKET_CATEGORY tc ON tc.category_id = sp.category_id
         """, (str(event_id),))
         categories = cur.fetchall()
@@ -356,7 +359,6 @@ def create_order(request, event_id):
                     VALUES (%s, NOW(), 'UNPAID', %s, %s)
                 """, (str(order_id), total_amount, customer_id))
 
-                # Trigger validate_promotion akan jalan di sini
                 if promotion_id:
                     op_id = uuid.uuid4()
                     cur.execute("""
@@ -364,7 +366,6 @@ def create_order(request, event_id):
                         VALUES (%s, %s, %s)
                     """, (str(op_id), str(promotion_id), str(order_id)))
 
-                # Trigger check_ticket_quota akan jalan tiap INSERT
                 for i in range(qty):
                     ticket_id   = uuid.uuid4()
                     ticket_code = f"TTK-{str(order_id)[:8].upper()}-{str(category_id)[:4].upper()}-{i+1:03d}"
@@ -440,7 +441,7 @@ def read_promotion(request):
         conn.close()
 
     role = get_user_role(request)
-    if role == 'administrator':                    
+    if role == 'admin':                    
         template = 'CRUD_promo_admin.html'
     elif role == 'organizer':
         template = 'read_promo_organizer.html'
@@ -462,7 +463,7 @@ def read_promotion(request):
 def create_promotion(request):
     if not request.session.get('user_id'):
         return redirect('fitur_wajib:login')
-    if get_user_role(request) != 'administrator':  
+    if get_user_role(request) != 'admin':  
         messages.error(request, "Akses ditolak.")
         return redirect('fitur_biru:read_promotion')
 
@@ -508,7 +509,7 @@ def create_promotion(request):
 def update_promotion(request, promotion_id):
     if not request.session.get('user_id'):
         return redirect('fitur_wajib:login')
-    if get_user_role(request) != 'administrator':  
+    if get_user_role(request) != 'admin':  
         messages.error(request, "Akses ditolak.")
         return redirect('fitur_biru:read_promotion')
 
@@ -551,7 +552,7 @@ def update_promotion(request, promotion_id):
 def delete_promotion(request, promotion_id):
     if not request.session.get('user_id'):
         return redirect('fitur_wajib:login')
-    if get_user_role(request) != 'administrator':  # ← FIX
+    if get_user_role(request) != 'admin':  # ← FIX
         messages.error(request, "Akses ditolak.")
         return redirect('fitur_biru:read_promotion')
 

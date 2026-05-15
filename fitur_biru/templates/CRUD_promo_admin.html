@@ -2,99 +2,81 @@
 <!DOCTYPE html>
 <html lang="id" data-bs-theme="light">
 <head>
-  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Manajemen Promosi - TikTakTuk</title>
-  <!-- CSS identik doc 16 + tambahan sidebar -->
+  
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+  
+  <link href="{% static 'css/main.css' %}" rel="stylesheet"/>
+
   <style>
-    :root { --sidebar-width: 260px; --primary-green: #1a7a4a; }
-    body { font-family: 'Inter', sans-serif; background-color: var(--bs-body-bg); }
-    .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; left: 0; top: 0; background: #111827; color: white; z-index: 1000; border-right: 1px solid rgba(255,255,255,0.1); overflow-y: auto; }
-    .sidebar-header { padding: 1.5rem; font-weight: 800; font-size: 1.25rem; color: var(--primary-green); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-    .nav-list { list-style: none; padding: 1rem; margin: 0; }
-    .nav-item-custom { margin-bottom: 4px; }
-    .nav-link-custom { display: flex; align-items: center; gap: 12px; padding: 0.75rem 1rem; color: #9ca3af; text-decoration: none; border-radius: 8px; font-size: 0.875rem; font-weight: 500; transition: all 0.2s; }
-    .nav-link-custom:hover { background: rgba(255,255,255,0.05); color: white; }
-    .nav-link-custom.active { background: var(--primary-green); color: white; }
-    .nav-link-custom.logout-link { color: #f87171; }
-    .main-content { margin-left: var(--sidebar-width); padding: 0; min-height: 100vh; }
-    /* CSS dari doc 16 */
-    .container-page { max-width: 1050px; margin-top: 40px; padding-bottom: 50px; }
+
+    .container-page { max-width: 1050px; margin-top: 20px; padding-bottom: 50px; }
     .btn-create { background: #2b59ff; color: white; border-radius: 12px; padding: 10px 20px; font-weight: 700; border: none; transition: 0.2s; }
     .btn-create:hover { background: #1a44d6; color: white; }
+    
     .stat-container { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-bottom: 30px; }
     .stat-box { padding: 25px; border-radius: 15px; border: 1px solid #f0f0f0; background: #fafafa; }
     [data-bs-theme="dark"] .stat-box { background: #1e1e2e; border-color: #2a2a3e; }
+    
     .stat-label { font-size: 0.8rem; color: #888; display: block; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; }
     .stat-value { font-size: 1.5rem; font-weight: 800; }
+    
     .filter-section { display: flex; gap: 15px; margin-bottom: 25px; }
     .search-wrapper { position: relative; flex: 3; }
     .search-wrapper i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #aaa; }
     .search-input { width: 100%; border-radius: 12px; border: 1px solid #eee; padding: 12px 12px 12px 40px; font-size: 0.9rem; background: var(--bs-body-bg); color: var(--bs-body-color); }
-    .status-select { border-radius: 12px; border: 1px solid #eee; padding: 12px; font-size: 0.9rem; flex: 1; background: var(--bs-body-bg); color: var(--bs-body-color); }
-    .promo-table-card { border: 1px solid #f0f0f0; border-radius: 15px; overflow: hidden; }
-    [data-bs-theme="dark"] .promo-table-card { border-color: #2a2a3e; }
-    .table { margin-bottom: 0; }
-    .table thead { background: #fcfcfc; }
-    [data-bs-theme="dark"] .table thead { background: #1a1a2e; }
-    .table thead th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: #bbb; padding: 15px; border-bottom: 2px solid #f8f9fa; }
-    .table tbody td { padding: 18px 15px; vertical-align: middle; font-size: 0.9rem; border-bottom: 1px solid #f5f5f5; }
-    [data-bs-theme="dark"] .table tbody td { border-bottom-color: #2a2a3e; }
-    .promo-code-cell { font-weight: 800; display: flex; align-items: center; gap: 8px; }
+    
+    .promo-table-card { border: 1px solid #f0f0f0; border-radius: 15px; overflow: hidden; background: var(--bs-body-bg); }
+    .table thead th { font-size: 0.75rem; text-transform: uppercase; color: #bbb; padding: 15px; }
+    
     .badge-promo { padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 0.7rem; }
     .type-PERCENTAGE { background: #f0f3ff; color: #2b59ff; }
     .type-NOMINAL { background: #fff4e5; color: #ff9800; }
-    .action-icons { display: flex; gap: 15px; justify-content: flex-end; }
-    .btn-icon { border: none; background: none; padding: 0; color: #ccc; transition: color 0.2s; font-size: 1.2rem; cursor: pointer; }
-    .btn-icon:hover { color: #2b59ff; }
-    .icon-delete:hover { color: #dc3545; }
+    
+    /* Modal Styling sesuai tema bold kamu */
     .modal-content { border: 3px solid #000 !important; border-radius: 30px !important; padding: 15px; }
     .modal-title { font-weight: 800; font-size: 1.6rem; }
-    .btn-close { background: #eee; border-radius: 50%; opacity: 1; border: 2px solid #000; }
-    .modal-body label { font-weight: 700; text-transform: uppercase; font-size: 0.85rem; margin-bottom: 6px; display: block; }
     .form-bold { border: 2px solid #000 !important; border-radius: 15px !important; padding: 12px 18px !important; font-weight: 600 !important; }
     .btn-modal-batal { border: 2px solid #000 !important; border-radius: 30px !important; font-weight: 800 !important; padding: 11px 24px !important; background: #fff; }
     .btn-modal-buat { background: #004dc0 !important; color: white !important; border: 2px solid #000 !important; border-radius: 30px !important; font-weight: 800 !important; padding: 11px 24px !important; }
-    .empty-state { text-align: center; padding: 60px; color: #aaa; }
-    @media (max-width: 992px) { .sidebar { left: -100%; } .main-content { margin-left: 0; } }
   </style>
 </head>
 <body>
-<aside class="sidebar">
-  <div class="sidebar-header">
-    <div class="bg-white text-success rounded-2 px-2 py-1" style="font-size:14px;">TT</div>
-    <span>TikTakTuk</span>
-  </div>
-  <ul class="nav-list mt-2" id="sidebarMenu"></ul>
-</aside>
+
+{% include '_navbar.html' %}
+
 <div class="main-content">
   {% include '_topbar.html' %}
+
   <div class="p-4">
     <div class="container-page px-2">
+      
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h4 class="fw-bold mb-1">Manajemen Promosi</h4>
           <p class="text-muted small mb-0">Kelola kode promo dan kampanye diskon</p>
         </div>
-        <button class="btn-create" data-bs-toggle="modal" data-bs-target="#createPromoModal">
+        <button class="btn-create shadow-sm" data-bs-toggle="modal" data-bs-target="#createPromoModal">
           <i class="bi bi-plus-lg me-1"></i> Buat Promo
         </button>
       </div>
 
       {% if messages %}
         {% for msg in messages %}
-          <div class="alert alert-{{ msg.tags|default:'info' }} alert-dismissible fade show">
+          <div class="alert alert-{{ msg.tags|default:'info' }} alert-dismissible fade show border-0 shadow-sm">
             {{ msg }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
           </div>
         {% endfor %}
       {% endif %}
 
       <div class="stat-container">
-        <div class="stat-box"><span class="stat-label">Total Promo</span><span class="stat-value">{{ stats.0|default:0 }}</span></div>
-        <div class="stat-box"><span class="stat-label">Total Penggunaan</span><span class="stat-value">{{ stats.1|default:0 }}×</span></div>
-        <div class="stat-box"><span class="stat-label">Tipe Persentase</span><span class="stat-value">{{ stats.2|default:0 }}</span></div>
+        <div class="stat-box shadow-sm"><span class="stat-label">Total Promo</span><span class="stat-value">{{ stats.0|default:0 }}</span></div>
+        <div class="stat-box shadow-sm"><span class="stat-label">Total Penggunaan</span><span class="stat-value">{{ stats.1|default:0 }}×</span></div>
+        <div class="stat-box shadow-sm"><span class="stat-label">Tipe Persentase</span><span class="stat-value">{{ stats.2|default:0 }}</span></div>
       </div>
 
       <form method="GET" class="filter-section">
@@ -102,60 +84,75 @@
           <i class="bi bi-search"></i>
           <input type="text" name="search" value="{{ search }}" class="search-input" placeholder="Cari kode promo...">
         </div>
-        <select name="type" class="status-select" onchange="this.form.submit()">
+        <select name="type" class="form-select rounded-3 shadow-sm w-auto" onchange="this.form.submit()">
           <option value="all" {% if type_filter == 'all' %}selected{% endif %}>Semua Tipe</option>
           <option value="persentase" {% if type_filter == 'persentase' %}selected{% endif %}>Persentase</option>
           <option value="nominal" {% if type_filter == 'nominal' %}selected{% endif %}>Nominal</option>
         </select>
-        <button type="submit" class="btn btn-success px-3">Cari</button>
+        <button type="submit" class="btn btn-success rounded-3 px-4 fw-bold">Cari</button>
       </form>
 
-      <div class="promo-table-card">
-        <table class="table mb-0">
-          <thead>
-            <tr>
-              <th>Kode Promo</th><th>Tipe</th><th>Nilai Diskon</th>
-              <th>Mulai</th><th>Berakhir</th><th>Penggunaan</th><th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {% if promotions %}
-              {% for p in promotions %}
+      <div class="promo-table-card shadow-sm border-0">
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead class="table-light">
               <tr>
-                <td><div class="promo-code-cell"><i class="bi bi-tag-fill text-primary"></i>{{ p.1 }}</div></td>
-                <td><span class="badge-promo type-{{ p.2 }}">{{ p.2 }}</span></td>
-                <td>{% if p.2 == 'PERCENTAGE' %}{{ p.3|floatformat:0 }}%{% else %}Rp {{ p.3|floatformat:0 }}{% endif %}</td>
-                <td>{{ p.4|date:"d/m/Y" }}</td>
-                <td>{{ p.5|date:"d/m/Y" }}</td>
-                <td>{{ p.7 }} / {{ p.6 }}</td>
-                <td>
-                  <div class="action-icons">
-                    <button class="btn-icon" data-bs-toggle="modal" data-bs-target="#editPromoModal"
+                <th class="ps-4">Kode Promo</th>
+                <th>Tipe</th>
+                <th>Nilai Diskon</th>
+                <th>Mulai</th>
+                <th>Berakhir</th>
+                <th>Penggunaan</th>
+                <th class="text-end pe-4">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if promotions %}
+                {% for p in promotions %}
+                <tr>
+                  <td class="ps-4">
+                    <div class="fw-bold d-flex align-items-center gap-2">
+                      <i class="bi bi-tag-fill text-primary"></i>{{ p.1 }}
+                    </div>
+                  </td>
+                  <td><span class="badge-promo type-{{ p.2 }}">{{ p.2 }}</span></td>
+                  <td class="fw-bold">{% if p.2 == 'PERCENTAGE' %}{{ p.3|floatformat:0 }}%{% else %}Rp {{ p.3|floatformat:0 }}{% endif %}</td>
+                  <td class="text-muted small">{{ p.4|date:"d/m/Y" }}</td>
+                  <td class="text-muted small">{{ p.5|date:"d/m/Y" }}</td>
+                  <td class="fw-semibold">{{ p.7 }} / {{ p.6 }}</td>
+                  <td class="text-end pe-4">
+                    <button class="btn btn-sm btn-outline-primary border-0 me-2" data-bs-toggle="modal" data-bs-target="#editPromoModal"
                             data-id="{{ p.0 }}" data-code="{{ p.1 }}" data-type="{{ p.2 }}"
                             data-value="{{ p.3 }}" data-start="{{ p.4|date:'Y-m-d' }}"
-                            data-end="{{ p.5|date:'Y-m-d' }}" data-limit="{{ p.6 }}" title="Edit">
+                            data-end="{{ p.5|date:'Y-m-d' }}" data-limit="{{ p.6 }}">
                       <i class="bi bi-pencil-square"></i>
                     </button>
-                    <button class="btn-icon icon-delete" data-bs-toggle="modal" data-bs-target="#deletePromoModal"
-                            data-id="{{ p.0 }}" data-code="{{ p.1 }}" title="Hapus">
+                    <button class="btn btn-sm btn-outline-danger border-0" data-bs-toggle="modal" data-bs-target="#deletePromoModal"
+                            data-id="{{ p.0 }}" data-code="{{ p.1 }}">
                       <i class="bi bi-trash"></i>
                     </button>
-                  </div>
-                </td>
-              </tr>
-              {% endfor %}
-            {% else %}
-              <tr><td colspan="7"><div class="empty-state"><i class="bi bi-tag" style="font-size:2.5rem;"></i><p class="mt-2">Belum ada promosi.</p></div></td></tr>
-            {% endif %}
-          </tbody>
-        </table>
+                  </td>
+                </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="7">
+                    <div class="text-center py-5 text-muted">
+                      <i class="bi bi-tag fs-1"></i>
+                      <p class="mt-2">Belum ada promosi yang ditemukan.</p>
+                    </div>
+                  </td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
       </div>
 
     </div>
   </div>
 </div>
 
-<!-- Modal Create -->
 <div class="modal fade" id="createPromoModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -166,78 +163,38 @@
       <div class="modal-body">
         <form method="POST" action="{% url 'fitur_biru:create_promotion' %}">
           {% csrf_token %}
-          <div class="mb-3"><label>Kode Promo</label><input type="text" name="promo_code" class="form-control form-bold" placeholder="cth. TIKTAK20" required></div>
-          <div class="mb-3"><label>Tipe Diskon</label>
-            <select name="discount_type" class="form-control form-bold" required>
+          <div class="mb-3">
+            <label class="small fw-bold text-muted text-uppercase">Kode Promo</label>
+            <input type="text" name="promo_code" class="form-control form-bold" placeholder="cth. TIKTAK20" required>
+          </div>
+          <div class="mb-3">
+            <label class="small fw-bold text-muted text-uppercase">Tipe Diskon</label>
+            <select name="discount_type" class="form-select form-bold" required>
               <option value="PERCENTAGE">Persentase (%)</option>
               <option value="NOMINAL">Nominal (Rp)</option>
             </select>
           </div>
-          <div class="mb-3"><label>Nilai Diskon</label><input type="number" name="discount_value" class="form-control form-bold" step="0.01" min="0.01" required></div>
-          <div class="row">
-            <div class="col-6 mb-3"><label>Tanggal Mulai</label><input type="date" name="start_date" class="form-control form-bold" required></div>
-            <div class="col-6 mb-3"><label>Tanggal Berakhir</label><input type="date" name="end_date" class="form-control form-bold" required></div>
+          <div class="mb-3">
+            <label class="small fw-bold text-muted text-uppercase">Nilai Diskon</label>
+            <input type="number" name="discount_value" class="form-control form-bold" step="0.01" min="0.01" required>
           </div>
-          <div class="mb-4"><label>Batas Penggunaan</label><input type="number" name="usage_limit" class="form-control form-bold" min="1" required></div>
+          <div class="row">
+            <div class="col-6 mb-3">
+              <label class="small fw-bold text-muted text-uppercase">Mulai</label>
+              <input type="date" name="start_date" class="form-control form-bold" required>
+            </div>
+            <div class="col-6 mb-3">
+              <label class="small fw-bold text-muted text-uppercase">Berakhir</label>
+              <input type="date" name="end_date" class="form-control form-bold" required>
+            </div>
+          </div>
+          <div class="mb-4">
+            <label class="small fw-bold text-muted text-uppercase">Batas Penggunaan</label>
+            <input type="number" name="usage_limit" class="form-control form-bold" min="1" required>
+          </div>
           <div class="d-flex gap-3 justify-content-end">
             <button type="button" class="btn-modal-batal" data-bs-dismiss="modal">Batal</button>
-            <button type="submit" class="btn-modal-buat">Buat</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Edit -->
-<div class="modal fade" id="editPromoModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header border-0">
-        <h5 class="modal-title">Edit Promo</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <form method="POST" id="editPromoForm" action="">
-          {% csrf_token %}
-          <div class="mb-3"><label>Kode Promo</label><input type="text" name="promo_code" id="editCode" class="form-control form-bold" required></div>
-          <div class="mb-3"><label>Tipe Diskon</label>
-            <select name="discount_type" id="editType" class="form-control form-bold" required>
-              <option value="PERCENTAGE">Persentase (%)</option>
-              <option value="NOMINAL">Nominal (Rp)</option>
-            </select>
-          </div>
-          <div class="mb-3"><label>Nilai Diskon</label><input type="number" name="discount_value" id="editValue" class="form-control form-bold" step="0.01" min="0.01" required></div>
-          <div class="row">
-            <div class="col-6 mb-3"><label>Tanggal Mulai</label><input type="date" name="start_date" id="editStart" class="form-control form-bold" required></div>
-            <div class="col-6 mb-3"><label>Tanggal Berakhir</label><input type="date" name="end_date" id="editEnd" class="form-control form-bold" required></div>
-          </div>
-          <div class="mb-4"><label>Batas Penggunaan</label><input type="number" name="usage_limit" id="editLimit" class="form-control form-bold" min="1" required></div>
-          <div class="d-flex gap-3 justify-content-end">
-            <button type="button" class="btn-modal-batal" data-bs-dismiss="modal">Batal</button>
-            <button type="submit" class="btn-modal-buat">Simpan</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Delete -->
-<div class="modal fade" id="deletePromoModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header border-0">
-        <h5 class="modal-title text-danger">Hapus Promo</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <p>Apakah Anda yakin ingin menghapus kode promo <strong id="deletePromoCode"></strong>? Tidak dapat dibatalkan.</p>
-        <form method="POST" id="deletePromoForm" action="">
-          {% csrf_token %}
-          <div class="d-flex gap-3 justify-content-end mt-3">
-            <button type="button" class="btn-modal-batal" data-bs-dismiss="modal">Batal</button>
-            <button type="submit" class="btn btn-danger rounded-pill px-4 fw-bold">Hapus</button>
+            <button type="submit" class="btn-modal-buat">Buat Promo</button>
           </div>
         </form>
       </div>
@@ -246,9 +203,10 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="{% static 'js/navbar.js' %}?v=999"></script>
+<script src="{% static 'js/navbar.js' %}"></script>
 <script>
-  document.getElementById('editPromoModal').addEventListener('show.bs.modal', function(e) {
+  // Script logika pengisian modal edit/delete tetap sama
+  document.getElementById('editPromoModal')?.addEventListener('show.bs.modal', function(e) {
     const btn = e.relatedTarget;
     const baseUrl = "{% url 'fitur_biru:update_promotion' '00000000-0000-0000-0000-000000000000' %}";
     document.getElementById('editPromoForm').action = baseUrl.replace('00000000-0000-0000-0000-000000000000', btn.dataset.id);
@@ -261,7 +219,7 @@
     for (let o of sel.options) o.selected = o.value === btn.dataset.type;
   });
 
-  document.getElementById('deletePromoModal').addEventListener('show.bs.modal', function(e) {
+  document.getElementById('deletePromoModal')?.addEventListener('show.bs.modal', function(e) {
     const btn = e.relatedTarget;
     const baseUrl = "{% url 'fitur_biru:delete_promotion' '00000000-0000-0000-0000-000000000000' %}";
     document.getElementById('deletePromoForm').action = baseUrl.replace('00000000-0000-0000-0000-000000000000', btn.dataset.id);

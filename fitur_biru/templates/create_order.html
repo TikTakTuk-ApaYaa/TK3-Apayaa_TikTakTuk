@@ -5,82 +5,74 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Checkout Tiket - TikTakTuk</title>
+  
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+  <link href="{% static 'css/main.css' %}" rel="stylesheet"/>
+
   <style>
-    :root { --sidebar-width: 260px; --primary-green: #1a7a4a; }
-    body { font-family: 'Inter', sans-serif; background-color: var(--bs-body-bg); }
-    .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; left: 0; top: 0; background: #111827; color: white; z-index: 1000; border-right: 1px solid rgba(255,255,255,0.1); overflow-y: auto; }
-    .sidebar-header { padding: 1.5rem; font-weight: 800; font-size: 1.25rem; color: var(--primary-green); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-    .nav-list { list-style: none; padding: 1rem; margin: 0; }
-    .nav-item-custom { margin-bottom: 4px; }
-    .nav-link-custom { display: flex; align-items: center; gap: 12px; padding: 0.75rem 1rem; color: #9ca3af; text-decoration: none; border-radius: 8px; font-size: 0.875rem; font-weight: 500; transition: all 0.2s; }
-    .nav-link-custom:hover { background: rgba(255,255,255,0.05); color: white; }
-    .nav-link-custom.active { background: var(--primary-green); color: white; }
-    .nav-link-custom.logout-link { color: #f87171; }
-    .main-content { margin-left: var(--sidebar-width); padding: 0; min-height: 100vh; }
-    .container-page { max-width: 1050px; margin-top: 40px; padding-bottom: 50px; }
+    .container-page { max-width: 1050px; margin-top: 20px; padding-bottom: 50px; }
     .card-custom { border-radius: 15px; border: 1px solid #f0f0f0; background: #fafafa; padding: 24px; margin-bottom: 20px; }
     [data-bs-theme="dark"] .card-custom { background: #1e1e2e; border-color: #2a2a3e; }
-    .event-icon { background: #2b59ff; color: #fff; width: 56px; height: 56px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+    
+    .event-icon { background: #1a7a4a; color: #fff; width: 56px; height: 56px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
     .event-title { font-weight: 800; font-size: 1.2rem; margin-bottom: 4px; }
     .event-info { font-size: 0.85rem; color: #888; display: flex; gap: 15px; font-weight: 600; flex-wrap: wrap; }
+    
     .cat-item { border: 2px solid #f0f0f0; border-radius: 12px; padding: 16px 20px; margin-bottom: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; background: var(--bs-body-bg); }
-    [data-bs-theme="dark"] .cat-item { border-color: #2a2a3e; }
-    .cat-item:hover { border-color: #2b59ff; }
-    .cat-item.selected { border: 2px solid #2b59ff; background: #f0f3ff; position: relative; }
-    [data-bs-theme="dark"] .cat-item.selected { background: #1a233a; }
-    .cat-item.selected::after { content: '✓'; position: absolute; right: -8px; top: 50%; transform: translateY(-50%); background: #2b59ff; color: #fff; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
-    .cat-name { font-weight: 800; font-size: 0.95rem; }
-    .cat-quota { font-size: 0.8rem; color: #888; font-weight: 600; }
-    .cat-price { font-weight: 800; color: #2b59ff; font-size: 1.1rem; }
-    .control-label { font-weight: 800; font-size: 0.9rem; margin-bottom: 15px; display: block; text-transform: uppercase; color: #888; }
+    .cat-item:hover { border-color: #1a7a4a; }
+    .cat-item.selected { border: 2px solid #1a7a4a; background: rgba(26, 122, 74, 0.05); position: relative; }
+    .cat-item.selected::after { content: '✓'; position: absolute; right: -8px; top: 50%; transform: translateY(-50%); background: #1a7a4a; color: #fff; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
+    
     .qty-btn { border: 2px solid #f0f0f0; background: var(--bs-body-bg); color: var(--bs-body-color); width: 36px; height: 36px; border-radius: 8px; font-weight: bold; transition: 0.2s; }
+    .qty-btn:hover { background: #eee; }
+
     .promo-input { border-radius: 12px 0 0 12px; border: 2px solid #f0f0f0; border-right: none; background: var(--bs-body-bg); color: var(--bs-body-color); padding: 12px; font-weight: 600; }
-    .promo-input:focus { box-shadow: none; border-color: #2b59ff; }
-    .summary-card { border-top: 4px solid #2b59ff; }
-    .summary-total { font-size: 1.5rem; font-weight: 800; color: #2b59ff; }
-    .btn-pay { background: #2b59ff; border: none; padding: 14px; border-radius: 12px; font-weight: 800; transition: 0.3s; color: white; }
-    .btn-pay:hover { background: #1a44d6; color: white; }
-    .btn-pay:disabled { background: #a5b4fc; cursor: not-allowed; }
-    @media (max-width: 992px) { .sidebar { left: -100%; } .main-content { margin-left: 0; } }
+    .promo-input:focus { box-shadow: none; border-color: #1a7a4a; }
+    .promo-icon-box { border-radius: 0 12px 12px 0; border: 2px solid #f0f0f0; border-left: none; background: var(--bs-body-bg); }
+
+    .summary-card { border-top: 4px solid #1a7a4a; }
+    .summary-total { font-size: 1.5rem; font-weight: 800; color: #1a7a4a; }
+    .btn-pay { background: #1a7a4a; border: none; padding: 14px; border-radius: 12px; font-weight: 800; transition: 0.3s; color: white; }
+    .btn-pay:hover { background: #145e39; color: white; }
+    .btn-pay:disabled { background: #ccc; cursor: not-allowed; }
   </style>
 </head>
 <body>
 
-<aside class="sidebar">
-  <div class="sidebar-header">
-    <div class="bg-white text-success rounded-2 px-2 py-1" style="font-size:14px;">TT</div>
-    <span>TikTakTuk</span>
-  </div>
-  <ul class="nav-list mt-2" id="sidebarMenu"></ul>
-</aside>
+{% include '_navbar.html' %}
 
 <div class="main-content">
   {% include '_topbar.html' %}
 
   <div class="p-4">
-    <div class="container-page mx-auto px-2">
+    <div class="container-page mx-auto">
+      
+      <div class="mb-4">
+        <h4 class="fw-bold mb-1">Checkout Tiket</h4>
+        <p class="text-muted small">Lengkapi detail pesanan Anda</p>
+      </div>
 
       {% if messages %}
-        {% for msg in messages %}
-          <div class="alert alert-{{ msg.tags|default:'info' }} alert-dismissible fade show">
-            {{ msg }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="row">
+          <div class="col-lg-7">
+            {% for message in messages %}
+              <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-dismissible fade show border-0 shadow-sm mb-4" role="alert" style="border-radius: 12px; font-weight: 600;">
+                <div class="d-flex align-items-center">
+                  {% if message.tags == 'error' %}
+                    <i class="bi bi-exclamation-octagon-fill me-2 fs-5"></i>
+                  {% else %}
+                    <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+                  {% endif %}
+                  <div>{{ message }}</div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
           </div>
-        {% endfor %}
+        </div>
       {% endif %}
-
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h4 class="fw-bold mb-1">Checkout Tiket</h4>
-          <p class="text-muted small mb-0">Selesaikan pembayaran untuk mengamankan tiketmu</p>
-        </div>
-        <div class="text-muted small d-none d-sm-block">
-          <span class="fw-bold text-primary">Pilih</span> › Bayar › Selesai
-        </div>
-      </div>
 
       <form method="POST" action="{% url 'fitur_biru:create_order' event.0 %}">
         {% csrf_token %}
@@ -89,105 +81,92 @@
 
         <div class="row">
           <div class="col-lg-7">
-
-            <!-- Info Event -->
-            <div class="card-custom">
+            
+            <div class="card-custom shadow-sm border-0">
               <div class="d-flex align-items-center gap-3">
-                <div class="event-icon"><i class="bi bi-music-note-beamed"></i></div>
+                <div class="event-icon shadow-sm">
+                  <i class="bi bi-ticket-perforated-fill"></i>
+                </div>
                 <div>
                   <div class="event-title">{{ event.1 }}</div>
                   <div class="event-info">
-                    <span><i class="bi bi-calendar-event me-1"></i>{{ event.3|date:"d M Y, H:i" }}</span>
+                    <span><i class="bi bi-calendar-event me-1"></i>{{ event.3|date:"d M Y" }}</span>
                     <span><i class="bi bi-geo-alt me-1"></i>{{ event.2 }}</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- Pilih Kategori -->
-            <div class="card-custom">
-              <span class="control-label">Pilih Kategori Tiket</span>
-              {% if categories %}
-                {% for c in categories %}
-                  <div class="cat-item ticket-option"
-                       data-id="{{ c.0 }}"
-                       data-price="{{ c.2 }}"
-                       data-name="{{ c.1 }}"
-                       data-quota="{{ c.3 }}">
-                    <div>
-                      <div class="cat-name">{{ c.1 }}</div>
-                      <div class="cat-quota">
-                        {% if c.3 > 0 %}Sisa: {{ c.3 }} tiket{% else %}<span class="text-danger">Habis</span>{% endif %}
-                      </div>
-                    </div>
-                    <div class="cat-price">Rp {{ c.2|floatformat:0 }}</div>
+            <div class="card-custom shadow-sm border-0">
+              <label class="fw-bold text-muted small text-uppercase mb-3 d-block">Pilih Kategori Tiket</label>
+              {% for c in categories %}
+                <div class="cat-item ticket-option" data-id="{{ c.0 }}" data-price="{{ c.2 }}" data-name="{{ c.1 }}" data-quota="{{ c.3 }}">
+                  <div>
+                    <div class="fw-bold">{{ c.1 }}</div>
+                    <div class="text-muted small">Sisa Kuota: {{ c.3 }}</div>
                   </div>
-                {% endfor %}
-              {% else %}
-                <div class="text-center py-4" style="border: 2px dashed #eee; border-radius: 12px;">
-                  <i class="bi bi-ticket-perforated text-muted" style="font-size: 2.5rem;"></i>
-                  <p class="text-danger mt-2 fw-bold mb-0">Tidak ada kategori tiket tersedia.</p>
+                  <div class="fw-bold text-success">Rp {{ c.2|floatformat:0 }}</div>
                 </div>
-              {% endif %}
+              {% endfor %}
             </div>
 
-            <!-- Jumlah Tiket -->
-            <div class="card-custom">
-              <span class="control-label">Jumlah Tiket</span>
-              <div class="d-flex align-items-center gap-3 mb-2">
-                <button type="button" class="qty-btn" id="btnMin"><i class="bi bi-dash"></i></button>
-                <span id="qtyVal" class="fw-bold fs-5" style="width:20px;text-align:center;">1</span>
-                <button type="button" class="qty-btn" id="btnPlus"><i class="bi bi-plus"></i></button>
+            <div class="card-custom shadow-sm border-0">
+              <label class="fw-bold text-muted small text-uppercase mb-3 d-block">Jumlah Tiket (Maks. 10)</label>
+              <div class="d-flex align-items-center gap-3">
+                <button type="button" class="qty-btn" id="btnMin"><i class="bi bi-dash-lg"></i></button>
+                <span id="qtyVal" class="fw-bold fs-4 text-center" style="min-width: 40px;">1</span>
+                <button type="button" class="qty-btn" id="btnPlus"><i class="bi bi-plus-lg"></i></button>
               </div>
-              <span class="text-muted" style="font-size:0.75rem;font-weight:600;">Maksimal 10 tiket per transaksi</span>
             </div>
 
-            <!-- Kode Promo -->
-            <div class="card-custom">
-              <span class="control-label">Kode Promo (Opsional)</span>
+            <div class="card-custom shadow-sm border-0">
+              <label class="fw-bold text-muted small text-uppercase mb-3 d-block">Punya Kode Promo?</label>
               <div class="input-group">
-                <input type="text" name="promo_code" class="form-control promo-input"
-                       placeholder="Masukkan kode promo...">
-                <span class="input-group-text bg-transparent text-muted"
-                      style="border-radius:0 12px 12px 0;border:2px solid #f0f0f0;border-left:none;">
-                  <i class="bi bi-tag-fill"></i>
+                <input type="text" name="promo_code" class="form-control promo-input" placeholder="Contoh: MERDEKA79">
+                <span class="input-group-text promo-icon-box text-muted">
+                  <i class="bi bi-tags-fill"></i>
                 </span>
               </div>
-              <div class="form-text mt-1">Promo akan divalidasi oleh sistem saat klik bayar.</div>
-            </div>
-
-          </div><!-- col-lg-7 -->
-
-          <div class="col-lg-5">
-            <div class="card-custom summary-card position-sticky" style="top:90px;">
-              <h6 class="fw-bold mb-4 text-uppercase" style="color:#888;font-size:0.9rem;">Ringkasan Pesanan</h6>
-              <div class="d-flex justify-content-between mb-2 pb-3 border-bottom">
-                <span class="fw-bold"><span id="summCat">-</span>
-                  <span class="text-muted fw-normal">x <span id="summQty">1</span></span></span>
-                <span id="summSubtotal" class="fw-bold">Rp 0</span>
-              </div>
-              <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
-                <span class="fw-bold text-uppercase" style="font-size:0.9rem;">Estimasi Total</span>
-                <span class="summary-total" id="summTotal">Rp 0</span>
-              </div>
-              <button type="submit" class="btn w-100 btn-pay" id="btnSubmit" disabled>
-                <i class="bi bi-lock-fill me-1"></i>Bayar Sekarang
-              </button>
-              <p class="text-center text-muted mt-2 mb-0" style="font-size:0.75rem;">
-                Promo divalidasi trigger PostgreSQL saat klik bayar.
-              </p>
+              <p class="small text-muted mt-2 mb-0">Kode promo akan divalidasi oleh sistem saat pembayaran.</p>
             </div>
           </div>
 
-        </div><!-- row -->
-      </form>
+          <div class="col-lg-5">
+            <div class="card-custom summary-card shadow-sm border-0 sticky-top" style="top: 100px;">
+              <h6 class="fw-bold mb-4 text-muted small text-uppercase">Ringkasan Pesanan</h6>
+              
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted"><span id="summCat">-</span></span>
+                <span class="fw-bold" id="summSubtotal">Rp 0</span>
+              </div>
+              
+              <div class="d-flex justify-content-between mb-4 pb-3 border-bottom">
+                <span class="text-muted">Jumlah</span>
+                <span class="fw-bold">x <span id="summQty">1</span></span>
+              </div>
 
+              <div class="d-flex justify-content-between align-items-center mb-4">
+                <span class="fw-bold text-uppercase small">Estimasi Total</span>
+                <span class="summary-total" id="summTotal">Rp 0</span>
+              </div>
+
+              <button type="submit" class="btn w-100 btn-pay shadow-sm" id="btnSubmit" disabled>
+                <i class="bi bi-shield-lock-fill me-2"></i>Buat Pesanan
+              </button>
+              
+              <p class="text-center small text-muted mt-3">
+                <i class="bi bi-info-circle me-1"></i> Harga belum termasuk potongan promo.
+              </p>
+            </div>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="{% static 'js/navbar.js' %}?v=999"></script>
+<script src="{% static 'js/navbar.js' %}"></script>
 <script>
   let currentCategoryId = "";
   let pricePerTicket = 0;
@@ -196,48 +175,49 @@
   let maxQuotaLimit = 0;
 
   function updateUI() {
-    const total     = pricePerTicket * currentQty;
+    const total = pricePerTicket * currentQty;
     const formatted = "Rp " + total.toLocaleString('id-ID');
-    document.getElementById('hidden_qty').value    = currentQty;
-    document.getElementById('qtyVal').innerText    = currentQty;
-    document.getElementById('summQty').innerText   = currentQty;
-    document.getElementById('summCat').innerText   = categoryName;
-    document.getElementById('summSubtotal').innerText = formatted;
+    
+    document.getElementById('hidden_qty').value = currentQty;
+    document.getElementById('qtyVal').innerText = currentQty;
+    document.getElementById('summQty').innerText = currentQty;
+    document.getElementById('summCat').innerText = categoryName;
+    document.getElementById('summSubtotal').innerText = "Rp " + pricePerTicket.toLocaleString('id-ID');
     document.getElementById('summTotal').innerText = formatted;
   }
 
   document.addEventListener("DOMContentLoaded", function () {
     const options = document.querySelectorAll('.ticket-option');
-
+    
     options.forEach(function (item) {
       item.addEventListener('click', function () {
         options.forEach(el => el.classList.remove('selected'));
         this.classList.add('selected');
+        
         currentCategoryId = this.getAttribute('data-id');
-        pricePerTicket    = parseFloat(this.getAttribute('data-price'));
-        categoryName      = this.getAttribute('data-name');
-        maxQuotaLimit     = parseInt(this.getAttribute('data-quota'));
+        pricePerTicket = parseFloat(this.getAttribute('data-price'));
+        categoryName = this.getAttribute('data-name');
+        maxQuotaLimit = parseInt(this.getAttribute('data-quota'));
+        
         document.getElementById('hidden_category_id').value = currentCategoryId;
-
-        if (maxQuotaLimit === 0) { currentQty = 0; }
-        else if (currentQty > maxQuotaLimit) { currentQty = maxQuotaLimit; }
-        else if (currentQty === 0) { currentQty = 1; }
-
-        document.getElementById('btnSubmit').disabled = (maxQuotaLimit === 0);
+        document.getElementById('btnSubmit').disabled = (maxQuotaLimit <= 0);
+        
+     
+        if(currentQty > maxQuotaLimit) currentQty = maxQuotaLimit || 1;
+        
         updateUI();
       });
     });
 
-    document.getElementById('btnMin').addEventListener('click', function () {
-      if (!currentCategoryId) return;
-      const next = currentQty - 1;
-      if (next >= 1 && next <= 10 && next <= maxQuotaLimit) { currentQty = next; updateUI(); }
+    document.getElementById('btnMin').addEventListener('click', () => { 
+      if(currentQty > 1) { currentQty--; updateUI(); }
     });
-
-    document.getElementById('btnPlus').addEventListener('click', function () {
-      if (!currentCategoryId) return;
-      const next = currentQty + 1;
-      if (next >= 1 && next <= 10 && next <= maxQuotaLimit) { currentQty = next; updateUI(); }
+    
+    document.getElementById('btnPlus').addEventListener('click', () => { 
+      if(currentQty < 10 && currentQty < maxQuotaLimit) { 
+        currentQty++; 
+        updateUI(); 
+      }
     });
 
     if (options.length > 0) options[0].click();

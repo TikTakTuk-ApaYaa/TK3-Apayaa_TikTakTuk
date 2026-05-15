@@ -208,16 +208,16 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="{% static 'js/navbar.js' %}?v=999"></script>
+<script src="{% static 'js/navbar.js' %}?v=2026"></script>
 
 <script>
-  // ── CSRF ─────────────────────────────────────────────────────────────────
+  // ── CSRF ───
   function getCsrf() {
     const v = document.cookie.split(';').find(c => c.trim().startsWith('csrftoken='));
     return v ? v.split('=')[1].trim() : '';
   }
 
-  // ── Data dari server ──────────────────────────────────────────────────────
+  // ── Data dari server ─────
   let events      = {{ events_json|safe }};
   let venues      = {{ venues_json|safe }};
   let allArtists  = {{ all_artists_json|safe }};
@@ -236,30 +236,24 @@
     filterEvents();
   };
 
-  // ── Page UI ───────────────────────────────────────────────────────────────
+  // ── Page UI ────
   function updatePageUI() {
     const canManage = currentRole === 'admin' || currentRole === 'organizer';
     document.getElementById('btnBuatAcara').classList.toggle('d-none', !canManage);
     
-    // TAMBAHKAN INI: Update judul di Topbar yang baru kita include
-    const topBarTitle = document.getElementById('topBarTitle');
-    
     if (currentRole === 'organizer') {
-      if (topBarTitle) topBarTitle.textContent = 'Acara Saya'; // Judul di atas
       document.getElementById('pageTitle').textContent    = 'Acara Saya';
       document.getElementById('pageSubtitle').textContent = 'Kelola acara yang Anda selenggarakan';
     } else if (currentRole === 'admin') {
-      if (topBarTitle) topBarTitle.textContent = 'Semua Acara'; // Judul di atas
       document.getElementById('pageTitle').textContent    = 'Semua Acara';
       document.getElementById('pageSubtitle').textContent = 'Kelola seluruh acara di platform TikTakTuk';
     } else {
-      if (topBarTitle) topBarTitle.textContent = 'Jelajahi Acara'; // Judul di atas
       document.getElementById('pageTitle').textContent    = 'Jelajahi Acara';
       document.getElementById('pageSubtitle').textContent = 'Temukan acara terbaik dan beli tiket favorit Anda';
     }
   }
 
-  // ── Filters ───────────────────────────────────────────────────────────────
+  // ── Filters ────
   function populateFilters() {
     const vf = document.getElementById('filterVenue');
     const vp = vf.value;
@@ -302,10 +296,14 @@
       const emojis = ['🌍','🎤','🎸','🎷','🔥','✨','🎵','🎭'];
       const emoji  = emojis[list.indexOf(e) % emojis.length];
 
+      const favs = JSON.parse(localStorage.getItem('favEvents') || '[]');
+      const isFav = favs.includes(e.event_id);
+      const heartIconClass = isFav ? 'bi-heart-fill' : 'bi-heart';
+
       const favIcon = currentRole === 'customer'
-        ? `<i class="bi bi-heart text-danger"
+        ? `<i class="bi ${heartIconClass} text-danger"
               style="position:absolute;top:12px;right:14px;font-size:1.2rem;cursor:pointer;z-index:10;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));"
-              onclick="this.classList.toggle('bi-heart');this.classList.toggle('bi-heart-fill');event.stopPropagation();"></i>`
+              onclick="toggleFavorite(event, '${e.event_id}', this)"></i>`
         : '';
 
       return `<div class="col-md-6 col-lg-4">
@@ -335,10 +333,26 @@
     }).join('')}</div>`;
   }
 
-  
     function beliTiket(eventId) { window.location.href = `/events/${eventId}/checkout/`; }
 
-  // ── Artist tags ───────────────────────────────────────────────────────────
+  function toggleFavorite(event, eventId, iconElement) {
+    event.stopPropagation(); 
+    
+    let favs = JSON.parse(localStorage.getItem('favEvents') || '[]');
+
+    if (favs.includes(eventId)) {
+      favs = favs.filter(id => id !== eventId);
+      iconElement.classList.remove('bi-heart-fill');
+      iconElement.classList.add('bi-heart');
+    } else {
+      favs.push(eventId);
+      iconElement.classList.remove('bi-heart');
+      iconElement.classList.add('bi-heart-fill');
+    }
+    localStorage.setItem('favEvents', JSON.stringify(favs));
+  }
+
+  // ── Artist tags ───
   function addArtistTag(ev, mode) {
     if (ev.key !== 'Enter') return;
     ev.preventDefault();
@@ -374,7 +388,7 @@
     inp.focus();
   }
 
-  // ── Category rows ─────────────────────────────────────────────────────────
+  // ── Category rows ───
   function addCatRow(containerId, cat) {
     const c   = cat || { category_name:'', price:'', quota:'' };
     const idx = catCounter++;
@@ -407,7 +421,7 @@
     return err ? null : cats;
   }
 
-  // ── Venue dropdown in modal ───────────────────────────────────────────────
+  // ── Venue dropdown in modal ────
   function populateVenueSelect(selectId, selectedId) {
     document.getElementById(selectId).innerHTML =
       venues.map(v =>
@@ -415,7 +429,7 @@
       ).join('');
   }
 
-  // ── CREATE EVENT ──────────────────────────────────────────────────────────
+  // ── CREATE EVENT ─────
   function openCreateEvent() {
     createArtists = [];
     catCounter = 0;
@@ -462,7 +476,7 @@
     } catch { showToast('Terjadi kesalahan jaringan.', 'danger'); }
   }
 
-  // ── EDIT EVENT ────────────────────────────────────────────────────────────
+  // ── EDIT EVENT ────
   function openEditEvent(id) {
     const e = events.find(x => x.event_id === id);
     if (!e) return;
@@ -513,7 +527,7 @@
     } catch { showToast('Terjadi kesalahan jaringan.', 'danger'); }
   }
 
-  // ── TOAST ─────────────────────────────────────────────────────────────────
+  // ── TOAST ────
   function showToast(msg, type = 'success') {
     const el = document.getElementById('liveToast');
     el.className = `toast align-items-center border-0 text-bg-${type}`;
@@ -521,7 +535,7 @@
     new bootstrap.Toast(el, { delay: 3500 }).show();
   }
 
-  // ── INIT ──────────────────────────────────────────────────────────────────
+  // ── INIT ───
   document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       updatePageUI();
