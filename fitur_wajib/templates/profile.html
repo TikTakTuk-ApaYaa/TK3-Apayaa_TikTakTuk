@@ -240,14 +240,8 @@
     const avatarDisp    = document.getElementById('profile-avatar-disp');
     const editBtn       = document.getElementById('editProfileBtn');
 
-    // 1. Update Judul di Topbar baru
-    const topBarTitle = document.getElementById('topBarTitle');
-    if (topBarTitle) topBarTitle.textContent = 'Profil Saya';
-
-    // 2. Ambil elemen Label Role di Topbar baru
     const roleLabel = document.getElementById('roleLabel'); 
 
-    // Reset view
     adminInfo.classList.add('d-none');
     customerInfo.classList.add('d-none');
     organizerInfo.classList.add('d-none');

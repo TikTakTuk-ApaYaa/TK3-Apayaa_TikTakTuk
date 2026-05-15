@@ -269,9 +269,6 @@
   function updateVenueUI() {
     const canManage = currentRole === 'admin' || currentRole === 'organizer';
     document.getElementById('btnTambahVenue').classList.toggle('d-none', !canManage);
-  
-    const topBarTitle = document.getElementById('topBarTitle');
-    if (topBarTitle) topBarTitle.textContent = 'Manajemen Venue';
   }
 
   function updateStats() {

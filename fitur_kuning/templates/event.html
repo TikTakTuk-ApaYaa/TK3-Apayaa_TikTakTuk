@@ -241,18 +241,13 @@
     const canManage = currentRole === 'admin' || currentRole === 'organizer';
     document.getElementById('btnBuatAcara').classList.toggle('d-none', !canManage);
     
-    const topBarTitle = document.getElementById('topBarTitle');
-    
     if (currentRole === 'organizer') {
-      if (topBarTitle) topBarTitle.textContent = 'Acara Saya'; // Judul di atas
       document.getElementById('pageTitle').textContent    = 'Acara Saya';
       document.getElementById('pageSubtitle').textContent = 'Kelola acara yang Anda selenggarakan';
     } else if (currentRole === 'admin') {
-      if (topBarTitle) topBarTitle.textContent = 'Semua Acara'; // Judul di atas
       document.getElementById('pageTitle').textContent    = 'Semua Acara';
       document.getElementById('pageSubtitle').textContent = 'Kelola seluruh acara di platform TikTakTuk';
     } else {
-      if (topBarTitle) topBarTitle.textContent = 'Jelajahi Acara'; // Judul di atas
       document.getElementById('pageTitle').textContent    = 'Jelajahi Acara';
       document.getElementById('pageSubtitle').textContent = 'Temukan acara terbaik dan beli tiket favorit Anda';
     }
