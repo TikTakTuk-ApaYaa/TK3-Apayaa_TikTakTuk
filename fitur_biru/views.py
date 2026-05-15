@@ -25,10 +25,26 @@ def get_organizer_id(request):
     return request.session.get('organizer_id', None)
 
 def extract_trigger_message(exc):
-    try:
-        return exc.diag.message_primary
-    except AttributeError:
-        return str(exc)
+    """
+    Membersihkan pesan error dari database/trigger.
+    Menghilangkan bagian 'CONTEXT', 'PL/pgSQL line...', dll.
+    """
+    msg = str(exc)
+    
+    # 1. Kalau ada kata 'ERROR:', ambil setelahnya
+    if "ERROR:" in msg:
+        msg = msg.split("ERROR:")[1]
+    
+    # 2. Buang bagian CONTEXT dan seterusnya (biasanya dipisah baris baru)
+    if "CONTEXT:" in msg:
+        msg = msg.split("CONTEXT:")[0]
+        
+    # 3. Buang bagian 'at line ...' atau 'line ...' jika masih nyangkut
+    if "line " in msg:
+        msg = msg.split("line ")[0]
+
+    # 4. Bersihkan spasi atau karakter aneh di ujung-ujung
+    return msg.strip()
 
 
 # ============================================================
