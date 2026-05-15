@@ -1,18 +1,21 @@
---  TK04 — TRIGGER 3 (FITUR HIJAU)
-SET search_path TO tiktaktuk;
+-- TK04 — TRIGGER 3 (FITUR HIJAU)
+-- PENTING: semua referensi tabel sudah pakai schema eksplisit "tiktaktuk."
+--          agar berjalan benar di Railway / Supabase tanpa mengandalkan search_path
 
-DROP FUNCTION IF EXISTS fn_validate_event_artist() CASCADE;
-DROP FUNCTION IF EXISTS sp_sisa_kuota_event(UUID) CASCADE;
+DROP FUNCTION IF EXISTS tiktaktuk.fn_validate_event_artist() CASCADE;
+DROP FUNCTION IF EXISTS tiktaktuk.sp_sisa_kuota_event(UUID) CASCADE;
 
 
---  BAGIAN 1: Validasi EVENT_ARTIST
-CREATE OR REPLACE FUNCTION fn_validate_event_artist()
+-- ============================================================
+-- BAGIAN 1: Trigger — Validasi EVENT_ARTIST
+-- ============================================================
+CREATE OR REPLACE FUNCTION tiktaktuk.fn_validate_event_artist()
 RETURNS TRIGGER AS $$
 DECLARE
     v_artist_name  VARCHAR;
     v_event_title  VARCHAR;
 BEGIN
-    -- Artist harus terdaftar
+    -- Cek artist terdaftar
     SELECT name INTO v_artist_name
     FROM tiktaktuk.ARTIST
     WHERE artist_id = NEW.artist_id;
@@ -21,7 +24,7 @@ BEGIN
         RAISE EXCEPTION 'ERROR: Artist dengan ID % tidak ditemukan.', NEW.artist_id;
     END IF;
 
-    -- Event harus terdaftar
+    -- Cek event terdaftar
     SELECT event_title INTO v_event_title
     FROM tiktaktuk.EVENT
     WHERE event_id = NEW.event_id;
@@ -30,9 +33,10 @@ BEGIN
         RAISE EXCEPTION 'ERROR: Event dengan ID % tidak ditemukan.', NEW.event_id;
     END IF;
 
-    -- Artist tidak boleh didaftarkan dua kali ke event yang sama
+    -- Cek duplikasi artist di event yang sama
     IF EXISTS (
-        SELECT 1 FROM tiktaktuk.EVENT_ARTIST
+        SELECT 1
+        FROM tiktaktuk.EVENT_ARTIST
         WHERE artist_id = NEW.artist_id
           AND event_id  = NEW.event_id
     ) THEN
@@ -50,10 +54,13 @@ CREATE TRIGGER trg_validate_event_artist
 BEFORE INSERT
 ON tiktaktuk.EVENT_ARTIST
 FOR EACH ROW
-EXECUTE FUNCTION fn_validate_event_artist();
+EXECUTE FUNCTION tiktaktuk.fn_validate_event_artist();
 
---  BAGIAN 2: Stored Procedure Sisa Kuota Ticket Category
-CREATE OR REPLACE FUNCTION sp_sisa_kuota_event(p_event_id UUID)
+
+-- ============================================================
+-- BAGIAN 2: Stored Procedure — Sisa Kuota Ticket Category
+-- ============================================================
+CREATE OR REPLACE FUNCTION tiktaktuk.sp_sisa_kuota_event(p_event_id UUID)
 RETURNS TABLE (
     category_id   UUID,
     category_name VARCHAR,
