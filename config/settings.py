@@ -16,7 +16,7 @@ ALLOWED_HOSTS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://web-production-e6018.up.railway.app',
+    'https://tiktaktuk-apayaa.up.railway.app',
 ]
 
 # --- 2. DATABASE SETTINGS ---
