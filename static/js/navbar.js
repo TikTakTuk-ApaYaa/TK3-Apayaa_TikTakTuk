@@ -120,6 +120,22 @@ function toggleDarkMode() {
   localStorage.setItem('theme', isDark ? 'light' : 'dark');
 }
 
+function updateTopBarTitle() {
+  const currentPath = window.location.pathname;
+  const allMenus = [
+    ...ROLE_MENUS.admin,
+    ...ROLE_MENUS.organizer,
+    ...ROLE_MENUS.customer,
+    ...ROLE_MENUS.guest
+  ];
+  
+  const activeMenu = allMenus.find(item => item.href === currentPath);
+  const titleEl = document.getElementById('topBarTitle');
+  if (titleEl && activeMenu) {
+    titleEl.textContent = activeMenu.label;
+  }
+}
+
 // AUTO INIT 
 (function init() {
   const savedRole  = localStorage.getItem('role')  || 'guest';
@@ -133,4 +149,5 @@ function toggleDarkMode() {
   }
 
   renderSidebar(savedRole);
+  updateTopBarTitle();
 })();
