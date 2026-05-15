@@ -341,7 +341,15 @@ def create_order(request, event_id):
 
         # 2. Ambil Sisa Kuota via Stored Procedure
         # Gunakan schema prefix tiktaktuk langsung di nama fungsinya
-        cur.execute("SELECT category_id, category_name, price, remaining FROM sp_sisa_kuota_biru(%s::uuid)", [str(event_id)])
+        cur.execute("""
+            SELECT 
+                sp.category_id, 
+                sp.category_name, 
+                tc.price,          -- Kita ambil harga dari tabel asli (TICKET_CATEGORY)
+                sp.remaining       -- Sisa kuota dari Stored Procedure
+            FROM tiktaktuk.sp_sisa_kuota_biru(%s::uuid) sp
+            JOIN tiktaktuk.TICKET_CATEGORY tc ON tc.category_id = sp.category_id
+        """, [str(event_id)])
         categories = cur.fetchall()
 
         if request.method == 'POST':
