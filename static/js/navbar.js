@@ -45,6 +45,7 @@ const ROLE_MENUS = {
   customer: [
     { label: 'Dashboard',  icon: 'bi-grid-1x2',         href: '/' },
     { label: 'Tiket Saya', icon: 'bi-ticket',           href: '/tickets/' },
+    { label: 'Kategori Tiket',  icon: 'bi-tags',               href: '/ticket-categories/' },
     // PERBAIKAN FITUR BIRU
     { label: 'Pesanan',    icon: 'bi-bag-check',        href: '/orders/' },
     { label: 'Cari Event', icon: 'bi-search',           href: '/event/' },
