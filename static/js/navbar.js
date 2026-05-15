@@ -8,12 +8,12 @@ const ROLE_MENUS = {
   admin: [
     { label: 'Dashboard',       icon: 'bi-grid-1x2',           href: '/' },
     { label: 'Manajemen Venue', icon: 'bi-building',           href: '/venue/', },
-    { label: 'Manajemen Kursi', icon: 'bi-grid-3x3',           href: '/fitur_merah/templates/seat-main.html' },
+    { label: 'Manajemen Kursi', icon: 'bi-grid-3x3',           href: '/seats/' },
     { label: 'Kategori Tiket',  icon: 'bi-tags',               href: '/ticket-categories/' },
-    { label: 'Manajemen Tiket', icon: 'bi-ticket-perforated',  href: '/fitur_merah/templates/ticket-main.html?mode=all' },
+    { label: 'Manajemen Tiket', icon: 'bi-ticket-perforated',  href: '/tickets/' },
     // PERBAIKAN FITUR BIRU
     { label: 'Semua Order',     icon: 'bi-cart-check',         href: '/orders/admin/' },
-    { label: 'Tiket (Aset)',    icon: 'bi-collection',         href: '/fitur_merah/templates/ticket-main.html?mode=asset'},
+    { label: 'Tiket (Aset)',    icon: 'bi-collection',         href: '/tickets/'},
     // PERBAIKAN FITUR BIRU
     { label: 'Order (Aset)',    icon: 'bi-receipt',            href: '/orders/admin/' },
     { label: 'Semua Event',     icon: 'bi-calendar-event',     href: '/event/' },
@@ -28,12 +28,12 @@ const ROLE_MENUS = {
     { label: 'Dashboard',       icon: 'bi-grid-1x2',           href: '/' },
     { label: 'Event Saya',      icon: 'bi-calendar-event',     href: '/event/' },
     { label: 'Manajemen Venue', icon: 'bi-building',           href: '/venue/', },
-    { label: 'Manajemen Kursi', icon: 'bi-grid-3x3',           href: '/fitur_merah/templates/seat-main.html' },
+    { label: 'Manajemen Kursi', icon: 'bi-grid-3x3',           href: '/seats/' },
     { label: 'Kategori Tiket',  icon: 'bi-tags',               href: '/ticket-categories/' },
-    { label: 'Manajemen Tiket', icon: 'bi-ticket-perforated',  href: '/fitur_merah/templates/ticket-main.html?mode=all' },
+    { label: 'Manajemen Tiket', icon: 'bi-ticket-perforated',  href: '/tickets/' },
     // PERBAIKAN FITUR BIRU
     { label: 'Semua Order',     icon: 'bi-cart-check',         href: '/orders/organizer/' },
-    { label: 'Tiket (Aset)',    icon: 'bi-collection',         href: '/fitur_merah/templates/ticket-main.html?mode=asset'},
+    { label: 'Tiket (Aset)',    icon: 'bi-collection',         href: '/tickets/'},
     // PERBAIKAN FITUR BIRU
     { label: 'Order (Aset)',    icon: 'bi-receipt',            href: '/orders/organizer/' },
     { label: 'Promosi',    icon: 'bi-megaphone',        href: '/promotions/' },
@@ -44,7 +44,7 @@ const ROLE_MENUS = {
 
   customer: [
     { label: 'Dashboard',  icon: 'bi-grid-1x2',         href: '/' },
-    { label: 'Tiket Saya', icon: 'bi-ticket',           href: '/fitur_merah/templates/ticket-main.html?view=customer' },
+    { label: 'Tiket Saya', icon: 'bi-ticket',           href: '/tickets/' },
     // PERBAIKAN FITUR BIRU
     { label: 'Pesanan',    icon: 'bi-bag-check',        href: '/orders/' },
     { label: 'Cari Event', icon: 'bi-search',           href: '/event/' },

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="id" data-bs-theme="light">
 <head>
@@ -7,87 +8,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+  <link href="{% static 'css/main.css' %}" rel="stylesheet"/>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    :root { --sidebar-width: 260px; --primary-green: #1a7a4a; --transition-speed: 0.3s; }
-    body { font-family: 'Inter', sans-serif; background-color: var(--bs-body-bg); transition: background-color var(--transition-speed), color var(--transition-speed); }
-    .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; left: 0; top: 0; background: #111827; color: white; transition: all var(--transition-speed); z-index: 1000; border-right: 1px solid rgba(255,255,255,0.1); overflow-y: auto; }
-    [data-bs-theme="dark"] .sidebar { background: #000; }
-    .sidebar-header { padding: 1.5rem; font-weight: 800; font-size: 1.25rem; color: var(--primary-green); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-    .nav-list { list-style: none; padding: 1rem; margin: 0; }
-    .nav-item-custom { margin-bottom: 4px; }
-    .nav-link-custom { display: flex; align-items: center; gap: 12px; padding: 0.75rem 1rem; color: #9ca3af; text-decoration: none; border-radius: 8px; font-size: 0.875rem; font-weight: 500; transition: all 0.2s; }
-    .nav-link-custom:hover { background: rgba(255,255,255,0.05); color: white; }
-    .nav-link-custom.active { background: var(--primary-green); color: white; }
-    .nav-link-custom.logout-link { color: #f87171; }
-    .nav-link-custom.logout-link:hover { background: rgba(248,113,113,0.1); color: #f87171; }
-    .main-content { margin-left: var(--sidebar-width); padding: 0; min-height: 100vh; }
-    .top-bar { height: 70px; background: var(--bs-body-bg); border-bottom: 1px solid var(--bs-border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; position: sticky; top: 0; z-index: 999; }
-    .dev-tool-dropdown .dropdown-toggle::after { display: none; }
-    .theme-toggle-btn { cursor: pointer; font-size: 1.2rem; color: var(--bs-secondary-color); transition: color 0.2s; }
-    .theme-toggle-btn:hover { color: var(--primary-green); }
-    [data-bs-theme="dark"] .main-content { background: #0b0f17; color: #e5e7eb; }
-    [data-bs-theme="dark"] .main-content .bg-white,
-    [data-bs-theme="dark"] #ticketModal .bg-white,
-    [data-bs-theme="dark"] #ticketDeleteModal .bg-white { background-color: #111827 !important; }
-    [data-bs-theme="dark"] .main-content .bg-gray-50 { background-color: #1f2937 !important; }
-    [data-bs-theme="dark"] .main-content .bg-gray-200 { background-color: #334155 !important; }
-    [data-bs-theme="dark"] .main-content .text-gray-900,
-    [data-bs-theme="dark"] #ticketModal .text-gray-900 { color: #f9fafb !important; }
-    [data-bs-theme="dark"] .main-content .text-gray-700 { color: #d1d5db !important; }
-    [data-bs-theme="dark"] .main-content .text-gray-600,
-    [data-bs-theme="dark"] #ticketDeleteModal .text-gray-600 { color: #cbd5e1 !important; }
-    [data-bs-theme="dark"] .main-content .text-gray-500,
-    [data-bs-theme="dark"] #ticketModal .text-gray-500 { color: #9ca3af !important; }
-    [data-bs-theme="dark"] .main-content .border-gray-300,
-    [data-bs-theme="dark"] #ticketModal .border,
-    [data-bs-theme="dark"] #ticketDeleteModal .border { border-color: #374151 !important; }
-    [data-bs-theme="dark"] .main-content input,
-    [data-bs-theme="dark"] .main-content select,
-    [data-bs-theme="dark"] #ticketModal input,
-    [data-bs-theme="dark"] #ticketModal select {
-      background-color: #0f172a !important;
-      border-color: #374151 !important;
-      color: #f9fafb !important;
-    }
-    [data-bs-theme="dark"] .main-content input::placeholder,
-    [data-bs-theme="dark"] #ticketModal input::placeholder { color: #94a3b8; }
-    [data-bs-theme="dark"] .main-content .shadow,
-    [data-bs-theme="dark"] #ticketModal .shadow-xl,
-    [data-bs-theme="dark"] #ticketDeleteModal .shadow-xl { box-shadow: 0 12px 30px rgba(0,0,0,0.35) !important; }
-    [data-bs-theme="dark"] .sidebar .bg-white { background-color: #ffffff !important; }
-    @media (max-width: 992px) { .sidebar { left: -100%; } .main-content { margin-left: 0; } }
-  </style>
 </head>
 <body>
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <div class="bg-white text-success rounded-2 px-2 py-1" style="font-size:14px;">TT</div>
-      <span>TikTakTuk</span>
-    </div>
-    <ul class="nav-list" id="sidebarMenu"></ul>
-  </aside>
+  {% include '_navbar.html' %}
 
   <div class="main-content">
-    <header class="top-bar">
-      <h6 class="mb-0 fw-bold">Manajemen Tiket</h6>
-      <div class="d-flex align-items-center gap-3">
-        <div class="theme-toggle-btn" onclick="toggleDarkMode()">
-          <i id="themeIcon" class="bi bi-moon-stars"></i>
-        </div>
-        <div class="dropdown dev-tool-dropdown">
-          <button class="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
-            <i class="bi bi-eye"></i><span id="roleLabel">Guest</span>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
-            <li><h6 class="dropdown-header">Switch Role</h6></li>
-            <li><a class="dropdown-item" href="#" onclick="updateRole('admin')"><i class="bi bi-shield-check me-2"></i>Administrator</a></li>
-            <li><a class="dropdown-item" href="#" onclick="updateRole('organizer')"><i class="bi bi-calendar-event me-2"></i>Event Organizer</a></li>
-            <li><a class="dropdown-item" href="#" onclick="updateRole('customer')"><i class="bi bi-person me-2"></i>Customer</a></li>
-          </ul>
-        </div>
-      </div>
-    </header>
+    {% include '_topbar.html' %}
 
     <div class="p-4">
       <div class="max-w-7xl mx-auto">
@@ -118,12 +46,16 @@
         </div>
 
         <!-- FILTER -->
+        <div id="ticketAlert" class="hidden mb-4 rounded-lg border px-4 py-3 text-sm"></div>
+
         <div class="flex gap-4 mb-6">
             <input id="ticketSearch" type="text" placeholder="Cari kode tiket atau nama acara..." class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
             <select id="ticketStatusFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 <option>Semua Status</option>
                 <option>Valid</option>
                 <option>Terpakai</option>
+                <option>Pending</option>
+                <option>Dibatalkan</option>
             </select>
         </div>
 
@@ -147,32 +79,18 @@
           <input id="ticketCode" class="mt-1 w-full border rounded-lg px-3 py-2" placeholder="Auto jika kosong">
         </label>
         <label class="block">
-          <span class="text-xs font-bold uppercase text-gray-500">Event</span>
-          <input id="ticketEvent" class="mt-1 w-full border rounded-lg px-3 py-2" required>
+          <span class="text-xs font-bold uppercase text-gray-500">Kategori Tiket</span>
+          <select id="ticketCategory" class="mt-1 w-full border rounded-lg px-3 py-2" required></select>
         </label>
         <label class="block">
-          <span class="text-xs font-bold uppercase text-gray-500">Kategori</span>
-          <select id="ticketCategory" class="mt-1 w-full border rounded-lg px-3 py-2" required>
-            <option>VIP</option>
-            <option>Regular</option>
-            <option>Festival</option>
-          </select>
-        </label>
-        <label class="block">
-          <span class="text-xs font-bold uppercase text-gray-500">Status</span>
-          <select id="ticketStatus" class="mt-1 w-full border rounded-lg px-3 py-2" required>
-            <option>Valid</option>
-            <option>Terpakai</option>
-            <option>Dibatalkan</option>
-          </select>
+          <span class="text-xs font-bold uppercase text-gray-500">Order</span>
+          <select id="ticketOrder" class="mt-1 w-full border rounded-lg px-3 py-2" required></select>
         </label>
         <label class="block">
           <span class="text-xs font-bold uppercase text-gray-500">Kursi</span>
-          <input id="ticketSeat" class="mt-1 w-full border rounded-lg px-3 py-2" placeholder="Contoh: A1">
-        </label>
-        <label class="block">
-          <span class="text-xs font-bold uppercase text-gray-500">Pelanggan</span>
-          <input id="ticketCustomer" class="mt-1 w-full border rounded-lg px-3 py-2" required>
+          <select id="ticketSeat" class="mt-1 w-full border rounded-lg px-3 py-2">
+            <option value="">Tanpa kursi</option>
+          </select>
         </label>
       </div>
       <div class="grid grid-cols-2 gap-3 mt-6">
@@ -194,44 +112,84 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="../../fitur_wajib/templates/navbar.js"></script>
+  <script src="{% static 'js/navbar.js' %}"></script>
   <script>
-  const ticketParams = new URLSearchParams(window.location.search);
-  const ticketRole = ticketParams.get('view') === 'customer' || localStorage.getItem('role') === 'customer' ? 'customer' : 'manager';
-  const ticketSeed = [
-    { id: 1, code: 'TKT001', status: 'Valid', category: 'VIP', event: 'Concert A', datetime: '2024-12-01 20:00', venue: 'Stadion Gelora Bung Karno', seat: 'A1', price: '500000', order: 'ORD001', customer: 'John Doe', owner: 'current_customer' },
-    { id: 2, code: 'TKT002', status: 'Terpakai', category: 'Regular', event: 'Concert B', datetime: '2024-12-08 19:30', venue: 'Jakarta Convention Center', seat: 'B7', price: '250000', order: 'ORD002', customer: 'Jane Smith', owner: 'other_customer' },
-    { id: 3, code: 'TKT003', status: 'Valid', category: 'Festival', event: 'Indie Night', datetime: '2024-12-15 18:30', venue: 'The Kasablanka Hall', seat: 'F12', price: '350000', order: 'ORD003', customer: 'John Doe', owner: 'current_customer' }
-  ];
-  let tickets = JSON.parse(localStorage.getItem('tiktaktukTickets') || 'null') || ticketSeed;
+  const ticketRole = '{{ role|default:"guest" }}';
+  localStorage.setItem('role', ticketRole);
+  renderSidebar(ticketRole);
+  document.getElementById('topBarTitle').textContent = ticketRole === 'customer' ? 'Tiket Saya' : 'Manajemen Tiket';
+
+  const API_TICKETS = '/api/merah/tickets/';
+  const API_OPTIONS = '/api/merah/ticket-options/';
+  let tickets = [];
+  let ticketOptions = { categories: [], orders: [], seats: [] };
+  let canManageTickets = false;
   let ticketPendingDeleteId = null;
 
-  function visibleTickets() {
-    const search = document.getElementById('ticketSearch').value.toLowerCase();
+  function showTicketAlert(message, type = 'danger') {
+    const alert = document.getElementById('ticketAlert');
+    alert.textContent = message;
+    alert.className = `mb-4 rounded-lg border px-4 py-3 text-sm ${type === 'success' ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`;
+    setTimeout(() => alert.classList.add('hidden'), 3500);
+  }
+
+  function formatRp(value) {
+    return 'Rp ' + Number(value || 0).toLocaleString('id-ID');
+  }
+
+  async function loadTicketOptions() {
+    if (!canManageTickets) return;
+    const res = await fetch(API_OPTIONS);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Gagal memuat pilihan tiket.');
+    ticketOptions = data;
+
+    document.getElementById('ticketCategory').innerHTML = data.categories.map(category =>
+      `<option value="${category.id}" data-venue="${category.venue_id}">${escapeHtml(category.event)} - ${escapeHtml(category.name)} (${formatRp(category.price)})</option>`
+    ).join('');
+    document.getElementById('ticketOrder').innerHTML = data.orders.map(order =>
+      `<option value="${order.id}">${escapeHtml(order.customer)} - ${order.status} - ${order.id.slice(0, 8)}</option>`
+    ).join('');
+    renderSeatOptions();
+  }
+
+  function renderSeatOptions(selectedSeat = '') {
+    const categoryId = document.getElementById('ticketCategory').value;
+    const category = ticketOptions.categories.find(item => item.id === categoryId);
+    const venueId = category?.venue_id;
+    const options = ticketOptions.seats
+      .filter(seat => !venueId || seat.venue_id === venueId || seat.id === selectedSeat)
+      .map(seat => `<option value="${seat.id}" ${seat.id === selectedSeat ? 'selected' : ''}>${escapeHtml(seat.label)}</option>`)
+      .join('');
+    document.getElementById('ticketSeat').innerHTML = '<option value="">Tanpa kursi</option>' + options;
+    if (selectedSeat) document.getElementById('ticketSeat').value = selectedSeat;
+  }
+
+  async function loadTickets() {
+    const params = new URLSearchParams();
+    const q = document.getElementById('ticketSearch').value.trim();
     const status = document.getElementById('ticketStatusFilter').value;
-    return tickets.filter(ticket => {
-      const ownerMatches = ticketRole !== 'customer' || ticket.owner === 'current_customer';
-      const text = `${ticket.code} ${ticket.event} ${ticket.venue} ${ticket.customer}`.toLowerCase();
-      const statusMatches = status === 'Semua Status' || ticket.status === status;
-      return ownerMatches && text.includes(search) && statusMatches;
-    });
+    if (q) params.set('q', q);
+    if (status !== 'Semua Status') params.set('status', status);
+
+    const res = await fetch(API_TICKETS + (params.toString() ? '?' + params.toString() : ''));
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Gagal memuat tiket.');
+    tickets = data.tickets || [];
+    canManageTickets = Boolean(data.can_manage);
+    renderTickets(data.stats || {});
   }
 
-  function saveTickets() {
-    localStorage.setItem('tiktaktukTickets', JSON.stringify(tickets));
-  }
-
-  function renderTickets() {
-    const rows = visibleTickets();
-    document.getElementById('ticketCreateButton').classList.toggle('hidden', ticketRole === 'customer');
-    document.getElementById('ticketTotal').textContent = rows.length;
-    document.getElementById('ticketValid').textContent = rows.filter(ticket => ticket.status === 'Valid').length;
-    document.getElementById('ticketUsed').textContent = rows.filter(ticket => ticket.status === 'Terpakai').length;
+  function renderTickets(stats) {
+    document.getElementById('ticketCreateButton').classList.toggle('hidden', !canManageTickets);
+    document.getElementById('ticketTotal').textContent = stats.total ?? tickets.length;
+    document.getElementById('ticketValid').textContent = stats.valid ?? 0;
+    document.getElementById('ticketUsed').textContent = stats.used ?? 0;
     document.getElementById('ticketTitle').textContent = ticketRole === 'customer' ? 'Tiket Saya' : 'Manajemen Tiket';
     document.getElementById('ticketSubtitle').textContent = ticketRole === 'customer'
       ? 'Kelola dan akses tiket pertunjukan Anda'
-      : 'Kelola tiket: tambah, ubah status, dan hapus tiket';
-    document.getElementById('ticketList').innerHTML = rows.map(ticket => `
+      : 'Kelola tiket, kategori, order, dan relasi kursi';
+    document.getElementById('ticketList').innerHTML = tickets.map(ticket => `
       <div class="bg-white rounded-lg shadow p-6 mb-4 flex justify-between items-start">
         <div class="flex gap-4">
           <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg"></div>
@@ -240,38 +198,40 @@
               <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${ticket.status === 'Valid' ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'}">${ticket.status}</span>
               <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">${ticket.category}</span>
             </div>
-            <h3 class="text-lg font-semibold text-gray-900">${ticket.event}</h3>
+            <h3 class="text-lg font-semibold text-gray-900">${escapeHtml(ticket.event)}</h3>
             <p class="text-sm text-gray-600 mb-4">${ticket.code}</p>
             <div class="grid grid-cols-3 gap-4 text-sm mb-4">
               <div><div class="font-medium text-gray-500">Jadwal</div><div class="text-gray-900">${ticket.datetime}</div></div>
-              <div><div class="font-medium text-gray-500">Lokasi</div><div class="text-gray-900">${ticket.venue}</div></div>
-              <div><div class="font-medium text-gray-500">Kursi</div><div class="text-gray-900">${ticket.seat || '-'}</div></div>
-              <div><div class="font-medium text-gray-500">Harga</div><div class="text-gray-900">${ticket.price}</div></div>
-              <div><div class="font-medium text-gray-500">Order</div><div class="text-gray-900">${ticket.order}</div></div>
-              ${ticketRole === 'customer' ? '' : `<div><div class="font-medium text-gray-500">Pelanggan</div><div class="text-gray-900">${ticket.customer}</div></div>`}
+              <div><div class="font-medium text-gray-500">Lokasi</div><div class="text-gray-900">${escapeHtml(ticket.venue)}</div></div>
+              <div><div class="font-medium text-gray-500">Kursi</div><div class="text-gray-900">${escapeHtml(ticket.seat || '-')}</div></div>
+              <div><div class="font-medium text-gray-500">Harga</div><div class="text-gray-900">${formatRp(ticket.price)}</div></div>
+              <div><div class="font-medium text-gray-500">Order</div><div class="text-gray-900">${ticket.order_id.slice(0, 8)}</div></div>
+              ${ticketRole === 'customer' ? '' : `<div><div class="font-medium text-gray-500">Pelanggan</div><div class="text-gray-900">${escapeHtml(ticket.customer)}</div></div>`}
             </div>
             <div class="flex gap-2">
-              ${ticketRole === 'customer'
+              ${!canManageTickets
                 ? '<button class="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800">Tampilkan QR</button>'
-                : `<button onclick="openTicketModal(${ticket.id})" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Update</button>
-                   <button onclick="openTicketDeleteModal(${ticket.id})" class="bg-red-100 text-red-600 px-4 py-2 rounded-lg hover:bg-red-200">Hapus</button>`}
+                : `<button onclick="openTicketModal('${ticket.id}')" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Update</button>
+                   <button onclick="openTicketDeleteModal('${ticket.id}')" class="bg-red-100 text-red-600 px-4 py-2 rounded-lg hover:bg-red-200">Hapus</button>`}
             </div>
           </div>
         </div>
         <div class="w-24 h-24 bg-gray-200 rounded-lg grid place-items-center text-xs text-gray-500">QR</div>
-      </div>`).join('');
+      </div>`).join('') || '<div class="bg-white rounded-lg shadow p-6 text-gray-600">Belum ada tiket yang sesuai.</div>';
   }
 
-  function openTicketModal(id) {
+  async function openTicketModal(id = '') {
+    if (!ticketOptions.categories.length) await loadTicketOptions();
     const ticket = tickets.find(item => item.id === id);
     document.getElementById('ticketModalTitle').textContent = ticket ? 'Update Tiket' : 'Tambah Tiket';
     document.getElementById('ticketId').value = ticket?.id || '';
     document.getElementById('ticketCode').value = ticket?.code || '';
-    document.getElementById('ticketEvent').value = ticket?.event || '';
-    document.getElementById('ticketCategory').value = ticket?.category || 'VIP';
-    document.getElementById('ticketStatus').value = ticket?.status || 'Valid';
-    document.getElementById('ticketSeat').value = ticket?.seat || '';
-    document.getElementById('ticketCustomer').value = ticket?.customer || '';
+    document.getElementById('ticketCategory').value = ticket?.category_id || ticketOptions.categories[0]?.id || '';
+    document.getElementById('ticketOrder').value = ticket?.order_id || ticketOptions.orders[0]?.id || '';
+    if (ticket?.seat_id && !ticketOptions.seats.some(seat => seat.id === ticket.seat_id)) {
+      ticketOptions.seats.push({ id: ticket.seat_id, label: `${ticket.venue} - ${ticket.seat}`, venue_id: ticket.venue_id });
+    }
+    renderSeatOptions(ticket?.seat_id || '');
     document.getElementById('ticketModal').classList.remove('hidden');
   }
 
@@ -292,40 +252,53 @@
     document.getElementById('ticketDeleteModal').classList.add('hidden');
   }
 
-  document.getElementById('ticketForm').addEventListener('submit', event => {
+  document.getElementById('ticketForm').addEventListener('submit', async event => {
     event.preventDefault();
-    const id = Number(document.getElementById('ticketId').value);
-    const category = document.getElementById('ticketCategory').value;
+    const id = document.getElementById('ticketId').value;
     const payload = {
-      id: id || Date.now(),
-      code: document.getElementById('ticketCode').value.trim() || `TKT${Date.now().toString().slice(-4)}`,
-      status: document.getElementById('ticketStatus').value,
-      category,
-      event: document.getElementById('ticketEvent').value.trim(),
-      datetime: '2024-12-20 19:00',
-      venue: 'Stadion Gelora Bung Karno',
-      seat: document.getElementById('ticketSeat').value.trim(),
-      price: category === 'VIP' ? '500000' : category === 'Festival' ? '350000' : '250000',
-      order: `ORD${Date.now().toString().slice(-3)}`,
-      customer: document.getElementById('ticketCustomer').value.trim(),
-      owner: 'current_customer'
+      ticket_code: document.getElementById('ticketCode').value.trim(),
+      category_id: document.getElementById('ticketCategory').value,
+      order_id: document.getElementById('ticketOrder').value,
+      seat_id: document.getElementById('ticketSeat').value
     };
-    tickets = id ? tickets.map(ticket => ticket.id === id ? { ...ticket, ...payload } : ticket) : [...tickets, payload];
-    saveTickets();
-    closeTicketModal();
-    renderTickets();
+    try {
+      const res = await fetch(id ? API_TICKETS + id + '/' : API_TICKETS, {
+        method: id ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Gagal menyimpan tiket.');
+      closeTicketModal();
+      showTicketAlert(data.message || 'Tiket berhasil disimpan.', 'success');
+      ticketOptions = { categories: [], orders: [], seats: [] };
+      await loadTickets();
+    } catch (err) {
+      showTicketAlert(err.message);
+    }
   });
 
-  document.getElementById('ticketDeleteConfirm').addEventListener('click', () => {
-    tickets = tickets.filter(ticket => ticket.id !== ticketPendingDeleteId);
-    saveTickets();
-    closeTicketDeleteModal();
-    renderTickets();
+  document.getElementById('ticketDeleteConfirm').addEventListener('click', async () => {
+    try {
+      const res = await fetch(API_TICKETS + ticketPendingDeleteId + '/', { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Gagal menghapus tiket.');
+      closeTicketDeleteModal();
+      showTicketAlert(data.message || 'Tiket berhasil dihapus.', 'success');
+      await loadTickets();
+    } catch (err) {
+      showTicketAlert(err.message);
+    }
   });
 
-  document.getElementById('ticketSearch').addEventListener('input', renderTickets);
-  document.getElementById('ticketStatusFilter').addEventListener('change', renderTickets);
-  renderTickets();
+  function escapeHtml(str) {
+    return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  document.getElementById('ticketCategory').addEventListener('change', () => renderSeatOptions());
+  document.getElementById('ticketSearch').addEventListener('input', loadTickets);
+  document.getElementById('ticketStatusFilter').addEventListener('change', loadTickets);
+  loadTickets().then(loadTicketOptions).catch(err => showTicketAlert(err.message));
   </script>
 </body>
 </html>
