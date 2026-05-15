@@ -571,3 +571,65 @@ def delete_promotion(request, promotion_id):
             conn.close()
 
     return redirect('fitur_biru:read_promotion')
+
+from django.utils import timezone # Pastikan ini ada di bagian atas file
+
+def confirm_payment(request, order_id):
+    # 1. Cek Autentikasi
+    if not request.session.get('user_id'):
+        return redirect('fitur_wajib:login')
+
+    conn = get_db_conn()
+    try:
+        cur = conn.cursor()
+        
+        # 2. Ambil data deadline dan status
+        cur.execute("""
+            SELECT payment_deadline, payment_status 
+            FROM "ORDER" WHERE order_id = %s
+        """, (order_id,))
+        order = cur.fetchone()
+        
+        if not order:
+            messages.error(request, "Order tidak ditemukan.")
+            return redirect('fitur_biru:read_order_customer')
+
+        deadline = order[0]
+        status = order[1]
+        
+        # 3. FIX: Penanganan Timezone Comparison
+        # Mengubah deadline menjadi 'aware' jika ditarik sebagai 'naive' dari DB
+        if deadline and timezone.is_naive(deadline):
+            deadline = timezone.make_aware(deadline)
+            
+        waktu_sekarang = timezone.now()
+
+        # 4. Logic Konfirmasi / Pembatalan
+        if status == 'UNPAID':
+            if waktu_sekarang > deadline:
+                # Jika sudah lewat 30 detik
+                cur.execute("""
+                    UPDATE "ORDER" SET payment_status = 'CANCELLED' WHERE order_id = %s
+                """, (order_id,))
+                conn.commit()
+                messages.error(request, "Maaf, waktu pembayaran Anda (30 detik) sudah habis. Order dibatalkan otomatis.")
+            else:
+                # Jika masih dalam kurun waktu 30 detik
+                cur.execute("""
+                    UPDATE "ORDER" SET payment_status = 'PAID' WHERE order_id = %s
+                """, (order_id,))
+                conn.commit()
+                messages.success(request, "Pembayaran berhasil dikonfirmasi!")
+        else:
+            # Jika status sudah PAID atau CANCELLED sebelumnya
+            messages.info(request, f"Order ini sudah berstatus {status}.")
+
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        messages.error(request, f"Gagal konfirmasi: {e}")
+    finally:
+        if conn:
+            conn.close()
+
+    return redirect('fitur_biru:read_order_customer')
