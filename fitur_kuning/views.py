@@ -19,7 +19,7 @@ def _login_required(fn):
 
 
 def _schema(cursor):
-    cursor.execute("SET search_path TO taktiktuk;")
+    cursor.execute("SET search_path TO tiktaktuk;")
 
 
 def _clean_db_error(exc):
@@ -309,7 +309,6 @@ def event_create(request):
                 cur.execute("""
                     INSERT INTO event_artist (event_id, artist_id, role)
                     VALUES (%s, %s, 'Performer')
-                    ON CONFLICT DO NOTHING
                 """, [new_event_id, artist_id])
 
             # Ticket categories
@@ -384,7 +383,6 @@ def event_update(request, event_id):
                 cur.execute("""
                     INSERT INTO event_artist (event_id, artist_id, role)
                     VALUES (%s, %s, 'Performer')
-                    ON CONFLICT DO NOTHING
                 """, [eid, artist_id])
 
             # Re-create categories

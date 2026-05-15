@@ -8,10 +8,10 @@ from django.views.decorators.http import require_http_methods
 from django.db import connection
 
 
-#  Helper: set schema search path
+# Helper: set schema search path
 def _sp(cursor):
-    """Set search_path ke schema Tiktaktuk."""
-    cursor.execute("SET search_path TO Tiktaktuk")
+    """Set search_path ke schema tiktaktuk."""
+    cursor.execute("SET search_path TO tiktaktuk")
 
 
 def _clean_db_error(exc):
@@ -21,7 +21,6 @@ def _clean_db_error(exc):
         ERROR:  <pesan trigger>
     """
     msg = str(exc)
-    # Ambil baris pertama yang mengandung ERROR:
     for line in msg.splitlines():
         line = line.strip()
         if line.startswith("ERROR:"):
@@ -29,7 +28,7 @@ def _clean_db_error(exc):
     return msg.splitlines()[0] if msg else "Terjadi kesalahan."
 
 
-#  PAGE VIEWS (serve HTML templates)
+# PAGE VIEWS (serve HTML templates)
 def artist_page(request):
     return render(request, "artist_list.html")
 
@@ -38,7 +37,7 @@ def ticket_category_page(request):
     return render(request, "ticket_category_list.html")
 
 
-#  API: ARTIST
+# API: ARTIST
 @csrf_exempt
 def api_artists(request):
     """GET /hijau/api/artists/  — daftar semua artis (+ pencarian)
@@ -144,7 +143,6 @@ def api_artist_detail(request, artist_id):
         try:
             with connection.cursor() as c:
                 _sp(c)
-                # Cek apakah artis terdaftar di event — jika ada constraint FK, beri pesan jelas
                 c.execute(
                     "SELECT COUNT(*) FROM EVENT_ARTIST WHERE artist_id=%s", [artist_id]
                 )
@@ -165,16 +163,64 @@ def api_artist_detail(request, artist_id):
     return JsonResponse({"error": "Method not allowed."}, status=405)
 
 
-#  API: TICKET CATEGORY
+# API: TICKET CATEGORY
 @csrf_exempt
 def api_ticket_categories(request):
-    """GET /hijau/api/ticket-categories/  — daftar kategori tiket
-       POST /hijau/api/ticket-categories/ — tambah kategori tiket
+    """GET /hijau/api/ticket-categories/        — daftar semua kategori tiket
+       GET /hijau/api/ticket-categories/?event_id=<uuid>  — sisa kuota via SP
+       POST /hijau/api/ticket-categories/       — tambah kategori tiket
     """
     if request.method == "GET":
         q = request.GET.get("q", "").strip().lower()
         event_filter = request.GET.get("event_id", "").strip()
 
+        if event_filter:
+            try:
+                with connection.cursor() as c:
+                    _sp(c)
+                    c.execute(
+                        "SELECT * FROM sp_sisa_kuota_event(%s::UUID)",
+                        [event_filter],
+                    )
+                    sp_rows = c.fetchall()
+
+                    c.execute(
+                        "SELECT category_id, price FROM TICKET_CATEGORY WHERE tevent_id = %s::UUID",
+                        [event_filter],
+                    )
+                    price_map = {str(r[0]): float(r[1]) for r in c.fetchall()}
+
+                    c.execute(
+                        "SELECT event_title FROM EVENT WHERE event_id = %s::UUID",
+                        [event_filter],
+                    )
+                    event_row = c.fetchone()
+                    event_title = event_row[0] if event_row else None
+
+            except Exception as exc:
+                return JsonResponse({"error": _clean_db_error(exc)}, status=400)
+
+            categories = [
+                {
+                    "id": str(r[0]),
+                    "name": r[1],
+                    "quota": r[2],
+                    "sold": r[3],
+                    "remaining": r[4],
+                    "price": price_map.get(str(r[0]), 0),   
+                    "event_id": event_filter,
+                    "event_title": event_title,              
+                }
+                for r in sp_rows
+            ]
+
+            # Filter pencarian nama kategori jika ada query q
+            if q:
+                categories = [cat for cat in categories if q in cat["name"].lower()]
+
+            return JsonResponse({"categories": categories, "total": len(categories)})
+
+        # Kalau tidak ada event_filter, pakai query biasa (SP butuh event_id spesifik)
         sql = """
             SELECT tc.category_id, tc.category_name, tc.quota, tc.price,
                    tc.tevent_id, e.event_title,
@@ -191,9 +237,6 @@ def api_ticket_categories(request):
         if q:
             sql += " AND (LOWER(tc.category_name) LIKE %s OR LOWER(e.event_title) LIKE %s)"
             params += [f"%{q}%", f"%{q}%"]
-        if event_filter:
-            sql += " AND tc.tevent_id = %s"
-            params.append(event_filter)
 
         sql += " ORDER BY e.event_title, tc.category_name"
 
@@ -304,7 +347,6 @@ def api_ticket_category_detail(request, category_id):
         try:
             with connection.cursor() as c:
                 _sp(c)
-                # Cek apakah ada tiket yang sudah dibuat untuk kategori ini
                 c.execute(
                     "SELECT COUNT(*) FROM TICKET WHERE tcategory_id=%s", [category_id]
                 )
@@ -327,7 +369,7 @@ def api_ticket_category_detail(request, category_id):
     return JsonResponse({"error": "Method not allowed."}, status=405)
 
 
-#  API: EVENTS (untuk dropdown di form kategori)
+# API: EVENTS (untuk dropdown di form kategori)
 def api_events(request):
     """GET /hijau/api/events/ — daftar semua event (untuk dropdown)"""
     with connection.cursor() as c:

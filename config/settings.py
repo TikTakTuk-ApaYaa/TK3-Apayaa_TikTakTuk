@@ -12,6 +12,15 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 import dj_database_url
+# Database
+
+_db = dj_database_url.parse('postgresql://postgres.kmyshghsxqwwngvzyijs:tiktaktuk-apayaa@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres')
+
+# Tambahkan ,public di sini supaya Django bisa baca tabel session-nya sendiri
+_db['OPTIONS'] = {'options': '-c search_path=tiktaktuk,public'}
+
+# Baru setelah itu, jadikan _db sebagai isi dari DATABASES
+DATABASES = {'default': _db}
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -79,10 +88,14 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+import dj_database_url
+
 _db = dj_database_url.parse('postgresql://postgres.kmyshghsxqwwngvzyijs:tiktaktuk-apayaa@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres')
 
+# Masukkan options ke dalam _db DULU
 _db['OPTIONS'] = {'options': '-c search_path=tiktaktuk'}
 
+# Baru setelah itu, jadikan _db sebagai isi dari DATABASES
 DATABASES = {'default': _db}
 
 
@@ -126,4 +139,8 @@ STATICFILES_DIRS = [
 ]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-LOGIN_URL = 'login'
+
+LOGIN_URL = 'fitur_wajib:login'
+
+
+DATABASE_URL_STRING = 'postgresql://postgres.kmyshghsxqwwngvzyijs:tiktaktuk-apayaa@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres'
