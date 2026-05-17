@@ -1,9 +1,5 @@
 SET search_path TO tiktaktuk;
 
--- ============================================================
--- TRIGGER 1: Cegah penghapusan kursi yang sudah terisi tiket
--- ============================================================
-
 CREATE OR REPLACE FUNCTION fn_cek_kursi_terisi()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -28,11 +24,6 @@ CREATE TRIGGER trg_cek_kursi_terisi
 BEFORE DELETE ON SEAT
 FOR EACH ROW
 EXECUTE FUNCTION fn_cek_kursi_terisi();
-
-
--- ============================================================
--- TRIGGER 2: Cegah pembuatan tiket saat kuota kategori penuh
--- ============================================================
 
 CREATE OR REPLACE FUNCTION fn_cek_kuota_kategori_tiket()
 RETURNS TRIGGER AS $$
