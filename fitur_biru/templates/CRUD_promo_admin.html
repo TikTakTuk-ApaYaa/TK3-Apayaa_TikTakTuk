@@ -279,11 +279,9 @@
 <script>
   document.getElementById('editPromoModal')?.addEventListener('show.bs.modal', function(e) {
     const btn = e.relatedTarget;
-    // Ganti URL dengan ID promo
     const baseUrl = "{% url 'fitur_biru:update_promotion' '00000000-0000-0000-0000-000000000000' %}";
     document.getElementById('editPromoForm').action = baseUrl.replace('00000000-0000-0000-0000-000000000000', btn.dataset.id);
     
-    // Isi field form
     document.getElementById('editCode').value  = btn.dataset.code;
     document.getElementById('editValue').value = btn.dataset.value;
     document.getElementById('editStart').value = btn.dataset.start;

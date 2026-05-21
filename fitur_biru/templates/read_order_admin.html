@@ -217,7 +217,7 @@
 <script src="{% static 'js/navbar.js' %}"></script>
 
 <script>
-  // Script untuk mengisi URL action modal secara dinamis
+  // Script untuk mengisi URL action modal
   document.getElementById('updateModal').addEventListener('show.bs.modal', function(e) {
     const btn = e.relatedTarget;
     const orderId = btn.getAttribute('data-order-id');
@@ -225,7 +225,6 @@
 
     document.getElementById('updateOrderIdLabel').textContent = 'Order ID: #' + orderId.substring(0,8).toUpperCase();
     
-    // Gunakan namespace fitur_biru agar tidak NoReverseMatch
     document.getElementById('updateForm').action = "{% url 'fitur_biru:update_order_admin' '00000000-0000-0000-0000-000000000000' %}"
       .replace('00000000-0000-0000-0000-000000000000', orderId);
 

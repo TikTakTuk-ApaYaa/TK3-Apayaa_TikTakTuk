@@ -31,19 +31,15 @@ def extract_trigger_message(exc):
     """
     msg = str(exc)
     
-    # 1. Kalau ada kata 'ERROR:', ambil setelahnya
     if "ERROR:" in msg:
         msg = msg.split("ERROR:")[1]
     
-    # 2. Buang bagian CONTEXT dan seterusnya (biasanya dipisah baris baru)
     if "CONTEXT:" in msg:
         msg = msg.split("CONTEXT:")[0]
         
-    # 3. Buang bagian 'at line ...' atau 'line ...' jika masih nyangkut
     if "line " in msg:
         msg = msg.split("line ")[0]
 
-    # 4. Bersihkan spasi atau karakter aneh di ujung-ujung
     return msg.strip()
 
 
@@ -60,15 +56,11 @@ def read_order_customer(request):
         messages.error(request, "Akses ditolak. Hanya customer yang bisa melihat pesanan.")
         return redirect('fitur_wajib:dashboard')
 
-    # Ambil input search & filter di luar blok cursor biar rapi
     search = request.GET.get('search', '')
     status_filter = request.GET.get('status', 'all')
 
-    # Buka koneksi
     with connection.cursor() as cur:
-        _sp(cur) # 1. Set Search Path (WAJIB di dalem with)
-        
-        # 2. Query Stats (Harus menjorok ke dalem)
+        _sp(cur) 
         cur.execute("""
             SELECT
                 COUNT(*) AS total,
@@ -79,7 +71,6 @@ def read_order_customer(request):
         """, [customer_id])
         stats = cur.fetchone()
 
-        # 3. Bangun Query List
         query = 'SELECT order_id, order_date, payment_status, total_amount FROM "ORDER" WHERE customer_id = %s'
         params = [customer_id]
         
@@ -95,12 +86,9 @@ def read_order_customer(request):
                 params.append(db_status)
         
         query += " ORDER BY order_date DESC"
-        
-        # 4. Eksekusi Query List (Harus menjorok ke dalem juga)
         cur.execute(query, params)
         orders = cur.fetchall()
 
-    # Baru setelah dapet data (orders & stats), kita render HTML
     return render(request, 'read_order_cust.html', {
         'orders': orders, 
         'stats': stats,
@@ -127,9 +115,7 @@ def read_order_organizer(request):
     status_filter = request.GET.get('status', 'all')
 
     with connection.cursor() as cur:
-        _sp(cur) # 1. Masuk ke dalam 'with'
-        
-        # 2. Query Stats (Masuk ke dalam 'with')
+        _sp(cur) 
         cur.execute("""
             SELECT
                 COUNT(DISTINCT o.order_id) AS total,
@@ -144,7 +130,6 @@ def read_order_organizer(request):
         """, [organizer_id])
         stats = cur.fetchone()
 
-        # 3. Bangun Query List
         query = """
             SELECT DISTINCT o.order_id, c.full_name, o.order_date, o.payment_status, o.total_amount
             FROM "ORDER" o
@@ -166,11 +151,9 @@ def read_order_organizer(request):
                 params.append(db_status)
         query += " ORDER BY o.order_date DESC"
 
-        # 4. Eksekusi Query List (WAJIB menjorok ke dalam 'with')
         cur.execute(query, params)
         orders = cur.fetchall()
 
-    # Baru render setelah blok 'with' selesai
     return render(request, 'read_order_organizer.html', {
         'orders': orders, 
         'stats': stats,
@@ -195,11 +178,8 @@ def read_order_admin(request):
     search = request.GET.get('search', '')
     status_filter = request.GET.get('status', 'all')
 
-    # BUKA KONEKSI
     with connection.cursor() as cur:
-        _sp(cur) # SETELAH INI, SEMUA HARUS MASUK KE DALAM (TAB)
-        
-        # 1. Query Stats
+        _sp(cur) 
         cur.execute("""
             SELECT
                 COUNT(*) AS total,
@@ -210,7 +190,6 @@ def read_order_admin(request):
         """)
         stats = cur.fetchone()
 
-        # 2. Bangun Query List
         query = """
             SELECT o.order_id, c.full_name, o.order_date, o.payment_status, o.total_amount
             FROM "ORDER" o
@@ -231,12 +210,9 @@ def read_order_admin(request):
         
         query += " ORDER BY o.order_date DESC"
         
-        # 3. Jalankan Query List
         cur.execute(query, params)
         orders = cur.fetchall()
-        # AKHIR DARI BLOK WITH (Koneksi otomatis tutup di sini)
-
-    # BARU RENDER
+        
     return render(request, 'read_order_admin.html', {
         'orders': orders, 
         'stats': stats,
@@ -247,7 +223,6 @@ def read_order_admin(request):
 
 
 def update_order_admin(request, order_id):
-    # 1. Cek Login & Role
     if not request.session.get('user_id'):
         return redirect('fitur_wajib:login')
     
@@ -255,39 +230,33 @@ def update_order_admin(request, order_id):
         messages.error(request, "Akses ditolak.")
         return redirect('fitur_wajib:dashboard')
 
-    # 2. Cek Method POST
     if request.method == 'POST':
         new_status = request.POST.get('payment_status')
         
-        # Validasi status agar tidak asal input
         if new_status not in {'PAID', 'UNPAID', 'CANCELLED'}:
             messages.error(request, "Status tidak valid.")
             return redirect('fitur_biru:read_order_admin')
 
         try:
-            # 3. Eksekusi Query (Pake gaya Django Native)
             with connection.cursor() as cur:
-                _sp(cur) # Set search path ke schema lo
+                _sp(cur) 
                 cur.execute(
                     'UPDATE "ORDER" SET payment_status = %s WHERE order_id = %s',
                     [new_status, order_id]
                 )
                 
-                # Cek apakah ada baris yang terupdate
                 if cur.rowcount == 0:
                     messages.warning(request, "Data order tidak ditemukan.")
                 else:
                     messages.success(request, f"Status order {order_id} berhasil diubah jadi {new_status}.")
         
         except Exception as e:
-            # Pake helper extract_trigger_message yang udah kita bahas tadi
             messages.error(request, f"Gagal update: {extract_trigger_message(e)}")
             
     return redirect('fitur_biru:read_order_admin')
 
 
 def delete_order_admin(request, order_id):
-    # 1. Cek Login & Role
     if not request.session.get('user_id'):
         return redirect('fitur_wajib:login')
     
@@ -297,11 +266,9 @@ def delete_order_admin(request, order_id):
 
     if request.method == 'POST':
         try:
-            # 2. Pake with connection.cursor() (Native Django)
             with connection.cursor() as cur:
-                _sp(cur) # Set schema tiktaktuk
+                _sp(cur) 
                 
-                # 3. Hapus data berelasi (Manual Cascade)
                 cur.execute('DELETE FROM ORDER_PROMOTION WHERE order_id = %s', [order_id])
                 
                 cur.execute("""
@@ -311,14 +278,10 @@ def delete_order_admin(request, order_id):
                 
                 cur.execute('DELETE FROM TICKET WHERE torder_id = %s', [order_id])
                 
-                # 4. Hapus order utama
                 cur.execute('DELETE FROM "ORDER" WHERE order_id = %s', [order_id])
-                
-                # Gak perlu conn.commit() kalau pake 'with', otomatis dihandle Django
                 messages.success(request, f"Order {order_id} berhasil dihapus.")
                 
         except Exception as e:
-            # Gak perlu conn.rollback() manual
             messages.error(request, f"Gagal hapus: {extract_trigger_message(e)}")
 
     return redirect('fitur_biru:read_order_admin')
@@ -337,11 +300,8 @@ def create_order(request, event_id):
         messages.error(request, "Hanya customer yang bisa membeli tiket.")
         return redirect('fitur_kuning:event_list')
 
-    # Buka koneksi pake gaya Django Native
     with connection.cursor() as cur:
-        _sp(cur) # Set search path biar bisa baca table ORDER, EVENT, dll.
-
-        # 1. Ambil Info Event
+        _sp(cur) 
         cur.execute("""
             SELECT e.event_id, e.event_title, v.venue_name, e.event_datetime,
                    e.description, v.is_reserved
@@ -355,8 +315,6 @@ def create_order(request, event_id):
             messages.error(request, "Event tidak ditemukan.")
             return redirect('fitur_kuning:event_list')
 
-        # 2. Ambil Sisa Kuota via Stored Procedure
-        # Gunakan schema prefix tiktaktuk langsung di nama fungsinya
         cur.execute("""
             SELECT 
                 sp.category_id, 
@@ -373,7 +331,6 @@ def create_order(request, event_id):
             qty         = int(request.POST.get('qty', 1))
             promo_code  = request.POST.get('promo_code', '').strip()
 
-            # Validasi Input Sederhana
             if qty < 1 or qty > 10:
                 messages.error(request, "Jumlah tiket harus antara 1–10.")
                 return redirect('fitur_biru:create_order', event_id=event_id)
@@ -387,7 +344,6 @@ def create_order(request, event_id):
                 messages.error(request, f"Kuota tidak cukup. Sisa: {selected_cat[3]} tiket.")
                 return redirect('fitur_biru:create_order', event_id=event_id)
 
-            # 3. Hitung Harga & Promo
             price_per_ticket = Decimal(str(selected_cat[2]))
             total_amount     = price_per_ticket * qty
             promotion_id     = None
@@ -408,10 +364,8 @@ def create_order(request, event_id):
 
             total_amount = max(total_amount, Decimal('0'))
 
-            # 4. Proses Insert (Dibungkus Try-Except untuk nangkep Trigger)
             try:
                 order_id = uuid.uuid4()
-                # Insert ke tabel ORDER (pakai double quote karena ORDER itu reserved keyword)
                 cur.execute("""
                     INSERT INTO "ORDER" (order_id, order_date, payment_status, total_amount, customer_id)
                     VALUES (%s, NOW(), 'UNPAID', %s, %s)
@@ -423,7 +377,6 @@ def create_order(request, event_id):
                         VALUES (%s, %s, %s)
                     """, [str(uuid.uuid4()), str(promotion_id), str(order_id)])
 
-                # Insert Tiket sesuai Quantity
                 for i in range(qty):
                     t_id = uuid.uuid4()
                     t_code = f"TTK-{str(order_id)[:8].upper()}-{i+1:03d}"
@@ -436,11 +389,9 @@ def create_order(request, event_id):
                 return redirect('fitur_biru:read_order_customer')
 
             except Exception as e:
-                # Nangkep error dari trigger (misal: "Tiket sudah habis" atau "Promo expired")
                 messages.error(request, extract_trigger_message(e))
                 return redirect('fitur_biru:create_order', event_id=event_id)
 
-    # Render halaman checkout
     return render(request, 'create_order.html', {
         'event': event,
         'categories': categories,
@@ -459,11 +410,9 @@ def read_promotion(request):
     type_filter = request.GET.get('type', 'all')
     role        = get_user_role(request)
 
-    # 2. Buka Koneksi
     with connection.cursor() as cur:
-        _sp(cur) # Set search_path
+        _sp(cur) 
 
-        # 3. Query Stats
         cur.execute("""
             SELECT
                 COUNT(*) AS total_promo,
@@ -473,7 +422,6 @@ def read_promotion(request):
         """)
         stats = cur.fetchone()
 
-        # 4. Bangun Query List Promotion
         query = """
             SELECT
                 p.promotion_id, p.promo_code, p.discount_type, p.discount_value,
@@ -496,11 +444,9 @@ def read_promotion(request):
                 
         query += " ORDER BY p.promo_code ASC"
         
-        # 5. Eksekusi Query (Pastikan menjorok ke dalam blok 'with')
         cur.execute(query, params)
         promotions = cur.fetchall()
 
-    # 6. Tentukan Template Berdasarkan Role
     if role == 'admin':                    
         template = 'CRUD_promo_admin.html'
     elif role == 'organizer':
@@ -572,7 +518,6 @@ def delete_promotion(request, promotion_id):
         try:
             with connection.cursor() as cur:
                 _sp(cur)
-                # Hapus relasi dulu baru parent-nya
                 cur.execute('DELETE FROM ORDER_PROMOTION WHERE promotion_id = %s', [promotion_id])
                 cur.execute('DELETE FROM PROMOTION WHERE promotion_id = %s', [promotion_id])
             messages.success(request, "Promosi berhasil dihapus.")
@@ -591,7 +536,6 @@ def confirm_payment(request, order_id):
     try:
         with connection.cursor() as cur:
             _sp(cur)
-            # 1. Ambil data (pakai double quote "ORDER" karena reserved keyword)
             cur.execute('SELECT payment_deadline, payment_status FROM "ORDER" WHERE order_id = %s', [order_id])
             order = cur.fetchone()
             
@@ -600,8 +544,7 @@ def confirm_payment(request, order_id):
                 return redirect('fitur_biru:read_order_customer')
 
             deadline, status = order[0], order[1]
-            
-            # Handle timezone biar gak error comparison
+
             if deadline and timezone.is_naive(deadline):
                 deadline = timezone.make_aware(deadline)
             

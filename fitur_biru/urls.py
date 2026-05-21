@@ -1,6 +1,6 @@
 
 from django.urls import path
-from . import views as v   # sesuaikan nama module
+from . import views as v 
 
 app_name = 'fitur_biru' 
 
