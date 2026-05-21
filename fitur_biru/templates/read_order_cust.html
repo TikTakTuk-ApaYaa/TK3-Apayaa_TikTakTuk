@@ -33,7 +33,7 @@
     .status-UNPAID { background: #fff4e5; color: #ff9800; }
     .status-CANCELLED { background: #ffe6e6; color: #dc3545; }
 
-    /* Tombol Bayar Kecil (Fit) */
+    /* Tombol Bayar */
     .btn-pay-now { background: #00ab66; color: white; border: none; padding: 4px 14px; border-radius: 6px; font-weight: 700; font-size: 0.75rem; transition: 0.2s; }
     .btn-pay-now:hover { background: #00854f; transform: translateY(-1px); color: white; }
 
@@ -183,13 +183,11 @@
         if (diff <= 0) {
           clearInterval(interval);
           
-          // 1. Hilangkan tombol bayar di layar
           const container = document.getElementById(`pay-container-${orderId}`);
           if (container) {
             container.innerHTML = '<span class="text-danger small fw-bold">Waktu Habis</span>';
           }
 
-          // 2. Ubah status badge secara visual menjadi CANCELLED
           const row = el.closest('tr');
           const badge = row.querySelector('.status-badge');
           if (badge && badge.innerText === 'UNPAID') {
